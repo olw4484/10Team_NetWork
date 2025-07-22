@@ -7,6 +7,8 @@ public class EventManager : MonoBehaviour
 {
     public static EventManager Instance { get; private set; }
 
+    // 싱글턴 초기화
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -19,10 +21,19 @@ public class EventManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public event Action<MinionController, GameObject> OnMinionKilled;
+    // Minion을 잡았을 때
 
-    public void MinionKilled(MinionController victim, GameObject killer)
+    public event Action<GameObject, MinionController> OnMinionKillConfirmed;
+    public void MinionKillConfirmed(GameObject killer, MinionController victim)
     {
-        OnMinionKilled?.Invoke(victim, killer);
+        OnMinionKillConfirmed?.Invoke(killer, victim);
+    }
+
+    // Minion이 죽었을 때
+
+    public event Action<MinionController, GameObject> OnMinionDead;
+    public void MinionDead(MinionController victim, GameObject killer)
+    {
+        OnMinionDead?.Invoke(victim, killer);
     }
 }
