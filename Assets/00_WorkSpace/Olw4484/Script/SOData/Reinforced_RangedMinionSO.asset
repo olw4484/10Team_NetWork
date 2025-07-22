@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Reinforced_RangedMinionSO
   m_EditorClassIdentifier: 
   minionType: 1
-  maxHP: 80
-  attackPower: 10
-  moveSpeed: 2
+  maxHP: 160
+  attackPower: 18
+  moveSpeed: 3
   attackRange: 3.5
-  attackCooldown: 1.5
+  attackCooldown: 1.3
   prefab: {fileID: 0}

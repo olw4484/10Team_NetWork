@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6864bc45ee52e724da4248ca6bfd4b66, type: 3}
   m_Name: Basic_EliteMinionSO
   m_EditorClassIdentifier: 
-  minionType: 0
+  minionType: 2
   maxHP: 500
   attackPower: 30
   moveSpeed: 2.5
-  attackRange: 1
+  attackRange: 1.5
   attackCooldown: 0.8
   prefab: {fileID: 0}

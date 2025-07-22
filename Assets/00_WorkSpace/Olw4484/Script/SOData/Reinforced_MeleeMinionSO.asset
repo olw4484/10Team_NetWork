@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Reinforced_MeleeMinionSO
   m_EditorClassIdentifier: 
   minionType: 0
-  maxHP: 0
-  attackPower: 0
-  moveSpeed: 0
-  attackRange: 0
-  attackCooldown: 0
+  maxHP: 200
+  attackPower: 25
+  moveSpeed: 3
+  attackRange: 1
+  attackCooldown: 1
   prefab: {fileID: 0}
