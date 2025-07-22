@@ -44,3 +44,16 @@
 KMS_Monster
 YSJ_Network
 ```
+
+---
+
+### 파일 관리 룰셋
+- 00_WorkSpace - ID에서 작업을 하되 폴더명은 영어로 만든다.
+- 기본적으로 작업자 초성_스크립트명으로 작업을한다.
+```
+[본인 이름 이니셜]_[용도(카멜표기법 사용)]
+예시) 
+KMS_MinionFactory
+YSJ_NetworkManager
+```
+---
