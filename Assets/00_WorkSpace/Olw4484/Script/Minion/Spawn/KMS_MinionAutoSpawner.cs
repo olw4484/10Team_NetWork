@@ -5,43 +5,33 @@ using static UnityEngine.GraphicsBuffer;
 
 public class KMS_MinionAutoSpawner : KMS_BaseMinionSpawner
 {
-    [Header("Spawner Settings")]
+    [Header("Auto Spawn Settings")]
+    public List<MinionType> minionSequence = new List<MinionType> { MinionType.Melee, MinionType.Melee, MinionType.Ranged, MinionType.Ranged };
     public Transform spawnPoint;
     public Transform target;
+    public float spawnDelay = 0.5f;
+    public float spawnInterval = 30f;
 
-    public float spawnInterval = 50f; // 전체 주기 기본 50초
-    public float spawnDelay = 0.5f;   // 개별 미니언 생성 간격 기본 0.5초
-    public List<KMS_SpawnBatch> spawnBatchList = new List<KMS_SpawnBatch>();
-
-    private float timer;
-    private bool isSpawning = false;
+    private int currentIndex = 0;
+    private float timer = 0f;
 
     private void Update()
     {
-        if (isSpawning) return;
-
         timer += Time.deltaTime;
 
         if (timer >= spawnInterval)
         {
             timer = 0f;
-            StartCoroutine(SpawnBatchRoutine());
+            StartCoroutine(SpawnSequence());
         }
     }
 
-    private IEnumerator SpawnBatchRoutine()
+    private IEnumerator SpawnSequence()
     {
-        isSpawning = true;
-
-        foreach (var batch in spawnBatchList)
+        foreach (var type in minionSequence)
         {
-            for (int i = 0; i < batch.count; i++)
-            {
-                SpawnMinion(batch.minionType, spawnPoint.position, target);
-                yield return new WaitForSeconds(spawnDelay);
-            }
+            SpawnFreeMinion(type, spawnPoint.position, target);
+            yield return new WaitForSeconds(spawnDelay);
         }
-
-        isSpawning = false;
     }
 }

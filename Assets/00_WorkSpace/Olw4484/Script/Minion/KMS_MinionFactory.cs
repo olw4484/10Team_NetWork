@@ -19,25 +19,40 @@ public class KMS_MinionFactory : MonoBehaviour
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
-    public MinionController CreateMinion(MinionType type, Vector3 spawnPosition, Transform target)
+    public void SpawnFreeMinion(MinionType type, Vector3 position, Transform target)
     {
-        GameObject prefab = GetPrefabByType(type);
-        if (prefab == null)
+        GameObject prefab = GetMinionPrefab(type);
+        if (prefab == null) return;
+
+        GameObject minion = Instantiate(prefab, position, Quaternion.identity);
+        minion.GetComponent<MinionController>()?.SetTarget(target);
+    }
+
+    public bool TrySpawnMinion(MinionType type, Vector3 position, Transform target)
+    {
+        if (!KMS_ResourceSystem.Instance.HasEnoughResource(type))
         {
-            Debug.LogWarning($"No prefab found for {type}");
-            return null;
+            Debug.Log($"Not enough resource to spawn {type}");
+            return false;
         }
 
-        GameObject newMinion = Instantiate(prefab, spawnPosition, Quaternion.identity);
-        MinionController controller = newMinion.GetComponent<MinionController>();
-        controller.SetTarget(target);
-        return controller;
+        KMS_ResourceSystem.Instance.ConsumeResource(type);
+
+        GameObject prefab = GetMinionPrefab(type);
+        if (prefab == null)
+        {
+            Debug.LogError($"Missing prefab for {type}");
+            return false;
+        }
+
+        GameObject minion = Instantiate(prefab, position, Quaternion.identity);
+        minion.GetComponent<MinionController>()?.SetTarget(target);
+        return true;
     }
 
-    private GameObject GetPrefabByType(MinionType type)
+    public GameObject GetMinionPrefab(MinionType type)
     {
         return type switch
         {

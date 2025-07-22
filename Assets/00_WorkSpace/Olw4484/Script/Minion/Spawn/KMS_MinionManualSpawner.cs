@@ -16,9 +16,14 @@ public class KMS_MinionManualSpawner : KMS_BaseMinionSpawner
 
     private void Start()
     {
-        meleeButton?.onClick.AddListener(() => SpawnMinion(MinionType.Melee, spawnPoint.position, target));
-        rangedButton?.onClick.AddListener(() => SpawnMinion(MinionType.Ranged, spawnPoint.position, target));
-        eliteButton?.onClick.AddListener(() => SpawnMinion(MinionType.Elite, spawnPoint.position, target));
+        meleeButton?.onClick.AddListener(() => TrySpawn(MinionType.Melee));
+        rangedButton?.onClick.AddListener(() => TrySpawn(MinionType.Ranged));
+        eliteButton?.onClick.AddListener(() => TrySpawn(MinionType.Elite));
+    }
+
+    private void TrySpawn(MinionType type)
+    {
+        KMS_MinionFactory.Instance.TrySpawnMinion(type, spawnPoint.position, target);
     }
 }
 
