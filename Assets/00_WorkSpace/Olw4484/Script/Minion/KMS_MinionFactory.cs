@@ -6,6 +6,9 @@ public class KMS_MinionFactory : MonoBehaviour
 {
     public static KMS_MinionFactory Instance { get; private set; }
 
+    private Dictionary<MinionType, MinionDataSO> minionDataDict = new();
+    [SerializeField] private MinionDataSO[] minionDataList;
+
     [Header("Minion Prefabs")]
     public GameObject meleeMinionPrefab;
     public GameObject rangedMinionPrefab;
@@ -19,19 +22,39 @@ public class KMS_MinionFactory : MonoBehaviour
             return;
         }
         Instance = this;
+
+        foreach (var data in minionDataList)
+        {
+            if (!minionDataDict.ContainsKey(data.minionType))
+            {
+                minionDataDict.Add(data.minionType, data);
+            }
+            else
+            {
+                Debug.LogWarning($"Duplicate MinionType: {data.minionType}");
+            }
+        }
     }
 
-    public void SpawnFreeMinion(MinionType type, Vector3 position, Transform target)
+    public MinionController SpawnFreeMinion(MinionType type, Vector3 position, Transform target)
     {
-        GameObject prefab = GetMinionPrefab(type);
-        if (prefab == null) return;
+        if (!minionDataDict.TryGetValue(type, out var data)) return null;
 
-        GameObject minion = Instantiate(prefab, position, Quaternion.identity);
-        minion.GetComponent<MinionController>()?.SetTarget(target);
+        GameObject minion = Instantiate(data.prefab, position, Quaternion.identity);
+        var controller = minion.GetComponent<MinionController>();
+        controller?.Initialize(data, target);
+        return controller;
     }
+
 
     public bool TrySpawnMinion(MinionType type, Vector3 position, Transform target)
     {
+        if (!minionDataDict.TryGetValue(type, out var data))
+        {
+            Debug.LogError($"No data found for {type}");
+            return false;
+        }
+
         if (!KMS_ResourceSystem.Instance.HasEnoughResource(type))
         {
             Debug.Log($"Not enough resource to spawn {type}");
@@ -40,15 +63,8 @@ public class KMS_MinionFactory : MonoBehaviour
 
         KMS_ResourceSystem.Instance.ConsumeResource(type);
 
-        GameObject prefab = GetMinionPrefab(type);
-        if (prefab == null)
-        {
-            Debug.LogError($"Missing prefab for {type}");
-            return false;
-        }
-
-        GameObject minion = Instantiate(prefab, position, Quaternion.identity);
-        minion.GetComponent<MinionController>()?.SetTarget(target);
+        GameObject minion = Instantiate(data.prefab, position, Quaternion.identity);
+        minion.GetComponent<MinionController>()?.Initialize(data, target);
         return true;
     }
 

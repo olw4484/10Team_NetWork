@@ -43,6 +43,19 @@ public class MinionController : MonoBehaviour, IDamageable
         attackTimer += Time.deltaTime;
     }
 
+    public void Initialize(MinionDataSO data, Transform target)
+    {
+        this.moveSpeed = data.moveSpeed;
+        this.attackRange = data.attackRange;
+        this.attackCooldown = data.attackCooldown;
+        this.attackPower = data.attackPower;
+        this.maxHP = data.maxHP;
+        this.currentHP = maxHP;
+
+        this.target = target;
+    }
+
+
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;
