@@ -43,6 +43,7 @@ public class HeroModel : MonoBehaviour
     }
 }
 
+// HeroStat ±¸Á¶Ã¼
 public struct HeroStat
 {
     public string Name;

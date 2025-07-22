@@ -19,6 +19,11 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         mov = GetComponent<HeroMovement>();
     }
 
+    private void FixedUpdate()
+    {
+        
+    }
+
     public void GetHeal(int amount)
     {
         
