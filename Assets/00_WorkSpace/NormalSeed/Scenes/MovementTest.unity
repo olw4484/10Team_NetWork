@@ -207,13 +207,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 460937109}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.5155577, y: -0.15751272, z: 0.09706291, w: 0.83664143}
+  m_LocalPosition: {x: -0.0000003546954, y: 18.63, z: -11.81}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 63.285, y: -21.324, z: 0}
 --- !u!1 &711083070
 GameObject:
   m_ObjectHideFlags: 0
@@ -569,6 +569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d70328fe4e78e7c42a11253e37bb729e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 0}
 --- !u!114 &1438374971
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -581,6 +582,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7bbfac8be719649a951eb822128a9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  camera: {fileID: 0}
 --- !u!114 &1438374972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -593,6 +595,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd6de07b27188d849a25eee2d22c48fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <Name>k__BackingField: 
+  <MaxHP>k__BackingField: 0
+  <MaxMP>k__BackingField: 0
+  <MoveSpd>k__BackingField: 0
+  <Atk>k__BackingField: 0
+  <AtkRange>k__BackingField: 0
+  <Def>k__BackingField: 0
 --- !u!114 &1438374973
 MonoBehaviour:
   m_ObjectHideFlags: 0
