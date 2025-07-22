@@ -6,12 +6,20 @@ public class MinionController : MonoBehaviour, IDamageable
     public float moveSpeed;
     public float attackRange;
     public float attackCooldown;
+    public int attackPower;
     public int maxHP;
 
+    public MinionView view;
     private int currentHP;
     private Transform target;
     private bool isDead = false;
     private float attackTimer = 0f;
+
+    private void Awake()
+    {
+        view = GetComponentInChildren<MinionView>();
+    }
+
 
     void Start()
     {
@@ -45,12 +53,29 @@ public class MinionController : MonoBehaviour, IDamageable
         transform.position = Vector3.MoveTowards(transform.position, destination, moveSpeed * Time.deltaTime);
     }
 
+    // 공격 시도
     private void TryAttack()
     {
         if (attackTimer >= attackCooldown)
         {
             attackTimer = 0f;
-            // 공격 애니메이션 및 데미지 처리
+
+            if (view != null && view.Animator != null)
+                ; //view.Animator.SetFloat("AttackSpeed", data.AttackAnimSpeed); //공격속도가 필요하면 주석 해제하고 사용 가능
+
+            view.PlayMinionAttackAnimation();
+            // 공격 데미지 처리는 애니메이션 이벤트에서
+        }
+    }
+
+    // 데미지 적용 // 애니메이션 클립 Attack 안에 이벤트 추가: ApplyDamage
+    private void ApplyDamage()
+    {
+        if (target != null)
+        {
+            var damageable = target.GetComponent<IDamageable>();
+            if (damageable != null)
+                damageable.TakeDamage(attackPower, gameObject);
         }
     }
 
@@ -70,6 +95,8 @@ public class MinionController : MonoBehaviour, IDamageable
         if (isDead) return;
 
         isDead = true;
+
+        view?.PlayMinionDeathAnimation();
 
         if (EventManager.Instance != null)
         {
