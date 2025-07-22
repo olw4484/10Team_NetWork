@@ -74,3 +74,7 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 /Assets/Imports
+
+Assets/Firebase
+Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_10_1.bundle.meta
+Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_10_1.so.meta
