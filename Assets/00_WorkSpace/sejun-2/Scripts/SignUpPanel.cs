@@ -43,7 +43,6 @@ public class SignUpPanel : MonoBehaviour
         FirebaseManager.Auth.CreateUserWithEmailAndPasswordAsync(idInput.text, passInput.text)
             .ContinueWithOnMainThread(task =>
             {
-
                 if (nicknameInput.text != "")
                 {
                     UserProfile profile = new UserProfile();
@@ -63,9 +62,7 @@ public class SignUpPanel : MonoBehaviour
                                 Debug.LogError($"유저 닉네임 설정 실패. 이유 : {task.Exception}");
                                 return;
                             }
-
                             Debug.Log("유저 닉네임 설정 성공");
-
                         });
                 }
 
@@ -79,7 +76,6 @@ public class SignUpPanel : MonoBehaviour
                     Debug.LogError($"이메일 가입 실패함. 이유 : {task.Exception}");
                     return;
                 }
-
                 Debug.Log("이메일 가입 성공!");
                 loginPanel.SetActive(true);
                 gameObject.SetActive(false);

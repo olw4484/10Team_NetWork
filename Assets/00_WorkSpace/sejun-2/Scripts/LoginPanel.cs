@@ -11,7 +11,7 @@ public class LoginPanel : MonoBehaviour
     [SerializeField] GameObject signUpPanel;
     [SerializeField] GameObject lobbyPanel;
 	[SerializeField] GameObject emailPanel;
-	//[SerializeField] GameObject nicknamePanel;
+	[SerializeField] GameObject nicknamePanel;
 	[SerializeField] GameObject LoginFailPanel;
 
     [SerializeField] TMP_InputField idInput;
@@ -54,30 +54,27 @@ public class LoginPanel : MonoBehaviour
 				}
 
 				Debug.Log("로그인 성공");
-				AuthResult result = task.Result;
-                FirebaseUser user = result.User;
-
-                Debug.Log($"유저의 이메일 : {user.Email}");
-                Debug.Log($"유저의 닉네임 : {user.DisplayName}");
-
+                //AuthResult result = task.Result;
+                //FirebaseUser user = result.User;
+                //Debug.Log($"유저의 이메일 : {user.Email}");
+                //Debug.Log($"유저의 닉네임 : {user.DisplayName}");
 
                 //1.이미 이메일 인증을 마친 유저인 경우는 로비로
+                FirebaseUser user = task.Result.User;
                 if (user.IsEmailVerified == true)
                 {
-                    //// 1-1. 아직 닉네임 설정을 하지 않은 경우
-                    //if (user.DisplayName == "")
-                    //{
-                    //    nicknamePanel.SetActive(true);
-                    //    gameObject.SetActive(false);
-                    //}
-                    //// 1-2. 닉네임 설정도 완료한 경우
-                    //else
-                    //{
-                    //    lobbyPanel.SetActive(true);
-                    //    gameObject.SetActive(false);
-                    //}
-                    lobbyPanel.SetActive(true);
-                    gameObject.SetActive(false);
+                    // 1-1. 아직 닉네임 설정을 하지 않은 경우
+                    if (user.DisplayName == "")
+                    {
+                        nicknamePanel.SetActive(true);
+                        gameObject.SetActive(false);
+                    }
+                    // 1-2. 닉네임 설정도 완료한 경우
+                    else
+                    {
+                        lobbyPanel.SetActive(true);
+                        gameObject.SetActive(false);
+                    }
                 }
                 //2.이메일 인증이 아직 되지 않은 유저는 이메일 인증을 대기
                 else

@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CancelMembershipPanel : MonoBehaviour
+public class DeleteUserPanel : MonoBehaviour
 {
     [SerializeField] GameObject lobbyPanel;
     [SerializeField] TMP_Text idText;
@@ -16,7 +16,7 @@ public class CancelMembershipPanel : MonoBehaviour
     private void Awake()
     {
         backButton.onClick.AddListener(Back);
-        DeleteUserButton.onClick.AddListener(CancelMembership);
+        DeleteUserButton.onClick.AddListener(DeleteUser);
     }
 
     private void Back()
@@ -25,7 +25,7 @@ public class CancelMembershipPanel : MonoBehaviour
         lobbyPanel.SetActive(true);
     }
 
-    private void CancelMembership()
+    private void DeleteUser()
     {
         FirebaseUser user = FirebaseManager.Auth.CurrentUser;
         user.DeleteAsync()
