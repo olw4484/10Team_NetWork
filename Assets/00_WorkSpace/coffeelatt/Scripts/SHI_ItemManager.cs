@@ -22,6 +22,7 @@ public class SHI_ItemManager : MonoBehaviour
     float Tallup = 1; // 아이템이 증가시키는 전체 스탯 양
     float TminionDamageDown = 1; // 아이템이 감소 시키는 미니언 공격력 양
     float TminionAttackRegeneration =0;// 아이템이 증가시키는 미니언 공격시 재생 속도 증가
+    [SerializeField] float BuffItemCoolDown = 0; // 버프 아이템의 쿨타임 감소 양
     private void Awake()
     {
         if (instance == null)
@@ -31,6 +32,13 @@ public class SHI_ItemManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+    }
+    private void Update()
+    {
+        if (BuffItemCoolDown > 0)
+        {
+            BuffItemCoolDown -= Time.deltaTime; // 버프 아이템의 쿨타임 감소
         }
     }
     public void UseItem(SHI_ItemBase item)
@@ -46,15 +54,19 @@ public class SHI_ItemManager : MonoBehaviour
             HpUp(item.Healhp); // 플레이어의 HP 회복
             MpUp(item.Healmp); // 플레이어의 MP 회복
             ExpUp(item.GainExp); // 플레이어의 경험치 증가
-            if (item.lifeSteal > 0 || item.nexusHitUp > 1 || item.minionHitup > 1)
+            if (BuffItemCoolDown <= 0) // 버프 아이템의 쿨타임이 있다면
             {
-                Buff(item); // 아이템의 버프 효과 적용
+
+                if (item.lifeSteal > 0 || item.nexusHitUp > 1 || item.minionHitup > 1)
+                {
+                    Buff(item); // 아이템의 버프 효과 적용
+                }
             }
         }
 
         else if (item.type == 1) // 장비 아이템
         {
-            StatUp(item); // 플레이어의 스탯을 아이템의 스탯으로 증가
+            Equip(item); // 플레이어의 스탯을 아이템의 스탯으로 증가
         }
        
     }
@@ -89,7 +101,7 @@ public class SHI_ItemManager : MonoBehaviour
         Tallup *= item.allup; // 전체 스탯 증가
         StartCoroutine(BuffDuration(item)); // 버프 지속 시간 동안 효과 적용
     }
-    void StatUp(SHI_ItemBase item)
+    void Equip(SHI_ItemBase item)
     {
         Thp += item.hp; // 플레이어의 HP 증가
         Tmp += item.mp; // 플레이어의 MP 증가
@@ -104,9 +116,26 @@ public class SHI_ItemManager : MonoBehaviour
         TminionHitup += item.minionHitup; // 플레이어의 미니언공격시 공격력 증가
         TminionAttackRegeneration += item.minionAttackRegeneration; // 플레이어의 미니언 공격시 재생 속도 증가
     }
+    void UnEquip(SHI_ItemBase item) // 아이템을 해제할 때 호출되는 함수 onclick 이벤트를 사용하여 해제?
+    {
+        Thp -= item.hp;
+        Tmp -= item.mp; // 플레이어의 MP 감소
+        Tatk -= item.atk; // 플레이어의 공격력 감소
+        TcoolDown += item.coolDown; // 플레이어의 쿨타임 증가
+        TmoveSpeed -= item.moveSpeed; // 플레이어의 이동 속도 감소
+        TatkSpeed -= item.atkSpeed; // 플레이어의 공격 속도 감소
+        TcritChance -= item.critChance; // 플레이어의 치명타 확률 감소
+        TskillPower -= item.skillPower; // 플레이어의 스킬 공격력 감소
+        TrangeUp -= item.rangeUp; // 플레이어의 사거리 감소
+        TminionDamageDown += item.minionDamageDown; // 플레이어의 미니언 공격력 증가
+        TminionHitup -= item.minionHitup; // 플레이어의 미니언공격시 공격력 감소
+        TminionAttackRegeneration -= item.minionAttackRegeneration; // 플레이어의 미니언 공격시 재생 속도 감소
+    }
      IEnumerator BuffDuration(SHI_ItemBase item)
     {
+        BuffItemCoolDown = item.Duration; // 버프 아이템의 쿨타임 설정
         yield return new WaitForSeconds(item.Duration); // 버프 지속 시간 동안 대기
+        
         TlifeSteal = 0; // 생명력 흡수 감소
         TminionHitup2 = 1; // 미니언 공격력 감소
         TnexusHitUp = 1; // 넥서스 공격력 감소
