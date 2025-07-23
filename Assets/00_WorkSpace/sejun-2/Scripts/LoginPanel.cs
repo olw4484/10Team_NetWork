@@ -49,36 +49,42 @@ public class LoginPanel : MonoBehaviour
                     // 로그인 실패시 로그인 실패 패널 활성화
 					LoginFailPanel.SetActive(true);
 					gameObject.SetActive(false);
-                    //Debug.LogError($"로그인에 실패함. 이유 : {task.Exception}");
+                    Debug.LogError($"로그인에 실패함. 이유 : {task.Exception}");
 					return;
 				}
 
 				Debug.Log("로그인 성공");
+				AuthResult result = task.Result;
+                FirebaseUser user = result.User;
 
-				// 1. 이미 이메일 인증을 마친 유저인 경우는 로비로
-				//FirebaseUser user = task.Result.User;
-				//if (user.IsEmailVerified == true)
-				//{
-				//	// 1-1. 아직 닉네임 설정을 하지 않은 경우
-				//	if (user.DisplayName == "")
-				//	{
-				//		nicknamePanel.SetActive(true);
-				//		gameObject.SetActive(false);
-				//	}
-				//	// 1-2. 닉네임 설정도 완료한 경우
-				//	else
-				//	{
-				//		lobbyPanel.SetActive(true);
-				//		gameObject.SetActive(false);
-				//	}
-				//}
-				// 2. 이메일 인증이 아직 되지 않은 유저는 이메일 인증을 대기
-				//else
-				//{
-				//	emailPanel.SetActive(true);
-				//	gameObject.SetActive(false);
-				//}
-			});
+                Debug.Log($"유저의 이메일 : {user.Email}");
+                Debug.Log($"유저의 닉네임 : {user.DisplayName}");
+
+
+                // 1. 이미 이메일 인증을 마친 유저인 경우는 로비로
+                //FirebaseUser user = task.Result.User;
+                //if (user.IsEmailVerified == true)
+                //{
+                //	// 1-1. 아직 닉네임 설정을 하지 않은 경우
+                //	if (user.DisplayName == "")
+                //	{
+                //		nicknamePanel.SetActive(true);
+                //		gameObject.SetActive(false);
+                //	}
+                //	// 1-2. 닉네임 설정도 완료한 경우
+                //	else
+                //	{
+                //		lobbyPanel.SetActive(true);
+                //		gameObject.SetActive(false);
+                //	}
+                //}
+                // 2. 이메일 인증이 아직 되지 않은 유저는 이메일 인증을 대기
+                //else
+                //{
+                //	emailPanel.SetActive(true);
+                //	gameObject.SetActive(false);
+                //}
+            });
     }
 
 	private void ResetPass()

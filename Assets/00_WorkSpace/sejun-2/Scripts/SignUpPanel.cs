@@ -13,7 +13,7 @@ public class SignUpPanel : MonoBehaviour
     //[SerializeField] GameObject iDCheckFailPanel;
 
     [SerializeField] TMP_InputField idInput;
-    //[SerializeField] TMP_InputField nicknameInput;
+    [SerializeField] TMP_InputField nicknameInput;
     [SerializeField] TMP_InputField passInput;
     [SerializeField] TMP_InputField passConfirmInput;
 
@@ -35,10 +35,41 @@ public class SignUpPanel : MonoBehaviour
             Debug.LogError("패스워드가 일치하지 않습니다");
             return;
         }
+        if (nicknameInput.text == "")
+        {
+            Debug.LogError("닉네임을 설정해주세요");
+            return;
+        }
 
         FirebaseManager.Auth.CreateUserWithEmailAndPasswordAsync(idInput.text, passInput.text)
             .ContinueWithOnMainThread(task =>
             {
+
+                if (nicknameInput.text != "")
+                {
+                    UserProfile profile = new UserProfile();
+                    profile.DisplayName = nicknameInput.text;
+
+                    FirebaseUser user = FirebaseManager.Auth.CurrentUser;
+                    user.UpdateUserProfileAsync(profile)
+                        .ContinueWithOnMainThread(task =>
+                        {
+                            if (task.IsCanceled)
+                            {
+                                Debug.LogError("유저 닉네임 설정 취소됨");
+                                return;
+                            }
+                            if (task.IsFaulted)
+                            {
+                                Debug.LogError($"유저 닉네임 설정 실패. 이유 : {task.Exception}");
+                                return;
+                            }
+
+                            Debug.Log("유저 닉네임 설정 성공");
+
+                        });
+                }
+
                 if (task.IsCanceled)
                 {
                     Debug.LogError("이메일 가입이 취소됨"); 
@@ -49,11 +80,12 @@ public class SignUpPanel : MonoBehaviour
                     Debug.LogError($"이메일 가입 실패함. 이유 : {task.Exception}");
                     return;
                 }
-
+          
                 Debug.Log("이메일 가입 성공!");
                 loginPanel.SetActive(true);
                 gameObject.SetActive(false);
             });
+
     }
 
     private void Cancel()
