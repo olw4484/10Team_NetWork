@@ -28,5 +28,12 @@ public class KMS_MinionRewardSystem : MonoBehaviour
             if (data.gearReward > 0)
                 KMS_ResourceSystem.Instance.AddResource(KMS_ResourceSystem.ResourceType.Gear, data.gearReward);
         }
+
+        // 경험치 지급 //경험치 시스템 필요시 주석 해제후 사용 가능
+        //var killerExpHandler = killer.GetComponent<IExpReceiver>();
+        //if (killerExpHandler != null && data.expReward > 0)
+        //{
+        //    killerExpHandler.AddExp(data.expReward);
+        //}
     }
 }

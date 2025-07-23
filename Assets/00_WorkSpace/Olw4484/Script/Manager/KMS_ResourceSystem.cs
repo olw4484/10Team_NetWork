@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,7 @@ public class KMS_ResourceSystem : MonoBehaviour
     [Header("Resource Settings")]
     public int currentGold = 0;
     public int currentGear = 0; // 추후 사용 가능성이 있음.
+
 
     // 싱글턴 인스턴스
     private void Awake()
@@ -45,6 +47,8 @@ public class KMS_ResourceSystem : MonoBehaviour
             _ => 0
         };
     }
+
+    public event Action<ResourceType, int> OnResourceChanged;
     /// <summary>
     /// 미니언 처치시 얻을 수 있는 자원의 타입과 양
     /// SO를 추적해서 MinionDataSO.goldReward 값을 받아옴
@@ -68,6 +72,19 @@ public class KMS_ResourceSystem : MonoBehaviour
 
                 // 더 많은 자원이 생기면 여기 추가
         }
+
+        OnResourceChanged?.Invoke(type, GetResource(type));
+
+    }
+
+    public int GetResource(ResourceType type)
+    {
+        return type switch
+        {
+            ResourceType.Gold => currentGold,
+            ResourceType.Gear => currentGear,
+            _ => 0
+        };
     }
 }
 

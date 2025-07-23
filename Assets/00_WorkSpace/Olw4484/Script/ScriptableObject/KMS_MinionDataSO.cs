@@ -14,8 +14,10 @@ public class MinionDataSO : ScriptableObject
     public float attackRange;
     public float attackCooldown;
 
+    [Header("Reward")]
     public int goldReward;
     public int gearReward;
+    //public int expReward;
 
     [Header("Visual")]
     public GameObject prefab;
