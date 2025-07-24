@@ -181,4 +181,8 @@ public class MinionController : MonoBehaviour, IDamageable
     {
         IsManual = isManual;
     }
+    public void SetSelected(bool isSelected)
+    {
+        view?.SetHighlight(isSelected);
+    }
 }
