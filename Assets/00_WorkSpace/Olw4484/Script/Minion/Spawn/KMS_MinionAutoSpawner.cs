@@ -9,7 +9,8 @@ public class KMS_MinionAutoSpawner : KMS_BaseMinionSpawner
     public Transform spawnPoint;
     public Transform target;
     [SerializeField] public float spawnDelay = 0.5f;
-    [SerializeField] public float spawnInterval = 30f;
+    [SerializeField] public float spawnInterval = 50f;
+    public KMS_WaypointGroup waypointGroup;
 
     private int currentIndex = 0;
     private float timer = 0f;
@@ -29,7 +30,7 @@ public class KMS_MinionAutoSpawner : KMS_BaseMinionSpawner
     {
         foreach (var type in minionSequence)
         {
-            SpawnFreeMinion(type, spawnPoint.position, target);
+            SpawnFreeMinion(type, spawnPoint.position, target, waypointGroup);
             yield return new WaitForSeconds(spawnDelay);
         }
     }

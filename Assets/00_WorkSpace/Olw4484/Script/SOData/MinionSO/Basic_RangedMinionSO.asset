@@ -10,14 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6864bc45ee52e724da4248ca6bfd4b66, type: 3}
-  m_Name: Basic_EliteMinionSO
+  m_Name: Basic_RangedMinionSO
   m_EditorClassIdentifier: 
-  minionType: 2
-  maxHP: 500
-  attackPower: 30
-  moveSpeed: 2.5
-  attackRange: 1.5
-  attackCooldown: 0.8
-  goldReward: 15
+  minionType: 1
+  maxHP: 80
+  attackPower: 10
+  moveSpeed: 2
+  attackRange: 3.5
+  attackCooldown: 1.5
+  goldReward: 3
   gearReward: 0
-  prefab: {fileID: 0}
+  expReward: 8
+  detectRange: 5
+  prefab: {fileID: 7540996777296793832, guid: 09dfb07bea465cc4d811f3905a2ce5b5, type: 3}
