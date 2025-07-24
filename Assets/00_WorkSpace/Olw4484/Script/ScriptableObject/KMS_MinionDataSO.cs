@@ -19,6 +19,9 @@ public class MinionDataSO : ScriptableObject
     public int gearReward;
     public int expReward;
 
+    [Header("AI")]
+    public float detectRange = 5f;
+
     [Header("Visual")]
     public GameObject prefab;
 }

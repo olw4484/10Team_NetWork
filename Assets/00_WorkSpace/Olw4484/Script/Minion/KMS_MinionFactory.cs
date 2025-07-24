@@ -38,13 +38,13 @@ public class KMS_MinionFactory : MonoBehaviour
         }
     }
 
-    public MinionController SpawnFreeMinion(MinionType type, Vector3 position, Transform target)
+    public MinionController SpawnFreeMinion(MinionType type, Vector3 position, Transform target, KMS_WaypointGroup waypointGroup = null)
     {
         if (!minionDataDict.TryGetValue(type, out var data)) return null;
 
         GameObject minion = Instantiate(data.prefab, position, Quaternion.identity);
         var controller = minion.GetComponent<MinionController>();
-        controller?.Initialize(data, target);
+        controller?.Initialize(data, target, waypointGroup);
         return controller;
     }
 

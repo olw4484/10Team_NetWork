@@ -4,15 +4,8 @@ using UnityEngine;
 
 public class KMS_BaseMinionSpawner : MonoBehaviour
 {
-    public MinionController SpawnFreeMinion(MinionType type, Vector3 position, Transform target)
+    protected void SpawnFreeMinion(MinionType type, Vector3 pos, Transform target, KMS_WaypointGroup waypointGroup = null)
     {
-        GameObject prefab = KMS_MinionFactory.Instance.GetMinionPrefab(type);
-        if (prefab == null) return null;
-
-        GameObject minion = Instantiate(prefab, position, Quaternion.identity);
-        MinionController controller = minion.GetComponent<MinionController>();
-        controller?.SetTarget(target);
-
-        return controller;
+        KMS_MinionFactory.Instance.SpawnFreeMinion(type, pos, target, waypointGroup);
     }
 }

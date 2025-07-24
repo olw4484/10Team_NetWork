@@ -12,30 +12,6 @@ public class KMS_HQ : MonoBehaviour
     private void Start()
     {
         currentHP = data.maxHP;
-        spawnTimer = 0f;
-    }
-
-    private void Update()
-    {
-        // 자동 미니언 생성 타이밍 처리
-        spawnTimer += Time.deltaTime;
-        if (spawnTimer >= data.autoSpawnInterval)
-        {
-            spawnTimer = 0f;
-
-            foreach (var spawnPoint in data.autoSpawnPoints)
-            {
-                for (int i = 0; i < data.autoMinionCount; i++)
-                {
-                    SpawnMinion(spawnPoint.position);
-                }
-            }
-        }
-    }
-
-    private void SpawnMinion(Vector3 spawnPosition)
-    {
-        Instantiate(data.minionPrefab, spawnPosition, Quaternion.identity);
     }
 
     // 데미지 처리 (공격받을 경우)

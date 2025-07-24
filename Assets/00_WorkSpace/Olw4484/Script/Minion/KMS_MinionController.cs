@@ -20,6 +20,11 @@ public class MinionController : MonoBehaviour, IDamageable
     private bool isDead = false;
     private float attackTimer = 0f;
 
+    public KMS_WaypointGroup waypointGroup;
+    private int currentWaypointIndex = 0;
+
+    private Coroutine moveCoroutine;
+
     private void Awake()
     {
         view = GetComponentInChildren<MinionView>();
@@ -29,6 +34,11 @@ public class MinionController : MonoBehaviour, IDamageable
     void Start()
     {
         currentHP = maxHP;
+
+        if (waypointGroup != null && waypointGroup.GetWaypointCount() > 0)
+        {
+            MoveToNextWaypoint();
+        }
     }
 
     void Update()
@@ -48,16 +58,19 @@ public class MinionController : MonoBehaviour, IDamageable
         attackTimer += Time.deltaTime;
     }
 
-    public void Initialize(MinionDataSO data, Transform target)
+    public void Initialize(MinionDataSO data, Transform target, KMS_WaypointGroup waypointGroup = null)
     {
+        this.data = data;
         this.moveSpeed = data.moveSpeed;
         this.attackRange = data.attackRange;
         this.attackCooldown = data.attackCooldown;
         this.attackPower = data.attackPower;
         this.maxHP = data.maxHP;
         this.currentHP = maxHP;
-
         this.target = target;
+
+        this.waypointGroup = waypointGroup;
+        this.currentWaypointIndex = 0;
 
         // 이동 시작
         if (target != null)
@@ -75,6 +88,31 @@ public class MinionController : MonoBehaviour, IDamageable
         transform.position = Vector3.MoveTowards(transform.position, destination, moveSpeed * Time.deltaTime);
     }
 
+    private IEnumerator MoveTo(Transform point)
+    {
+        while (point != null && Vector3.Distance(transform.position, point.position) > 0.1f)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, point.position, moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        MoveToNextWaypoint(); // 다음 경로로
+    }
+
+    private void MoveToNextWaypoint()
+    {
+        if (currentWaypointIndex >= waypointGroup.GetWaypointCount()) return;
+
+        Transform nextPoint = waypointGroup.GetWaypoint(currentWaypointIndex);
+        currentWaypointIndex++;
+
+        if (moveCoroutine != null)
+            StopCoroutine(moveCoroutine);
+
+        moveCoroutine = StartCoroutine(MoveTo(nextPoint));
+    }
+
+
     private IEnumerator MoveToTarget()
     {
         while (target != null && Vector3.Distance(transform.position, target.position) > 0.1f)
@@ -82,6 +120,8 @@ public class MinionController : MonoBehaviour, IDamageable
             transform.position = Vector3.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
             yield return null;
         }
+
+        moveCoroutine = null;
     }
 
     // 공격 시도
