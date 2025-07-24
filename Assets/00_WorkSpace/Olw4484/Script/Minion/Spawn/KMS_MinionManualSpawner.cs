@@ -1,29 +1,38 @@
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class KMS_MinionManualSpawner : KMS_BaseMinionSpawner
+public class KMS_MinionManualSpawner : MonoBehaviour
 {
-    [Header("Spawner Settings")]
+    public KMS_HQDataSO data;
     public Transform spawnPoint;
     public Transform target;
+    public KMS_CommandPlayer player;
 
-    [Header("UI Buttons")]
-    public Button meleeButton;
-    public Button rangedButton;
-    public Button eliteButton;
+    public Transform uiButtonParent;
+    public GameObject buttonPrefab;
 
     private void Start()
     {
-        meleeButton?.onClick.AddListener(() => TrySpawn(MinionType.Melee));
-        rangedButton?.onClick.AddListener(() => TrySpawn(MinionType.Ranged));
-        eliteButton?.onClick.AddListener(() => TrySpawn(MinionType.Elite));
-    }
+        foreach (var info in data.manualSpawnList)
+        {
+            var btnGO = Instantiate(buttonPrefab, uiButtonParent);
+            btnGO.GetComponentInChildren<Text>().text = info.type.ToString();
 
-    private void TrySpawn(MinionType type)
-    {
-        KMS_MinionFactory.Instance.TrySpawnMinion(type, spawnPoint.position, target);
+            var capturedInfo = info;
+
+            btnGO.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                KMS_MinionFactory.Instance.TrySpawnMinion(
+                    capturedInfo.type,
+                    spawnPoint.position,
+                    target,
+                    player
+                );
+            });
+        }
     }
 }
 

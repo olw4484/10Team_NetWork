@@ -1,5 +1,6 @@
 using System.Resources;
 using UnityEngine;
+using System.Collections;
 using static KMS_ResourceSystem;
 
 public class MinionController : MonoBehaviour, IDamageable
@@ -57,6 +58,10 @@ public class MinionController : MonoBehaviour, IDamageable
         this.currentHP = maxHP;
 
         this.target = target;
+
+        // 이동 시작
+        if (target != null)
+            StartCoroutine(MoveToTarget());
     }
 
 
@@ -70,6 +75,15 @@ public class MinionController : MonoBehaviour, IDamageable
         transform.position = Vector3.MoveTowards(transform.position, destination, moveSpeed * Time.deltaTime);
     }
 
+    private IEnumerator MoveToTarget()
+    {
+        while (target != null && Vector3.Distance(transform.position, target.position) > 0.1f)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+    }
+
     // 공격 시도
     private void TryAttack()
     {
@@ -78,7 +92,7 @@ public class MinionController : MonoBehaviour, IDamageable
             attackTimer = 0f;
 
             if (view != null && view.Animator != null)
-                ; //view.Animator.SetFloat("AttackSpeed", data.AttackAnimSpeed); //공격속도가 필요하면 주석 해제하고 사용 가능
+                //view.Animator.SetFloat("AttackSpeed", data.AttackAnimSpeed); //공격속도가 필요하면 주석 해제하고 사용 가능
 
             view.PlayMinionAttackAnimation();
             // 공격 데미지 처리는 애니메이션 이벤트에서
