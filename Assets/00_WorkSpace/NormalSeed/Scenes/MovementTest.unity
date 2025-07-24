@@ -1041,6 +1041,7 @@ GameObject:
   - component: {fileID: 1438374976}
   - component: {fileID: 1438374974}
   - component: {fileID: 1438374975}
+  - component: {fileID: 1438374977}
   m_Layer: 0
   m_Name: Hero1
   m_TagString: Player
@@ -1259,6 +1260,28 @@ MonoBehaviour:
   skill_W: {fileID: 11400000, guid: 0b4d5e2142daab94aa9fa9608054d2fb, type: 2}
   skill_E: {fileID: 11400000, guid: 372b67e44db0ba741b1f052c09d1f613, type: 2}
   skill_R: {fileID: 11400000, guid: b5ebe19e23de0ef4ea4ef27c64a4ae77, type: 2}
+--- !u!114 &1438374977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1438374965}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 1
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -9,6 +9,7 @@ public class SkillSet : MonoBehaviour
     public SkillSO skill_E;
     public SkillSO skill_R;
 
+    protected Camera mainCam;
     protected HeroController hero;
 
     private void Start()
