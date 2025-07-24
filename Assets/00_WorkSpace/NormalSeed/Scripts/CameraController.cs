@@ -68,13 +68,17 @@ public class CameraController : MonoBehaviour
         ZoomCamera();
     }
 
-    // 카메라를 플레이어 위치로 이동시키는 메서드
+    /// <summary>
+    /// 카메라를 플레이어 위치로 이동시키는 메서드
+    /// </summary>
     void SetCameraOnPlayer()
     {
         transform.position = new Vector3(player.transform.position.x + 5f, 20f, player.transform.position.z - 5f);
     }
 
-    // 마우스 위치에 따라 카메라를 이동시키는 메서드
+    /// <summary>
+    /// 마우스 위치에 따라 카메라를 이동시키는 메서드
+    /// </summary>
     void MoveCamera()
     {
         Vector3 pos = transform.position;
@@ -106,6 +110,9 @@ public class CameraController : MonoBehaviour
         transform.position = pos;
     }
 
+    /// <summary>
+    /// 카메라를 줌인/줌아웃 시켜주는 메서드
+    /// </summary>
     void ZoomCamera()
     {
         mouseScrollInput = Input.GetAxis("Mouse ScrollWheel");
