@@ -73,7 +73,6 @@ public class MinionController : MonoBehaviour, IDamageable
         this.waypointGroup = waypointGroup;
         this.currentWaypointIndex = 0;
 
-        // 이동 시작
         if (target != null)
             StartCoroutine(MoveToTarget());
     }
@@ -178,8 +177,8 @@ public class MinionController : MonoBehaviour, IDamageable
         Destroy(gameObject, 1f);
     }
 
-    public void SetManualControl(bool value)
+    public void SetManualControl(bool isManual)
     {
-        IsManual = value;
+        IsManual = isManual;
     }
 }

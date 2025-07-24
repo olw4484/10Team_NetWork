@@ -68,21 +68,48 @@ public class KMS_MinionFactory : MonoBehaviour
 
     public bool TrySpawnMinion(MinionType type, Vector3 position, Transform target, KMS_CommandPlayer player)
     {
+        if (player == null)
+        {
+            Debug.LogError("[Factory] Player is null!");
+            return false;
+        }
+
         var minionInfo = hqData.manualSpawnList.FirstOrDefault(x => x.type == type);
         if (minionInfo == null)
         {
-            Debug.LogWarning($"[Factory] {type} 미니언 정보를 찾을 수 없음");
+            Debug.LogError($"[Factory] MinionInfo for type {type} is null!");
             return false;
+        }
+
+        if (target == null)
+        {
+            Debug.LogWarning("[Factory] Target is null - 미니언이 움직이지 않을 수 있음.");
         }
 
         if (!player.TrySpendGold(minionInfo.cost))
             return false;
 
         var go = Instantiate(minionInfo.prefab, position, Quaternion.identity);
-        if (minionDataDict.TryGetValue(type, out var data))
+        if (go == null)
         {
-            go.GetComponent<MinionController>()?.Initialize(data, target);
+            Debug.LogError("[Factory] Instantiate 결과가 null입니다.");
+            return false;
         }
+
+        if (!minionDataDict.TryGetValue(type, out var data))
+        {
+            Debug.LogError($"[Factory] MinionDataDict에서 {type} 데이터를 찾을 수 없습니다.");
+            return false;
+        }
+
+        var controller = go.GetComponent<MinionController>();
+        if (controller == null)
+        {
+            Debug.LogError("[Factory] MinionController가 프리팹에 존재하지 않습니다.");
+            return false;
+        }
+
+        controller.Initialize(data, target, null);
 
         return true;
     }
