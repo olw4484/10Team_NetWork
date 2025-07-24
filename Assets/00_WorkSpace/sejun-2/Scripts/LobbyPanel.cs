@@ -7,16 +7,16 @@ using UnityEngine.UI;
 
 public class LobbyPanel : MonoBehaviour
 {
+    [Header("Panels")]
     [SerializeField] GameObject loginPannel;
     [SerializeField] GameObject editPanel;
-    [SerializeField] GameObject DeleteUserPanel;
-
+    [SerializeField] GameObject deleteUserPanel;
+    [Header("Texts")]
     [SerializeField] TMP_Text emailText;
     [SerializeField] TMP_Text nameText;
+    [SerializeField] TMP_Text passwordText;
     [SerializeField] TMP_Text userIdText;
-    [SerializeField] TMP_InputField NewPasswordInput;
-
-    [SerializeField] Button ChangePasswordButton;
+    [Header("Buttons")]
     [SerializeField] Button logoutButton;
     [SerializeField] Button editProfileButton;
     [SerializeField] Button deleteUserButton;
@@ -26,7 +26,6 @@ public class LobbyPanel : MonoBehaviour
         logoutButton.onClick.AddListener(Logout);
         editProfileButton.onClick.AddListener(EditProfile);
         deleteUserButton.onClick.AddListener(DeleteUser);
-        ChangePasswordButton.onClick.AddListener(ChangePassword);
     }
 
     private void OnEnable() // 패널이 화면에 나타날 때마다 호출됨
@@ -35,7 +34,7 @@ public class LobbyPanel : MonoBehaviour
 
         emailText.text = user.Email;    
         nameText.text = user.DisplayName;
-
+        passwordText.text = "비밀번호는 보안상 표시되지 않습니다"; // 비밀번호는 보안상 표시하지 않음
         userIdText.text = user.UserId; // 사용자 ID 표시
 
         //구글이나 플레이 스토어 등 다른 프로바이더로 로그인한 경우,
@@ -65,32 +64,8 @@ public class LobbyPanel : MonoBehaviour
 
     private void DeleteUser()   // 회원 탈퇴 메서드
     {
-        DeleteUserPanel.SetActive(true);
+        deleteUserPanel.SetActive(true);
         gameObject.SetActive(false);
     }
 
-    private void ChangePassword() // 비밀번호 변경 메서드
-    {
-        Debug.Log("비밀번호 변경.");
-        FirebaseUser user = FirebaseManager.Auth.CurrentUser; // 현재 사용자 정보 가져오기
-        string newPassword = NewPasswordInput.text;
-        if (user != null)
-        {
-            user.UpdatePasswordAsync(newPassword).ContinueWith(task => {
-                if (task.IsCanceled)
-                {
-                    Debug.LogError("UpdatePasswordAsync가 취소되었습니다..");
-                    return;
-                }
-                if (task.IsFaulted)
-                {
-                    Debug.LogError("UpdatePasswordAsync에서 오류가 발생했습니다.: " + task.Exception);
-                    return;
-                }
-
-                Debug.Log("비밀번호가 성공적으로 업데이트되었습니다.");
-            });
-        }
-
-    }
 }
