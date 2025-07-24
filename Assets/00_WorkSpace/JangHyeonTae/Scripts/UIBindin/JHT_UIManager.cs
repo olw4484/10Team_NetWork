@@ -75,6 +75,9 @@ public class JHT_UIManager : MonoBehaviour
 
         T instance = child.GetComponent<T>();
 
+        //T prefab = Resources.Load<T>($"PopUpUI/{objName}");
+        //T instance = Instantiate(prefab, PopUpCanvas.transform);
+
         if (instance == null)
             Debug.Log("null");
 
