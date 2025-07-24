@@ -1,4 +1,6 @@
+using System.Resources;
 using UnityEngine;
+using static KMS_ResourceSystem;
 
 public class MinionController : MonoBehaviour, IDamageable
 {
@@ -8,8 +10,10 @@ public class MinionController : MonoBehaviour, IDamageable
     public float attackCooldown;
     public int attackPower;
     public int maxHP;
-
     public MinionView view;
+
+    public MinionDataSO data;
+
     private int currentHP;
     private Transform target;
     private bool isDead = false;
@@ -102,7 +106,6 @@ public class MinionController : MonoBehaviour, IDamageable
             Die(attacker);
         }
     }
-
     private void Die(GameObject killer)
     {
         if (isDead) return;

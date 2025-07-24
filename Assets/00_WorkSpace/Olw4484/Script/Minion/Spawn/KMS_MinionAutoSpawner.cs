@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class KMS_MinionAutoSpawner : KMS_BaseMinionSpawner
 {
@@ -9,8 +8,8 @@ public class KMS_MinionAutoSpawner : KMS_BaseMinionSpawner
     public List<MinionType> minionSequence = new List<MinionType> { MinionType.Melee, MinionType.Melee, MinionType.Ranged, MinionType.Ranged };
     public Transform spawnPoint;
     public Transform target;
-    public float spawnDelay = 0.5f;
-    public float spawnInterval = 30f;
+    [SerializeField] public float spawnDelay = 0.5f;
+    [SerializeField] public float spawnInterval = 30f;
 
     private int currentIndex = 0;
     private float timer = 0f;
