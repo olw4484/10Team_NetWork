@@ -13,7 +13,7 @@ public class Hero1SkillSet : SkillSet
     // protected Camera mainCam;
     //protected HeroController hero;
 
-    protected override void UseQ()
+    public override void UseQ()
     {
         // 마우스 방향에 부채꼴로 공격하는 스킬
         Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
@@ -56,10 +56,11 @@ public class Hero1SkillSet : SkillSet
                     damagable.TakeDamage(skill_Q.damage);
                 }
             }
+            Debug.Log("BladeWind");
         }
     }
 
-    protected override void UseW()
+    public override void UseW()
     {
         // 5초동안 방어력을 총 공격력의 0.2배만큼 올려주는 스킬
         StartCoroutine(BashRoutine());
@@ -69,16 +70,18 @@ public class Hero1SkillSet : SkillSet
     {
         
         hero.model.Def = hero.model.Def + hero.model.Atk * 0.2f;
+        Debug.Log($"방어력 올라감. 방어력 : {hero.model.Def}");
         yield return new WaitForSeconds(5f);
         hero.model.Def = hero.model.Def - hero.model.Atk * 0.2f;
+        Debug.Log($"방어력 돌아감. 방어력 : {hero.model.Def}");
     }
 
-    protected override void UseE()
+    public override void UseE()
     {
         // 마우스 방향으로 돌진하고 경로상에 부딪힌 적에 데미지를 주고 적 Hero와 부딪히면 멈추는 스킬
     }
 
-    protected override void UseR()
+    public override void UseR()
     {
         // 사정거리 안의 Hero를 선택해서 공격 가능, 적에게 큰 데미지를 주고 이동속도를 1초동안 감소시키는 스킬
     }

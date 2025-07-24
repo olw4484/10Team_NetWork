@@ -69,6 +69,9 @@ public class HeroMovement : MonoBehaviour
 
         // 이동중이라면 이동방향을 바라보도록 설정
         var dir = new Vector3(agent.steeringTarget.x, transform.position.y, agent.steeringTarget.z) - transform.position;
-        transform.forward = dir;
+        if (dir.sqrMagnitude > 0.001f)
+        {
+            transform.forward = dir;
+        }
     }
 }

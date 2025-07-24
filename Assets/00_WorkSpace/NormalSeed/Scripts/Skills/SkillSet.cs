@@ -15,24 +15,25 @@ public class SkillSet : MonoBehaviour
     private void Start()
     {
         hero = GetComponent<HeroController>();
+        mainCam = Camera.main;
     }
 
-    protected virtual void UseQ()
+    public virtual void UseQ()
     {
 
     }
 
-    protected virtual void UseW()
+    public virtual void UseW()
     {
         
     }
     
-    protected virtual void UseE()
+    public virtual void UseE()
     {
 
     }
 
-    protected virtual void UseR()
+    public virtual void UseR()
     {
 
     }
