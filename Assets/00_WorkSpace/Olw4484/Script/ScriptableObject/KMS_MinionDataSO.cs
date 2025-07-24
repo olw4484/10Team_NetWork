@@ -17,7 +17,7 @@ public class MinionDataSO : ScriptableObject
     [Header("Reward")]
     public int goldReward;
     public int gearReward;
-    //public int expReward;
+    public int expReward;
 
     [Header("Visual")]
     public GameObject prefab;
