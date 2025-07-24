@@ -58,11 +58,13 @@ public class CameraController : MonoBehaviour
             SetCameraOnPlayer();
         }
         
+        // Y토글이 꺼져있고 스페이스바를 누르고 있지 않은 상태라면
         if (!isFollowing && !Input.GetKey(KeyCode.Space))
         {
             MoveCamera();
         }
 
+        // 카메라 줌인/줌아웃
         ZoomCamera();
     }
 
