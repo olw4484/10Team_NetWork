@@ -1,8 +1,17 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "HQDataSO", menuName = "ScriptableObject/HQ Data")]
+[CreateAssetMenu(fileName = "HQDataSO", menuName = "Minion/HQ Data")]
 public class KMS_HQDataSO : ScriptableObject
 {
+    [System.Serializable]
+    public class SpawnableMinionInfo
+    {
+        public MinionType type;
+        public GameObject prefab;
+        public int cost;
+    }
+
     [Header("본진 HQ 프리팹 (HQ_Root 기준)")]
     public GameObject hqPrefab;
 
@@ -12,9 +21,6 @@ public class KMS_HQDataSO : ScriptableObject
     [Header("자동 미니언 생성 위치들 (UpLine, DownLine)")]
     public Transform[] autoSpawnPoints;
 
-    [Header("수동 미니언 대기 위치")]
-    public Transform manualSpawnPoint;
-
     [Header("미니언 프리팹")]
     public GameObject minionPrefab;
 
@@ -23,4 +29,7 @@ public class KMS_HQDataSO : ScriptableObject
 
     [Header("자동 생성 미니언 수 (포인트당)")]
     public int autoMinionCount = 1;
+
+    [Header("수동 생성 가능한 미니언 목록")]
+    public List<SpawnableMinionInfo> manualSpawnList;
 }

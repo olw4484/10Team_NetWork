@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 5838799318197566543}
   - component: {fileID: 1729272582029029864}
   - component: {fileID: 4533956436861705677}
+  - component: {fileID: 3709183532518107649}
+  - component: {fileID: 8195805684915850623}
   m_Layer: 0
   m_Name: HQ_Root
   m_TagString: Untagged
@@ -106,6 +108,36 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3709183532518107649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4452433821844447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8af47ff85d78a84685e095901f70c8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data: {fileID: 11400000, guid: 50cd7f5e4a71c8040b7fc289ba611888, type: 2}
+  teamId: 0
+--- !u!114 &8195805684915850623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4452433821844447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7295d85f3e45b3848bc8f6788d6593b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  defaultSpawnPoint: {fileID: 0}
+  rallyPointTarget: {fileID: 0}
+  rallyPointMarker: {fileID: 0}
 --- !u!1 &639524945811320587
 GameObject:
   m_ObjectHideFlags: 0
@@ -116,7 +148,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2553642892811470387}
   m_Layer: 0
-  m_Name: AutoSpawn_UpLine
+  m_Name: AutoSpawnPoint_UpLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -242,6 +274,37 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1672295203090562946
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7800389212176268666}
+  m_Layer: 0
+  m_Name: DefaultSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7800389212176268666
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1672295203090562946}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 127214404541418760}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2599322088750613498
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,6 +336,7 @@ Transform:
   m_Children:
   - {fileID: 1634045159240728058}
   - {fileID: 2553642892811470387}
+  - {fileID: 7800389212176268666}
   - {fileID: 2703932369894395319}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -286,7 +350,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2703932369894395319}
   m_Layer: 0
-  m_Name: AutoSpawn_DownLine
+  m_Name: AutoSpawnPoint_DownLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
