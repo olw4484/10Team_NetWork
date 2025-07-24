@@ -12,7 +12,12 @@
           "package_name": "com.TenTeam.Network"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1088430148228-nim1gi5nmfh8ullaau1n4a48godspvd4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD9MPz87ByRyHmaggFxpYcz2ofQWi0RNa8"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1088430148228-84bhjeu7fd4ucocs761bvt1o0aomhg0g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

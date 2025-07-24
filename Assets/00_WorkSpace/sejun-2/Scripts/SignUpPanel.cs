@@ -119,7 +119,7 @@ public class SignUpPanel : MonoBehaviour
             {
                 Debug.LogError("이미 사용 중인 이메일입니다.");
                 iDCheckPanel.SetActive(true);
-                iDCheckPanel.GetComponentInChildren<TMP_Text>().text = "This email address is already in use.";
+                iDCheckPanel.GetComponentInChildren<TMP_Text>().text = "이미 사용 중인 이메일입니다.";
                 gameObject.SetActive(false);
                 return;
             }
@@ -127,7 +127,7 @@ public class SignUpPanel : MonoBehaviour
             {
                 Debug.Log("사용 가능한 이메일입니다.");
                 iDCheckPanel.SetActive(true);
-                iDCheckPanel.GetComponentInChildren<TMP_Text>().text = "This is an available email.";
+                iDCheckPanel.GetComponentInChildren<TMP_Text>().text = "사용 가능한 이메일입니다.";
                 gameObject.SetActive(false);
                 return;
             }

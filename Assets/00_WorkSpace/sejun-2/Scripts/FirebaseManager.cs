@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Firebase.Extensions;
-using Firebase;
 using Firebase.Auth;
+using Firebase;
 
 public class FirebaseManager : MonoBehaviour
 {

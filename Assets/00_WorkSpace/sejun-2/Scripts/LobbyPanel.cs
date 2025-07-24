@@ -7,14 +7,16 @@ using UnityEngine.UI;
 
 public class LobbyPanel : MonoBehaviour
 {
+    [Header("Panels")]
     [SerializeField] GameObject loginPannel;
     [SerializeField] GameObject editPanel;
-    [SerializeField] GameObject cancelMembershipPanel;
-
+    [SerializeField] GameObject deleteUserPanel;
+    [Header("Texts")]
     [SerializeField] TMP_Text emailText;
     [SerializeField] TMP_Text nameText;
+    [SerializeField] TMP_Text passwordText;
     [SerializeField] TMP_Text userIdText;
-
+    [Header("Buttons")]
     [SerializeField] Button logoutButton;
     [SerializeField] Button editProfileButton;
     [SerializeField] Button deleteUserButton;
@@ -32,7 +34,19 @@ public class LobbyPanel : MonoBehaviour
 
         emailText.text = user.Email;    
         nameText.text = user.DisplayName;
-        userIdText.text = user.UserId;
+        passwordText.text = "비밀번호는 보안상 표시되지 않습니다"; // 비밀번호는 보안상 표시하지 않음
+        userIdText.text = user.UserId; // 사용자 ID 표시
+
+        //구글이나 플레이 스토어 등 다른 프로바이더로 로그인한 경우,
+        //foreach (IUserInfo userInfo in user.ProviderData) // 사용자 정보에서 프로바이더 데이터 가져오기
+        //{
+        //    if (userInfo.ProviderId == "password") // 프로바이더 ID가 "password"인 경우
+        //    {
+        //        emailText.text = userInfo.Email; // 이메일 텍스트 업데이트
+        //        break; // 루프 종료
+        //    }
+        //}
+
     }
 
     private void Logout()   // 로그아웃 메서드
@@ -50,7 +64,8 @@ public class LobbyPanel : MonoBehaviour
 
     private void DeleteUser()   // 회원 탈퇴 메서드
     {
-        cancelMembershipPanel.SetActive(true);
+        deleteUserPanel.SetActive(true);
         gameObject.SetActive(false);
     }
+
 }
