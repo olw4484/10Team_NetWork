@@ -39,7 +39,10 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
     #endregion
 
     [SerializeField] private GameObject loadingPanel;
+    [SerializeField] private GameObject lobbyPanel;
+    [SerializeField] private GameObject roomPanel;
     [SerializeField] private Transform roomListParent;
+    [SerializeField] private GameObject roomPanelPrefab;
 
     private CurrentState curPlayerState;
     private Dictionary<string, GameObject> currentRoomDic;
@@ -54,51 +57,57 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
     #region ConnectNetwork & Lobby
     public override void OnConnectedToMaster()
     {
-        loadingPanel.SetActive(true);
-        base.OnConnectedToMaster();
-        Debug.Log("마스터 서버 연결완료");
+        if (loadingPanel.activeSelf)
+        {
+            loadingPanel.SetActive(false);
+        }
         PhotonNetwork.JoinLobby();
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
-        base.OnDisconnected(cause);
         PhotonNetwork.ConnectUsingSettings();
     }
 
     public override void OnJoinedLobby()
     {
-        loadingPanel.SetActive(false);
-        if(roomManager == null)
-        {
-            roomManager = FindObjectOfType<JHT_RoomManager>();
-            Debug.Log("RoomManager null");
-        }
-
+        lobbyPanel.SetActive(true);
         StateCustomProperty(CurrentState.Lobby);
     }
 
     public override void OnCreatedRoom()
     {
-        base.OnCreatedRoom();
         StateCustomProperty(CurrentState.InRoom);
-        loadingPanel.SetActive(false);
     }
 
+    public override void OnJoinedRoom()
+    {
+        lobbyPanel.SetActive(false);
+        roomPanel.SetActive(true);
+        roomManager.PlayerPanelSpawn();
+    }
+    
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        base.OnPlayerEnteredRoom(newPlayer);
+        if(newPlayer != PhotonNetwork.LocalPlayer)
+            roomManager.PlayerPanelSpawn(newPlayer);
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        base.OnPlayerLeftRoom(otherPlayer);
+        if (otherPlayer != PhotonNetwork.LocalPlayer)
+            roomManager.PlayerLeaveRoom(otherPlayer);
+    }
+    public override void OnMasterClientSwitched(Player newClientPlayer)
+    {
+        roomManager.PlayerPanelSpawn(newClientPlayer);
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         foreach (RoomInfo roomInfo in roomList)
         {
+            //방이 사라질 때
             if (roomInfo.RemovedFromList)
             {
                 if (currentRoomDic.TryGetValue(roomInfo.Name, out GameObject obj))
@@ -110,14 +119,14 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
                 continue;
             }
             
+            //방이 생길 때
             if (currentRoomDic.ContainsKey(roomInfo.Name))
             {
                 currentRoomDic[roomInfo.Name].GetComponent<JHT_RoomItem>().Init(roomInfo);
             }
             else
             {
-                GameObject inst = Resources.Load("NetworkPrefab/RoomPanelItem").GameObject(); //물어볼거
-                GameObject prefab = Instantiate(inst);
+                GameObject prefab = Instantiate(roomPanelPrefab);
                 prefab.transform.SetParent(roomListParent);
                 prefab.GetComponent<JHT_RoomItem>().Init(roomInfo);
                 currentRoomDic.Add(roomInfo.Name, prefab);

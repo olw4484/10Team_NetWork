@@ -280,6 +280,7 @@ GameObject:
   - component: {fileID: 7520112347514748596}
   - component: {fileID: 5468088305790522261}
   - component: {fileID: 4989103137802226771}
+  - component: {fileID: -3854881151109349901}
   m_Layer: 5
   m_Name: RoomPanelItem
   m_TagString: Untagged
@@ -392,6 +393,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &-3854881151109349901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4335362264787364909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29326617ec1cae2489194b82b209c7fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  joinButton: {fileID: 4989103137802226771}
 --- !u!1 &7230218869308438195
 GameObject:
   m_ObjectHideFlags: 0

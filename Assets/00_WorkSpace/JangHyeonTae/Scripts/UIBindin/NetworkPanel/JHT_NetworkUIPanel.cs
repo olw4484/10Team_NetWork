@@ -20,16 +20,21 @@ public class JHT_NetworkUIPanel : JHT_BaseUI
     private TMP_InputField roomNameInput => GetUI<TMP_InputField>("RoomNameInput");
     private Image secretImage => GetUI<Image>("SecretButton");
 
-    bool isSecret;
     #endregion
 
     #region ·ë
     private GameObject roomPanel => GetUI("RoomPanel");
     private Button leaveRoomButton => GetUI<Button>("LeaveRoomButton");
     private Button startButton => GetUI<Button>("StartButton");
+    private Image redTeamPanel => GetUI<Image>("RedTeamPanel");
+    private Image blueTeamPanel => GetUI<Image>("BlueTeamPanel");
 
     #endregion
 
+
+    private bool isSecret;
+
+    [SerializeField] private JHT_RoomManager roomManager;
 
     private void Start()
     {
@@ -90,6 +95,42 @@ public class JHT_NetworkUIPanel : JHT_BaseUI
             lobbyPanel.SetActive(true);
 
         };
+
+
+        Color redBasicColor = redTeamPanel.color;
+        Color blueBasicColor = blueTeamPanel.color;
+
+        GetEvent("RedTeamPanel").Enter += data => redTeamPanel.color = new Color(redTeamPanel.color.r, redTeamPanel.color.g, redTeamPanel.color.b, 0.4f);
+        GetEvent("RedTeamPanel").Exit += data => redTeamPanel.color = redBasicColor;
+
+        GetEvent("BlueTeamPanel").Enter += data => blueTeamPanel.color = new Color(blueTeamPanel.color.r, blueTeamPanel.color.g, blueTeamPanel.color.b, 0.4f);
+        GetEvent("BlueTeamPanel").Exit += data => blueTeamPanel.color = blueBasicColor;
+
+
+        GetEvent("RedTeamPanel").Click += data =>
+        {
+            if (roomManager.SetTeam(roomManager.redTeam, roomManager.redTeam, out int idx))
+            {
+
+            }
+
+            Debug.Log("·¹µåÆÀ ´Ù Ã¡À½");
+        };
+
+        GetEvent("BlueTeamPanel").Click += data =>
+        {
+            if (roomManager.SetTeam(roomManager.blueTeam, roomManager.redTeam,out int idx))
+            {
+
+            }
+
+            Debug.Log("ºí·çÆÀ ´Ù Ã¡¾î¿ä");
+        };
+    }
+
+    private void PanelDestroy()
+    {
+
     }
 
     private IEnumerator ButtonColorChange()
@@ -97,5 +138,10 @@ public class JHT_NetworkUIPanel : JHT_BaseUI
         isSecret = !isSecret;
         yield return new WaitForSeconds(0.2f);
         secretImage.color = isSecret ? Color.red : Color.green;
+    }
+
+    private void PlayerTeamColor()
+    {
+
     }
 }
