@@ -20,4 +20,5 @@ MonoBehaviour:
   attackCooldown: 0.8
   goldReward: 15
   gearReward: 0
+  expReward: 30
   prefab: {fileID: 0}
