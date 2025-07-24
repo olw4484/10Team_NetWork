@@ -21,7 +21,4 @@ public class MinionDataSO : ScriptableObject
 
     [Header("AI")]
     public float detectRange = 5f;
-
-    [Header("Visual")]
-    public GameObject prefab;
 }

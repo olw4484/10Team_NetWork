@@ -1,7 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
 public class KMS_MinionFactory : MonoBehaviour
 {
@@ -15,9 +14,10 @@ public class KMS_MinionFactory : MonoBehaviour
     public GameObject meleeMinionPrefab;
     public GameObject rangedMinionPrefab;
     public GameObject eliteMinionPrefab;
+    private Dictionary<MinionType, GameObject> prefabDict;
 
     private void Awake()
-    {   
+    {
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -36,13 +36,30 @@ public class KMS_MinionFactory : MonoBehaviour
                 Debug.LogWarning($"Duplicate MinionType: {data.minionType}");
             }
         }
+        prefabDict = new Dictionary<MinionType, GameObject>
+        {
+            { MinionType.Melee, meleeMinionPrefab },
+            { MinionType.Ranged, rangedMinionPrefab },
+            { MinionType.Elite, eliteMinionPrefab }
+        };
+
     }
 
-    public MinionController SpawnFreeMinion(MinionType type, Vector3 position, Transform target, KMS_WaypointGroup waypointGroup = null)
+    public MinionController SpawnFreeMinion(MinionType type, Vector3 pos, Transform target, KMS_WaypointGroup waypointGroup = null)
     {
-        if (!minionDataDict.TryGetValue(type, out var data)) return null;
+        if (!KMS_MinionFactory.Instance.minionDataDict.TryGetValue(type, out var data))
+        {
+            Debug.LogError($"[Spawner] 해당 MinionType({type})에 대한 데이터가 없습니다.");
+            return null;
+        }
 
-        GameObject minion = Instantiate(data.prefab, position, Quaternion.identity);
+        if (data == null)
+        {
+            Debug.LogError($"[Spawner] 데이터는 있지만 null입니다. Type: {type}");
+            return null;
+        }
+
+        GameObject minion = Instantiate(prefabDict[type], pos, Quaternion.identity);
         var controller = minion.GetComponent<MinionController>();
         controller?.Initialize(data, target, waypointGroup);
         return controller;

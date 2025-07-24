@@ -24,6 +24,7 @@ public class MinionController : MonoBehaviour, IDamageable
     private int currentWaypointIndex = 0;
 
     private Coroutine moveCoroutine;
+    public bool IsManual { get; private set; } = false;
 
     private void Awake()
     {
@@ -175,5 +176,10 @@ public class MinionController : MonoBehaviour, IDamageable
         }
 
         Destroy(gameObject, 1f);
+    }
+
+    public void SetManualControl(bool value)
+    {
+        IsManual = value;
     }
 }

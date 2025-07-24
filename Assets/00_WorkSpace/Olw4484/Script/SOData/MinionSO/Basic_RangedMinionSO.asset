@@ -21,4 +21,5 @@ MonoBehaviour:
   goldReward: 3
   gearReward: 0
   expReward: 8
-  prefab: {fileID: 0}
+  detectRange: 5
+  prefab: {fileID: 7540996777296793832, guid: 09dfb07bea465cc4d811f3905a2ce5b5, type: 3}
