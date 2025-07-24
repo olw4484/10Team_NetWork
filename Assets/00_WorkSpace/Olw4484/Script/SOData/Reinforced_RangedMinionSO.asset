@@ -18,4 +18,6 @@ MonoBehaviour:
   moveSpeed: 3
   attackRange: 3.5
   attackCooldown: 1.3
+  goldReward: 5
+  gearReward: 0
   prefab: {fileID: 0}
