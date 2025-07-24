@@ -42,20 +42,20 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
 
         mov.LookMoveDir();
 
-        // 스페이스바를 누르면 카메라를 플레이어 위에 고정함
-        if (Input.GetKey(KeyCode.Space))
-        {
-            SetCameraOnHero();
-        }
+        //// 스페이스바를 누르면 카메라를 플레이어 위에 고정함
+        //if (Input.GetKey(KeyCode.Space))
+        //{
+        //    SetCameraOnHero();
+        //}
     }
 
-    /// <summary>
-    /// 카메라를 플레이어 위치에 고정하는 메서드
-    /// </summary>
-    private void SetCameraOnHero()
-    {
-        mov.camera.transform.position = transform.position + cameraOffset;
-    }
+    ///// <summary>
+    ///// 카메라를 플레이어 위치에 고정하는 메서드
+    ///// </summary>
+    //private void SetCameraOnHero()
+    //{
+    //    mov.camera.transform.position = transform.position + cameraOffset;
+    //}
 
     public void GetHeal(int amount)
     {
