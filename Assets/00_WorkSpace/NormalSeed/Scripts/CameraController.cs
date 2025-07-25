@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -5,6 +6,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    private GameObject[] players;
     private GameObject player;
     private bool isFollowing;
     public float camSpd;
@@ -17,8 +19,17 @@ public class CameraController : MonoBehaviour
 
     private void Init()
     {
-        // Photon을 이용해서 자신의 Player만 참조할 수 있게 바꿔야 함
-        player = GameObject.FindWithTag("Player");
+        // 모든 플레이어를 검색한 후 Photon을 이용해서 자신의 Player만 참조해 옴
+        players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject obj in players)
+        {
+            PhotonView pv = obj.GetComponent<PhotonView>();
+            if (pv != null && pv.IsMine)
+            {
+                player = obj;
+                return;
+            }
+        }
         isFollowing = true;
         camSpd = 20f;
         screenBoarderThickness = 10f;
