@@ -125,6 +125,6 @@ public class KMS_MinionFactory : MonoBehaviour
         };
     }
 }
-public enum MinionType { Melee, Ranged, Elite }
+public enum MinionType { Melee = 0, Ranged = 1, Elite =2 }
 
 
