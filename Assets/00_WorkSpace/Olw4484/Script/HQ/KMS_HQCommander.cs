@@ -1,6 +1,8 @@
 using UnityEngine;
+using static KMS_ISelectable;
+using static UnityEngine.GraphicsBuffer;
 
-public class KMS_HQCommander : MonoBehaviour
+public class KMS_HQCommander : MonoBehaviour, KMS_ISelectable 
 {
     [Header("연동 대상")]
     public KMS_CommandPlayer player;
@@ -10,35 +12,30 @@ public class KMS_HQCommander : MonoBehaviour
     public Transform rallyPointTarget;
     public GameObject rallyPointMarker;
 
+    bool IsSelected = false;
+
     private void Update()
     {
+        if (!IsSelected) return;
+
         if (Input.GetKeyDown(KeyCode.Q))
-            TrySpawn(MinionType.Melee);
+            OnSpawnMinionButton((int)MinionType.Melee);
 
         if (Input.GetKeyDown(KeyCode.W))
-            TrySpawn(MinionType.Ranged);
+            OnSpawnMinionButton((int)MinionType.Ranged);
 
         if (Input.GetKeyDown(KeyCode.E))
-            TrySpawn(MinionType.Elite);
+            OnSpawnMinionButton((int)MinionType.Elite);
 
-        // 향후 확장: D, F 키 특수 기능 등
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit))
-            {
-                SetRallyPoint(hit.point);
-            }
-        }
+        // 특수 스킬 확장 가능성 ) HQSkil 2~3개
     }
 
-    private void TrySpawn(MinionType type)
+    public void OnSpawnMinionButton(int type)
     {
+        var minionType = (MinionType)type;
         var spawnPos = defaultSpawnPoint.position;
         var target = rallyPointTarget != null ? rallyPointTarget : null;
-
-        KMS_MinionFactory.Instance.TrySpawnMinion(type, spawnPos, target, player);
+        KMS_MinionFactory.Instance.TrySpawnMinion(minionType, spawnPos, target, player);
     }
 
     public void SetRallyPoint(Vector3 point)
@@ -53,4 +50,18 @@ public class KMS_HQCommander : MonoBehaviour
 
         Debug.Log($"[Commander] Rally Point 설정: {point}");
     }
+
+    public void Select()
+    {
+        IsSelected = true;
+        // UI 표시 기능 등록
+    }
+
+    public void Deselect()
+    {
+        IsSelected = false;
+        // UI 표시 기능 해제
+    }
+
+    public SelectableType GetSelectableType() => SelectableType.Building;
 }

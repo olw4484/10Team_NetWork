@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8884922764543442983}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: AvatarRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,8 @@ GameObject:
   - component: {fileID: 7822561319918027528}
   - component: {fileID: 2886519966617591608}
   - component: {fileID: 3015614097898631099}
-  m_Layer: 0
+  - component: {fileID: 8355941925359505673}
+  m_Layer: 22
   m_Name: EliteMinion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -136,6 +137,33 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &8355941925359505673
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4872918348816314410}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 84
+  m_CollisionDetection: 0
 --- !u!1 &5949836832596800310
 GameObject:
   m_ObjectHideFlags: 0
@@ -147,7 +175,7 @@ GameObject:
   - component: {fileID: 7742879527008241358}
   - component: {fileID: -252785371207555250}
   - component: {fileID: 5388056467681079592}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: EliteMinion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -190,6 +218,9 @@ MonoBehaviour:
   maxHP: 0
   view: {fileID: 5388056467681079592}
   data: {fileID: 11400000, guid: ccd3e42ef521ec344b7fb23651e89f8a, type: 2}
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   waypointGroup: {fileID: 0}
 --- !u!114 &5388056467681079592
 MonoBehaviour:
@@ -207,6 +238,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   hitEffect: {fileID: 0}
   audioSource: {fileID: 0}
+  highlightEffect: {fileID: 0}
   attackSound: {fileID: 0}
   hitSound: {fileID: 0}
   deathSound: {fileID: 0}

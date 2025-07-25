@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8613733044725965479}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: 'AvatarRoot '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 6179474243884444698}
   - component: {fileID: 1682613736681378335}
   - component: {fileID: 5597219691720914509}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: RangedMinion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -85,6 +85,9 @@ MonoBehaviour:
   maxHP: 0
   view: {fileID: 5597219691720914509}
   data: {fileID: 11400000, guid: 8a8aef992bc781f41b5e8bac5126d853, type: 2}
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   waypointGroup: {fileID: 0}
 --- !u!114 &5597219691720914509
 MonoBehaviour:
@@ -102,6 +105,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   hitEffect: {fileID: 0}
   audioSource: {fileID: 0}
+  highlightEffect: {fileID: 0}
   attackSound: {fileID: 0}
   hitSound: {fileID: 0}
   deathSound: {fileID: 0}
@@ -117,7 +121,8 @@ GameObject:
   - component: {fileID: 3931487187172519882}
   - component: {fileID: 8214496270128913620}
   - component: {fileID: 1196353294249227677}
-  m_Layer: 0
+  - component: {fileID: 7486649475221024872}
+  m_Layer: 22
   m_Name: RangedMinion_Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -210,3 +215,30 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &7486649475221024872
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8438395235778416345}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 84
+  m_CollisionDetection: 0

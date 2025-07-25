@@ -1,9 +1,18 @@
+using Photon.Realtime;
+using TMPro;
 using UnityEngine;
 
 public class KMS_CommandPlayer : MonoBehaviour
 {
     public int teamId;
-    public int gold = 100;
+    public int gold = 150;
+    public int gear = 50;
+    public TMP_Text goldText, gearText;
+    void Update()
+    {
+        goldText.text = $"Gold: {gold}";
+        gearText.text = $"Gear: {gear}";
+    }
 
     public void AddGold(int amount)
     {
