@@ -109,20 +109,14 @@ public class JHT_NetworkUIPanel : JHT_BaseUI
 
         GetEvent("RedTeamPanel").Click += data =>
         {
-            if (roomManager.SetTeam(roomManager.redTeam, roomManager.redTeam, out int idx))
-            {
-
-            }
+            
 
             Debug.Log("·¹µåÆÀ ´Ù Ã¡À½");
         };
 
         GetEvent("BlueTeamPanel").Click += data =>
         {
-            if (roomManager.SetTeam(roomManager.blueTeam, roomManager.redTeam,out int idx))
-            {
-
-            }
+            
 
             Debug.Log("ºí·çÆÀ ´Ù Ã¡¾î¿ä");
         };

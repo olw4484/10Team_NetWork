@@ -139,7 +139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &9478865
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3903,12 +3903,8 @@ MonoBehaviour:
   playerBluePanelParent: {fileID: 363056907}
   startButton: {fileID: 1501886081}
   leaveRoomButton: {fileID: 596641540}
-  redTeam:
-  - {fileID: 0}
-  - {fileID: 0}
-  blueTeam:
-  - {fileID: 0}
-  - {fileID: 0}
+  redButton: {fileID: 0}
+  blueButton: {fileID: 0}
 --- !u!4 &1507226708
 Transform:
   m_ObjectHideFlags: 0
@@ -4217,7 +4213,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1580774167
 RectTransform:
   m_ObjectHideFlags: 0

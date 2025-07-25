@@ -48,6 +48,8 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
     private Dictionary<string, GameObject> currentRoomDic;
 
     public JHT_RoomManager roomManager;
+
+
     void Start()
     {
         currentRoomDic = new();
@@ -77,6 +79,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnCreatedRoom()
     {
+        roomManager.ResetTeamCount();
         StateCustomProperty(CurrentState.InRoom);
     }
 
@@ -84,22 +87,30 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
     {
         lobbyPanel.SetActive(false);
         roomPanel.SetActive(true);
-        roomManager.PlayerPanelSpawn();
+        //roomManager.SeparateTeamCustomProperty(PhotonNetwork.LocalPlayer);
     }
+
     
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        if(newPlayer != PhotonNetwork.LocalPlayer)
-            roomManager.PlayerPanelSpawn(newPlayer);
+        //if (PhotonNetwork.IsMasterClient)
+        //{
+            roomManager.SeparateTeamCustomProperty(newPlayer);
+            Debug.Log($"{newPlayer.ActorNumber} : {newPlayer.CustomProperties["Team"]}");
+        //}
+
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         if (otherPlayer != PhotonNetwork.LocalPlayer)
+        {
             roomManager.PlayerLeaveRoom(otherPlayer);
+        }
     }
     public override void OnMasterClientSwitched(Player newClientPlayer)
     {
+        Debug.Log($"MaserSwitch : {newClientPlayer}번으로 바뀜");
         roomManager.PlayerPanelSpawn(newClientPlayer);
     }
 
@@ -157,10 +168,16 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
     {
-        base.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
-        //여기서 GetCustomProperties 사용하면 됨, GetCustoomProperties는 커스텀 프로퍼티 읽어올때 사용
+        if (changedProps.ContainsKey("Team") && roomManager.playerPanelDic.ContainsKey(PhotonNetwork.LocalPlayer.ActorNumber))
+        {
+            roomManager.PlayerPanelSpawn(targetPlayer);
+        }
+        else if(changedProps.ContainsKey("Team"))
+        {
+            roomManager.PlayerPanelSpawn();
+        }
     }
-
-
     #endregion
+
+   
 }

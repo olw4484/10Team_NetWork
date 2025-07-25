@@ -15,11 +15,17 @@ public class JHT_RoomManager : MonoBehaviour
     [SerializeField] private Button startButton;
     [SerializeField] private Button leaveRoomButton;
 
-    private bool isRed;
-    public List<GameObject> redTeam = new List<GameObject>(2);
-    public List<GameObject> blueTeam =  new List<GameObject>(2);
+    //보류
+    [SerializeField] private Button redButton;
+    [SerializeField] private Button blueButton;
 
-    private Dictionary<int, JHT_PlayerPanelItem> playerPanelDic = new();
+    private bool isRed;
+    public Dictionary<int, JHT_PlayerPanelItem> playerPanelDic = new();
+    public Dictionary<int, string> teamDic = new();
+
+    private int blueCount;
+    private int redCount;
+
 
     private void Start()
     {
@@ -36,47 +42,81 @@ public class JHT_RoomManager : MonoBehaviour
             return;
         }
 
-        GameObject obj = Instantiate(playerPanelPrefab);
+        GameObject inst = InstAndSetParent(player);
 
-        if (SetTeam(redTeam,blueTeam, out int num))
-        {
-            obj.transform.SetParent(playerRedPanelParent);
-        }
-        else
-        {
-            obj.transform.SetParent(playerBluePanelParent);
-        }
-
-        JHT_PlayerPanelItem playerPanel = obj.GetComponent<JHT_PlayerPanelItem>();
+        JHT_PlayerPanelItem playerPanel = inst.GetComponent<JHT_PlayerPanelItem>();
         playerPanel.Init(player);
         playerPanelDic.Add(player.ActorNumber, playerPanel);
+        teamDic.Add(player.ActorNumber, (string)player.CustomProperties["Team"]);
     }
 
     public void PlayerPanelSpawn()
     {
         PhotonNetwork.AutomaticallySyncScene = true;
 
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            startButton.interactable = false;
+        }
+
         foreach (Player player in PhotonNetwork.PlayerList)
         {
-            GameObject obj = Instantiate(playerPanelPrefab);
+            GameObject inst = InstAndSetParent(player);
 
-            if(SetTeam(redTeam, blueTeam, out int num))
-            {
-                obj.transform.SetParent(playerRedPanelParent);
-                redTeam[num] = obj;
-            }
-            else
-            {
-                obj.transform.SetParent(playerBluePanelParent);
-                blueTeam[num] = obj;
-            }
+            JHT_PlayerPanelItem playerPanel = inst.GetComponent<JHT_PlayerPanelItem>();
+            playerPanel.Init(player);
 
-            JHT_PlayerPanelItem playerPanel = obj.GetComponent<JHT_PlayerPanelItem>();
-            playerPanel.Init(player); 
             playerPanelDic.Add(player.ActorNumber, playerPanel);
+            teamDic.Add(player.ActorNumber, (string)player.CustomProperties["Team"]);
         }
     }
 
+    //팀 : 부모정하기
+    public GameObject InstAndSetParent(Player player)
+    {
+        GameObject obj = Instantiate(playerPanelPrefab);
+
+        if (player.CustomProperties.TryGetValue("Team", out object team))
+        {
+            if ((string)team == "Blue")
+                obj.transform.SetParent(playerBluePanelParent);
+            else
+                obj.transform.SetParent(playerRedPanelParent);
+
+            return obj;
+        }
+        else
+        {
+            Debug.Log($"플레이어 {player.NickName} 팀 정보 없음");
+            return null;
+        }
+    }
+
+    #region 팀 : 팀나누기
+    public void SeparateTeamCustomProperty(Player player)
+    {
+        string team = blueCount >= redCount ? "Red" : "Blue";
+
+        ExitGames.Client.Photon.Hashtable teamProp = new();
+        teamProp["Team"] = team;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(teamProp);
+
+        if (team == "Blue")
+            blueCount++;
+        else 
+            redCount++;
+    }
+
+    public void ResetTeamCount()
+    {
+        blueCount = 0;
+        redCount = 0;
+    }
+    #endregion
+
+
+
+    //플레이어가 방을 떠났을 때
     public void PlayerLeaveRoom(Player player)
     {
         if (playerPanelDic.TryGetValue(player.ActorNumber, out JHT_PlayerPanelItem obj))
@@ -84,54 +124,43 @@ public class JHT_RoomManager : MonoBehaviour
             playerPanelDic.Remove(player.ActorNumber);
             Destroy(obj.gameObject);
         }
-    }
 
-    public bool SetTeam(List<GameObject> firstArr,List<GameObject> secondArr,out int idx)
-    {
-        bool isMySelect = false;
-        for (int i = 0; i < firstArr.Count; i++)
+        if (teamDic.ContainsKey(player.ActorNumber))
         {
-            if (firstArr[i] == null)
-            {
-                isMySelect = true;
-                idx = i;
-                return true;
-            }
-        }
+            if ((string)player.CustomProperties["Team"] == "Red")
+                redCount--;
+            else
+                blueCount--;
 
-        for (int i = 0; i < secondArr.Count; i++)
-        {
-            if (secondArr[i] == null)
-            {
-                isMySelect = false;
-                idx = i;
-                return true;
-            }
+            teamDic.Remove(player.ActorNumber);
         }
-
-        idx = -1;
-        return isMySelect;
-    }
-    public void PlayerTeamChange(Player player, Func<List<GameObject>, List<GameObject>, int,bool> action)
-    {
-        
     }
 
     public void GameStart()
     {
+        if (teamDic.Count == 4)
+        {
 
+        }
     }
+
+    //내 플레이어가 방을 떠났을 때
     public void LeaveRoom()
     {
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             Destroy(playerPanelDic[player.ActorNumber].gameObject);
         }
-
         playerPanelDic.Clear();
-
+        teamDic.Clear();
         PhotonNetwork.LeaveRoom();
-
     }
 
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log($"{PhotonNetwork.LocalPlayer.NickName} : {PhotonNetwork.LocalPlayer.CustomProperties["Team"]}");
+        }
+    }
 }
