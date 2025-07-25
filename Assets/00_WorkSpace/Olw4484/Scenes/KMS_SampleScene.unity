@@ -204,7 +204,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 74892017}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 602571874}
+        m_TargetAssemblyTypeName: KMS_HQCommander, Assembly-CSharp
+        m_MethodName: OnSpawnMinionButton
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &74892017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -431,7 +443,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 195672649}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 602571874}
+        m_TargetAssemblyTypeName: KMS_HQCommander, Assembly-CSharp
+        m_MethodName: OnSpawnMinionButton
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &195672649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -513,7 +537,7 @@ GameObject:
   - component: {fileID: 225920887}
   - component: {fileID: 225920886}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: RangedButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -558,7 +582,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: SpawnRanged(W) - 25Gold
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -795,7 +819,7 @@ GameObject:
   - component: {fileID: 413893209}
   - component: {fileID: 413893208}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: EliteButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -840,7 +864,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: SpawnElite(E) - 150Gold
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1051,6 +1075,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 461917735}
   m_CullTransparentMesh: 1
+--- !u!114 &602571874 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6871239658522718211, guid: ffd8ae3f122ff76419a436fbc50cf805, type: 3}
+  m_PrefabInstance: {fileID: 3705805711473220195}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7295d85f3e45b3848bc8f6788d6593b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &693865994
 GameObject:
   m_ObjectHideFlags: 0
@@ -1511,7 +1546,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 926911172}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 602571874}
+        m_TargetAssemblyTypeName: KMS_HQCommander, Assembly-CSharp
+        m_MethodName: OnSpawnMinionButton
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &926911172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1811,7 +1858,7 @@ GameObject:
   - component: {fileID: 1339306074}
   - component: {fileID: 1339306073}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: MeleeButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1856,7 +1903,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: SpawnMelee(Q) - 30Gold
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
