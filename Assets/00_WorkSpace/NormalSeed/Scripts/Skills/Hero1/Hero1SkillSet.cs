@@ -13,6 +13,7 @@ public class Hero1SkillSet : SkillSet
     // protected Camera mainCam;
     //protected HeroController hero;
 
+    #region UseQ
     public override void UseQ()
     {
         // 마우스 방향에 부채꼴로 공격하는 스킬
@@ -59,14 +60,15 @@ public class Hero1SkillSet : SkillSet
             Debug.Log("BladeWind");
         }
     }
+    #endregion
 
     public override void UseW()
     {
         // 5초동안 방어력을 총 공격력의 0.2배만큼 올려주는 스킬
-        StartCoroutine(BashRoutine());
+        StartCoroutine(HardenRoutine());
     }
 
-    private IEnumerator BashRoutine()
+    private IEnumerator HardenRoutine()
     {
         
         hero.model.Def = hero.model.Def + hero.model.Atk * 0.2f;

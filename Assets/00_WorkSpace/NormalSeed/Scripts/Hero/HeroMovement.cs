@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,8 @@ public class HeroMovement : MonoBehaviour
 
     private bool isMove;
     private Vector3 destination;
+
+    private WaitForSeconds distCheck = new WaitForSeconds(2f);
 
     private void Awake() => Init();
 
@@ -34,7 +37,62 @@ public class HeroMovement : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
         {
-            SetDestination(hit.point, moveSpd);
+            if (hit.collider.CompareTag("Ground"))
+            {
+                SetDestination(hit.point, moveSpd);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 히어로 기본공격 메서드
+    /// </summary>
+    /// <param name="moveSpd"></param>
+    /// <param name="damage"></param>
+    /// <param name="atkRange"></param>
+    public void HeroAttack(float moveSpd, int damage, float atkRange)
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
+        {
+            LGH_IDamagable damagable = hit.collider.GetComponent<LGH_IDamagable>();
+            PhotonView view = hit.collider.GetComponent<PhotonView>();
+
+            if (damagable != null && view != null && !view.IsMine)
+            {
+                object targetTeam, myTeam;
+                if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam) &&
+                    view.Owner.CustomProperties.TryGetValue("Team", out targetTeam))
+                {
+                    if (!targetTeam.Equals(myTeam))
+                    {
+                        // 공격 사거리 안에 있다면 기본공격 실행(애니메이션 재생, TakeDamage로 데미지 줌)
+                        StartCoroutine(HeroAttackRoutine(hit.collider.transform, damagable, atkRange, damage, moveSpd));
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    private IEnumerator HeroAttackRoutine(Transform target, LGH_IDamagable damagable, float atkRange, int damage, float moveSpd)
+    {
+        while (true)
+        {
+            float dist = Vector3.Distance(transform.position, target.position);
+            if (dist <= atkRange)
+            {
+                // TakeDamage를 RPC로 만들어야 함
+                damagable.TakeDamage(damage);
+                Debug.Log("Hero1 기본 공격");
+                yield break;
+            }
+            else
+            {
+                SetDestination(target.position, moveSpd);
+            }
+
+            yield return distCheck;
         }
     }
 
