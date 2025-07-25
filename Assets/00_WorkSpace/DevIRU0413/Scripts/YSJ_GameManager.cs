@@ -45,6 +45,7 @@ public class YSJ_GameManager : YSJ_SimpleSingleton<YSJ_GameManager>
     {
         BroadcastGameOver(teamId);
     }
+    #endregion
 
     // State
     public void ChangeState(GameState newState)
