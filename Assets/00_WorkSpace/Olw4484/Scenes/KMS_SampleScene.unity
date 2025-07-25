@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 94943063}
   - component: {fileID: 94943062}
   - component: {fileID: 94943061}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: Field
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1053,10 +1053,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectionMask:
     serializedVersion: 2
-    m_Bits: 6291456
+    m_Bits: 14680064
   commandMask:
     serializedVersion: 2
-    m_Bits: 6291456
+    m_Bits: 14680064
   dragBoxVisual: {fileID: 957717353}
 --- !u!1001 &3705805711473220195
 PrefabInstance:
@@ -1082,6 +1082,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 21
       objectReference: {fileID: 0}
+    - target: {fileID: 1685064864911331484, guid: ffd8ae3f122ff76419a436fbc50cf805, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
     - target: {fileID: 1941494277772749181, guid: ffd8ae3f122ff76419a436fbc50cf805, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1130,10 +1134,6 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 21
       objectReference: {fileID: 0}
-    - target: {fileID: 6399487474105978745, guid: ffd8ae3f122ff76419a436fbc50cf805, type: 3}
-      propertyPath: m_Layer
-      value: 21
-      objectReference: {fileID: 0}
     - target: {fileID: 6871239658522718211, guid: ffd8ae3f122ff76419a436fbc50cf805, type: 3}
       propertyPath: player
       value: 
@@ -1145,10 +1145,6 @@ PrefabInstance:
     - target: {fileID: 7722951474725474331, guid: ffd8ae3f122ff76419a436fbc50cf805, type: 3}
       propertyPath: m_Name
       value: HQ
-      objectReference: {fileID: 0}
-    - target: {fileID: 7722951474725474331, guid: ffd8ae3f122ff76419a436fbc50cf805, type: 3}
-      propertyPath: m_Layer
-      value: 21
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

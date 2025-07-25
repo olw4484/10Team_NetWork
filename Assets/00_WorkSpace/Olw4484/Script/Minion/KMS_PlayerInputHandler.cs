@@ -13,6 +13,7 @@ public class KMS_PlayerInputHandler : MonoBehaviour
 
     private Vector2 dragStartScreenPos;
     private bool isDragging = false;
+    private bool isAttackMoveMode = false;
     private float dragThreshold = 10f;
 
     private KMS_ISelectable currentSelected;
@@ -22,10 +23,29 @@ public class KMS_PlayerInputHandler : MonoBehaviour
     {
         HandleSelectionInput();
         HandleCommandInput();
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            isAttackMoveMode = true;
+        }
     }
 
     private void HandleSelectionInput()
     {
+        // 공격 이동 명령 처리
+        if (isAttackMoveMode && Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, 100f, commandMask))
+            {
+                foreach (var minion in selectedMinions)
+                {
+                    minion.SetAttackMoveTarget(hit.point); // 또는 hit.transform
+                }
+                isAttackMoveMode = false; // 한 번만 실행
+            }
+        }
+
         // 마우스 눌렀을 때
         if (Input.GetMouseButtonDown(0))
         {
@@ -81,15 +101,19 @@ public class KMS_PlayerInputHandler : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 100f, commandMask))
             {
-                // 현재 선택이 HQ라면 RallyPoint
+                // HQ가 선택된 상태면 RallyPoint
                 if (currentSelected is KMS_HQCommander hq)
                 {
                     hq.SetRallyPoint(hit.point);
                 }
-                // 아니면 미니언 등 명령 처리
-                else
+                // 미니언 여러 마리 선택된 상태면 모두에게 명령
+                else if (selectedMinions.Count > 0)
                 {
-                    IssueCommand(hit);
+                    foreach (var minion in selectedMinions)
+                    {
+                        if (minion != null)
+                            minion.SetTarget(hit.transform);
+                    }
                 }
             }
         }
@@ -170,10 +194,17 @@ public class KMS_PlayerInputHandler : MonoBehaviour
         {
             if (minion != null)
             {
-                // 위치 명령 전달
-                minion.SetTarget(hit.transform);
+                // 바닥(Ground)라면 좌표 이동
+                if (hit.collider.CompareTag("Ground")) // Ground에 Tag 설정 권장
+                {
+                    minion.MoveToPosition(hit.point);
+                }
+                // 적, HQ, 기타 오브젝트라면 Transform 타겟팅
+                else
+                {
+                    minion.SetTarget(hit.transform);
+                }
             }
         }
-
     }
 }
