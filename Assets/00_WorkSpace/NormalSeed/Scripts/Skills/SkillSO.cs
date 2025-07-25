@@ -8,7 +8,7 @@ public class SkillSO : ScriptableObject
     public string skillName; // 스킬 이름
     public int skillLevel; // 스킬 레벨
     public bool isPassive; // 패시브 스킬인지 여부 체크
-    public float damage; // 스킬 데미지
+    public int damage; // 스킬 데미지
     public float skillRange; // 스킬 사거리
     public List<float> buffAmount = new(); // 스킬이 버프 스킬일 때 버프 수치들. 버프가 여러 수치에 영향을 줄 수 있으므로 리스트로 생성함
     public float mana; // 스킬 사용에 필요한 마나량
