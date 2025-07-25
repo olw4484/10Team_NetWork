@@ -27,7 +27,7 @@ public class CameraController : MonoBehaviour
             if (pv != null && pv.IsMine)
             {
                 player = obj;
-                return;
+                break;
             }
         }
         isFollowing = true;

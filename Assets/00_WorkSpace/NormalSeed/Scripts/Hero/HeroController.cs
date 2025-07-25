@@ -31,7 +31,7 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
 
         atkDelay = 0f;
 
-        // 임시로 Hero1을 선택한 것으로 가정 -> Lobby에서 HeroType을 받아오는 방식으로 만들고 싶음
+        // 임시로 Hero1을 선택한 것으로 가정 -> 게임이 시작되면 HeroType을 결정하게
         heroType = 0;
         model.GetInitStats(heroType);
     }
