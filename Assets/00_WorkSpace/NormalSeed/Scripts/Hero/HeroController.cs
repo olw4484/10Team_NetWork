@@ -13,6 +13,8 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
 
     private Vector3 cameraOffset = new Vector3(5f, 19f, -5f);
 
+    private float atkDelay;
+
     public readonly int IDLE_HASH = Animator.StringToHash("Idle");
     public readonly int MOVE_HASH = Animator.StringToHash("Move");
     public readonly int ATTACK_HASH = Animator.StringToHash("Attack");
@@ -27,9 +29,28 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         view = GetComponent<HeroView>();
         mov = GetComponent<HeroMovement>();
 
-        // 임시로 Hero1을 선택한 것으로 가정
+        atkDelay = 0f;
+
+        // 임시로 Hero1을 선택한 것으로 가정 -> Lobby에서 HeroType을 받아오는 방식으로 만들고 싶음
         heroType = 0;
         model.GetInitStats(heroType);
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButton(1))
+        {
+            if (atkDelay <= 0f)
+            {
+                mov.HeroAttack(model.MoveSpd, (int)model.Atk, model.AtkRange); // 추후 damage 변수는 데미지 공식에 따라 바꿔줄 필요가 있음
+                atkDelay = 1 / model.AtkSpd;
+            }
+        }
+
+        if (atkDelay > 0f)
+        {
+            atkDelay -= Time.deltaTime;
+        }
     }
 
     private void FixedUpdate()

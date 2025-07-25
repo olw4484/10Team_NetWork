@@ -11,6 +11,7 @@ public class HeroModel : MonoBehaviour
     [field: SerializeField] public float MoveSpd { get; set; }
     [field: SerializeField] public float Atk { get; set; }
     [field: SerializeField] public float AtkRange { get; set; }
+    [field: SerializeField] public float AtkSpd { get; set; }
     [field: SerializeField] public float Def { get; set; }
 
     // Observable Properties
@@ -21,9 +22,9 @@ public class HeroModel : MonoBehaviour
     [field: SerializeField]
     private HeroStat[] HeroStats = new HeroStat[]
     {
-        new("Hero1", 200, 150, 2.5f, 10f, 5f, 10f),
-        new("Hero2", 250, 100, 2f, 8f, 4f, 15f),
-        new("Hero3", 150, 200, 1.5f, 8f, 10f, 8f)
+        new("Hero1", 200, 150, 2.5f, 10f, 5f, 1f, 10f),
+        new("Hero2", 250, 100, 2f, 8f, 4f, 0.8f, 15f),
+        new("Hero3", 150, 200, 1.5f, 8f, 10f, 0.8f, 8f)
     };
 
     public void GetInitStats(int heroType)
@@ -52,9 +53,10 @@ public struct HeroStat
     public float MoveSpd;
     public float Atk;
     public float AtkRange;
+    public float AtkSpd;
     public float Def;
 
-    public HeroStat(string name, int maxHP, int maxMP, float moveSpd, float atk, float atkRange, float def)
+    public HeroStat(string name, int maxHP, int maxMP, float moveSpd, float atk, float atkRange, float atkSpd, float def)
     {
         Name = name;
         MaxHP = maxHP;
@@ -62,6 +64,7 @@ public struct HeroStat
         MoveSpd = moveSpd;
         Atk = atk;
         AtkRange = atkRange;
+        AtkSpd = atkSpd;
         Def = def;
     }
 }

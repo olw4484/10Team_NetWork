@@ -166,6 +166,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a60146a84f5e245b609c65583f68fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hero: {fileID: 0}
+  skillSet: {fileID: 0}
 --- !u!1 &460937109
 GameObject:
   m_ObjectHideFlags: 0
@@ -392,7 +394,7 @@ GameObject:
   - component: {fileID: 624599332}
   m_Layer: 0
   m_Name: Wall3
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -497,7 +499,7 @@ GameObject:
   - component: {fileID: 675900592}
   m_Layer: 0
   m_Name: Wall4
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -603,7 +605,7 @@ GameObject:
   - component: {fileID: 711083075}
   m_Layer: 0
   m_Name: Ground
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -834,7 +836,7 @@ GameObject:
   - component: {fileID: 952197666}
   m_Layer: 0
   m_Name: Wall1
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -975,7 +977,7 @@ GameObject:
   - component: {fileID: 1214583330}
   m_Layer: 0
   m_Name: Wall2
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1226,6 +1228,7 @@ MonoBehaviour:
   <MoveSpd>k__BackingField: 0
   <Atk>k__BackingField: 0
   <AtkRange>k__BackingField: 0
+  <AtkSpd>k__BackingField: 0
   <Def>k__BackingField: 0
 --- !u!114 &1438374973
 MonoBehaviour:
