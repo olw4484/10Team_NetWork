@@ -1,9 +1,11 @@
-using System.Resources;
-using UnityEngine;
 using System.Collections;
+using System.Resources;
+using UnityEditor.Experimental.GraphView;
+using UnityEngine;
+using static KMS_ISelectable;
 using static KMS_ResourceSystem;
 
-public class MinionController : MonoBehaviour, IDamageable
+public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
 {
     [Header("Settings")]
     public float moveSpeed;
@@ -181,8 +183,21 @@ public class MinionController : MonoBehaviour, IDamageable
     {
         IsManual = isManual;
     }
+
     public void SetSelected(bool isSelected)
     {
         view?.SetHighlight(isSelected);
     }
+
+    public void Select()
+    {
+        view?.SetHighlight(true);
+    }
+
+    public void Deselect()
+    {
+        view?.SetHighlight(false);
+    }
+
+    public SelectableType GetSelectableType() => SelectableType.Unit;
 }

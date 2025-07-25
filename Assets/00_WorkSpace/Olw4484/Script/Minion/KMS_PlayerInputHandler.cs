@@ -1,17 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using static KMS_ISelectable;
 
 public class KMS_PlayerInputHandler : MonoBehaviour
 {
     [Header("레이어 설정")]
-    public LayerMask selectionMask;  // 수동 미니언 선택용
-    public LayerMask commandMask;    // 명령 전달용 (Ground, Enemy 등)
-    public RectTransform dragBoxVisual; // 드래그박스
+    public LayerMask selectionMask;
+    public LayerMask commandMask;
+    public RectTransform dragBoxVisual;
 
     private Vector2 dragStartScreenPos;
     private bool isDragging = false;
+    private float dragThreshold = 10f;
 
+    private KMS_ISelectable currentSelected;
     private List<MinionController> selectedMinions = new();
 
     void Update()
@@ -22,28 +26,43 @@ public class KMS_PlayerInputHandler : MonoBehaviour
 
     private void HandleSelectionInput()
     {
-        // 드래그 시작
-        if (Input.GetMouseButtonDown(0)) 
+        // 마우스 눌렀을 때
+        if (Input.GetMouseButtonDown(0))
         {
             dragStartScreenPos = Input.mousePosition;
-            isDragging = true;
-            dragBoxVisual.gameObject.SetActive(true);
+            isDragging = false; // 무조건 false로 시작
         }
 
-        // 드래그 종료
-        if (Input.GetMouseButton(0) && isDragging)
+        // 마우스 이동하면서 드래그인지 체크
+        if (Input.GetMouseButton(0))
         {
-            UpdateDragBoxVisual(dragStartScreenPos, Input.mousePosition);
+            if (!isDragging && Vector2.Distance(Input.mousePosition, dragStartScreenPos) > dragThreshold)
+            {
+                isDragging = true;
+                dragBoxVisual.gameObject.SetActive(true);
+            }
+            if (isDragging)
+            {
+                UpdateDragBoxVisual(dragStartScreenPos, Input.mousePosition);
+            }
         }
 
-        // 드래그 
-        if (Input.GetMouseButtonUp(0) && isDragging)
+        // 마우스 뗐을 때
+        if (Input.GetMouseButtonUp(0))
         {
-            isDragging = false;
             dragBoxVisual.gameObject.SetActive(false);
 
-            Vector2 dragEndScreenPos = Input.mousePosition;
-            SelectUnitsInDragBox(dragStartScreenPos, dragEndScreenPos);
+            if (isDragging)
+            {
+                // 드래그로 영역 선택
+                SelectUnitsInDragBox(dragStartScreenPos, Input.mousePosition);
+            }
+            else
+            {
+                // 단일 클릭 선택 처리
+                HandleSingleClickSelection();
+            }
+            isDragging = false;
         }
     }
 
@@ -51,7 +70,6 @@ public class KMS_PlayerInputHandler : MonoBehaviour
     {
         Vector2 size = current - start;
         Vector2 center = start + size / 2;
-
         dragBoxVisual.position = center;
         dragBoxVisual.sizeDelta = new Vector2(Mathf.Abs(size.x), Mathf.Abs(size.y));
     }
@@ -66,12 +84,6 @@ public class KMS_PlayerInputHandler : MonoBehaviour
                 IssueCommand(hit);
             }
         }
-    }
-    private Rect GetScreenRect(Vector2 start, Vector2 end)
-    {
-        Vector2 bottomLeft = Vector2.Min(start, end);
-        Vector2 topRight = Vector2.Max(start, end);
-        return new Rect(bottomLeft, topRight - bottomLeft);
     }
 
     private void SelectUnitsInDragBox(Vector2 start, Vector2 end)
@@ -88,14 +100,56 @@ public class KMS_PlayerInputHandler : MonoBehaviour
 
         foreach (var minion in FindObjectsOfType<MinionController>())
         {
-            if (!minion.IsManual) continue;
-
             Vector3 screenPos = Camera.main.WorldToScreenPoint(minion.transform.position);
-            if (selectionRect.Contains(screenPos, true))
+            if (KMS_SelectionUtility.IsInSelectionBox(start, end, screenPos))
             {
+                minion.Select();
                 selectedMinions.Add(minion);
-                minion.SetSelected(true); // 강조 효과
             }
+            else
+            {
+                minion.Deselect();
+            }
+        }
+
+        currentSelected = null; // 드래그는 HQ 선택 취소
+    }
+
+    private Rect GetScreenRect(Vector2 start, Vector2 end)
+    {
+        Vector2 bottomLeft = Vector2.Min(start, end);
+        Vector2 size = Vector2.Max(start, end) - bottomLeft;
+        return new Rect(bottomLeft, size);
+    }
+
+    private void HandleSingleClickSelection()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out var hit, 100f, selectionMask))
+        {
+            Debug.Log($"Ray Hit: {hit.collider.name} on layer {LayerMask.LayerToName(hit.collider.gameObject.layer)}");
+
+            var selectable = hit.collider.GetComponent<KMS_ISelectable>();
+            if (selectable != null)
+            {
+                currentSelected?.Deselect();
+                currentSelected = selectable;
+                currentSelected.Select();
+
+                switch (selectable.GetSelectableType())
+                {
+                    case SelectableType.Unit:
+                        Debug.Log("유닛 선택됨");
+                        break;
+                    case SelectableType.Building:
+                        Debug.Log("건물 선택됨");
+                        break;
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Raycast missed any object in selectionMask.");
         }
     }
 
@@ -111,5 +165,6 @@ public class KMS_PlayerInputHandler : MonoBehaviour
                 minion.SetTarget(hit.transform);
             }
         }
+
     }
 }

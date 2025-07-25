@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5537802708903624571}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: ControlRallyPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 3829931751999028704}
   - component: {fileID: 8601011188526470539}
   - component: {fileID: 1861239777153078864}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: HQ_TeamColorDoom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 8231728334376134682}
   - component: {fileID: 6368525155100687907}
   - component: {fileID: 7604642951313844842}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: RallyMarker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -253,7 +253,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 52061777251493334}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: DefaultSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -403,7 +403,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2597035859003247320}
   - component: {fileID: 6651627434542401932}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: AutoSpawnPoint_DownLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -440,7 +440,7 @@ MonoBehaviour:
   minionSequence: 00000000000000000100000001000000
   spawnPoint: {fileID: 2597035859003247320}
   target: {fileID: 0}
-  spawnDelay: 0.5
+  spawnDelay: 1
   spawnInterval: 50
   waypointGroup: {fileID: 0}
 --- !u!1 &6399487474105978745
@@ -457,7 +457,7 @@ GameObject:
   - component: {fileID: 2039795938639052269}
   - component: {fileID: 7976804137809719086}
   - component: {fileID: 6871239658522718211}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: HQ_Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -592,7 +592,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4758797512183435480}
   - component: {fileID: 3627917881680003176}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: AutoSpawnPoint_UpLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -629,7 +629,7 @@ MonoBehaviour:
   minionSequence: 00000000000000000100000001000000
   spawnPoint: {fileID: 4758797512183435480}
   target: {fileID: 0}
-  spawnDelay: 0.5
+  spawnDelay: 1
   spawnInterval: 50
   waypointGroup: {fileID: 0}
 --- !u!1 &7722951474725474331
@@ -641,7 +641,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1941494277772749181}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: HQ
   m_TagString: Untagged
   m_Icon: {fileID: 0}

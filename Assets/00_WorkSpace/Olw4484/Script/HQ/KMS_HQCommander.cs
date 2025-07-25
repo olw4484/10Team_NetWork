@@ -1,6 +1,7 @@
 using UnityEngine;
+using static KMS_ISelectable;
 
-public class KMS_HQCommander : MonoBehaviour
+public class KMS_HQCommander : MonoBehaviour, KMS_ISelectable 
 {
     [Header("연동 대상")]
     public KMS_CommandPlayer player;
@@ -57,4 +58,18 @@ public class KMS_HQCommander : MonoBehaviour
 
         Debug.Log($"[Commander] Rally Point 설정: {point}");
     }
+
+    public void Select()
+    {
+        IsSelected = true;
+        // UI 표시 기능 등록
+    }
+
+    public void Deselect()
+    {
+        IsSelected = false;
+        // UI 표시 기능 해제
+    }
+
+    public SelectableType GetSelectableType() => SelectableType.Building;
 }
