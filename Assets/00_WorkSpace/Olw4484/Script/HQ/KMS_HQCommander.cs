@@ -1,5 +1,6 @@
 using UnityEngine;
 using static KMS_ISelectable;
+using static UnityEngine.GraphicsBuffer;
 
 public class KMS_HQCommander : MonoBehaviour, KMS_ISelectable 
 {
@@ -18,23 +19,23 @@ public class KMS_HQCommander : MonoBehaviour, KMS_ISelectable
         if (!IsSelected) return;
 
         if (Input.GetKeyDown(KeyCode.Q))
-            TrySpawn(MinionType.Melee);
+            OnSpawnMinionButton((int)MinionType.Melee);
 
         if (Input.GetKeyDown(KeyCode.W))
-            TrySpawn(MinionType.Ranged);
+            OnSpawnMinionButton((int)MinionType.Ranged);
 
         if (Input.GetKeyDown(KeyCode.E))
-            TrySpawn(MinionType.Elite);
+            OnSpawnMinionButton((int)MinionType.Elite);
 
-        // 향후 확장: D, F 키 특수 기능 등
+        // 특수 스킬 확장 가능성 ) HQSkil 2~3개
     }
 
-    private void TrySpawn(MinionType type)
+    public void OnSpawnMinionButton(int type)
     {
+        var minionType = (MinionType)type;
         var spawnPos = defaultSpawnPoint.position;
         var target = rallyPointTarget != null ? rallyPointTarget : null;
-
-        KMS_MinionFactory.Instance.TrySpawnMinion(type, spawnPos, target, player);
+        KMS_MinionFactory.Instance.TrySpawnMinion(minionType, spawnPos, target, player);
     }
 
     public void SetRallyPoint(Vector3 point)

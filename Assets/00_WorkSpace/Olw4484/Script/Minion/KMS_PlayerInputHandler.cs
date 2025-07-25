@@ -106,14 +106,10 @@ public class KMS_PlayerInputHandler : MonoBehaviour
                 {
                     hq.SetRallyPoint(hit.point);
                 }
-                // 미니언 여러 마리 선택된 상태면 모두에게 명령
+                // 미니언 여러 마리 선택된 상태면 IssueCommand로 분기 처리
                 else if (selectedMinions.Count > 0)
                 {
-                    foreach (var minion in selectedMinions)
-                    {
-                        if (minion != null)
-                            minion.SetTarget(hit.transform);
-                    }
+                    IssueCommand(hit);
                 }
             }
         }
@@ -182,20 +178,20 @@ public class KMS_PlayerInputHandler : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Raycast missed any object in selectionMask.");
+           
         }
     }
 
     private void IssueCommand(RaycastHit hit)
     {
         Debug.Log($"[Input] 명령 발송: {hit.collider.gameObject.name} 위치 {hit.point}");
-
+        Debug.Log($"[우클릭] Ray Hit: {hit.collider.name} / Tag: {hit.collider.tag} / Layer: {LayerMask.LayerToName(hit.collider.gameObject.layer)} / Pos: {hit.point}");
         foreach (var minion in selectedMinions)
         {
             if (minion != null)
             {
                 // 바닥(Ground)라면 좌표 이동
-                if (hit.collider.CompareTag("Ground")) // Ground에 Tag 설정 권장
+                if (hit.collider.CompareTag("Ground"))
                 {
                     minion.MoveToPosition(hit.point);
                 }
