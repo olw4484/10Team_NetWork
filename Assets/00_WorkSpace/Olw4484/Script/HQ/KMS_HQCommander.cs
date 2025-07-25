@@ -10,8 +10,12 @@ public class KMS_HQCommander : MonoBehaviour
     public Transform rallyPointTarget;
     public GameObject rallyPointMarker;
 
+    bool IsSelected = false;
+
     private void Update()
     {
+        if (!IsSelected) return;
+
         if (Input.GetKeyDown(KeyCode.Q))
             TrySpawn(MinionType.Melee);
 
