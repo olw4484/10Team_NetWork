@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class HeroController : MonoBehaviour, LGH_IDamagable
 {
-    protected HeroModel model;
-    protected HeroView view;
-    protected HeroMovement mov;
+    public HeroModel model;
+    public HeroView view;
+    public HeroMovement mov;
 
-    private int heroType;
+    [SerializeField] private int heroType;
     private bool isInCombat;
 
     private Vector3 cameraOffset = new Vector3(5f, 19f, -5f);
@@ -41,21 +41,7 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         }
 
         mov.LookMoveDir();
-
-        //// 스페이스바를 누르면 카메라를 플레이어 위에 고정함
-        //if (Input.GetKey(KeyCode.Space))
-        //{
-        //    SetCameraOnHero();
-        //}
     }
-
-    ///// <summary>
-    ///// 카메라를 플레이어 위치에 고정하는 메서드
-    ///// </summary>
-    //private void SetCameraOnHero()
-    //{
-    //    mov.camera.transform.position = transform.position + cameraOffset;
-    //}
 
     public void GetHeal(int amount)
     {
