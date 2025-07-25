@@ -27,15 +27,6 @@ public class KMS_HQCommander : MonoBehaviour, KMS_ISelectable
             TrySpawn(MinionType.Elite);
 
         // 향후 확장: D, F 키 특수 기능 등
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit))
-            {
-                SetRallyPoint(hit.point);
-            }
-        }
     }
 
     private void TrySpawn(MinionType type)

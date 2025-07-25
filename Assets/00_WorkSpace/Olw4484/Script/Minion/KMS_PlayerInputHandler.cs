@@ -81,7 +81,16 @@ public class KMS_PlayerInputHandler : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 100f, commandMask))
             {
-                IssueCommand(hit);
+                // 현재 선택이 HQ라면 RallyPoint
+                if (currentSelected is KMS_HQCommander hq)
+                {
+                    hq.SetRallyPoint(hit.point);
+                }
+                // 아니면 미니언 등 명령 처리
+                else
+                {
+                    IssueCommand(hit);
+                }
             }
         }
     }

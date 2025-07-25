@@ -288,7 +288,7 @@ GameObject:
   - component: {fileID: 547640571600810918}
   - component: {fileID: 5032386558863492159}
   - component: {fileID: 6210784605535792210}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: MinionOwnershipZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -303,12 +303,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2192402290784182939}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 20, y: 10, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3519561928229026635}
+  m_Father: {fileID: 1941494277772749181}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1685064864911331484
 MeshFilter:
@@ -478,7 +478,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4257984066159417403}
-  - {fileID: 2632197022318720203}
   m_Father: {fileID: 1941494277772749181}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &369572835110942355
@@ -666,5 +665,6 @@ Transform:
   - {fileID: 52061777251493334}
   - {fileID: 5537802708903624571}
   - {fileID: 2597035859003247320}
+  - {fileID: 2632197022318720203}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
