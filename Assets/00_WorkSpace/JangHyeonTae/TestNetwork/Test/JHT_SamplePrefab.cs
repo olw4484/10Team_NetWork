@@ -11,9 +11,21 @@ public class JHT_SamplePrefab : MonoBehaviourPun
         Debug.Log($"JHT_SamplePrefab Start : photonView.ViewID : {photonView.ViewID}");
         Debug.Log($"JHT_SamplePrefab Start : PhotonNetwork.LocalPlayer.ActorNumber : {PhotonNetwork.LocalPlayer.ActorNumber}");
 
-        if(PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("Team",out object value))
+    }
+
+    private void Update()
+    {
+
+        if (Input.GetKeyUp(KeyCode.Space))
         {
-            Debug.Log($"JHT_SamplePrefab Start : TeamColor : {PhotonNetwork.LocalPlayer.CustomProperties["Team"]}");
+            if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out object value))
+            {
+                Debug.Log($"JHT_SamplePrefab Start : TeamColor : {PhotonNetwork.LocalPlayer.CustomProperties["Team"]}");
+            }
+            else
+            {
+                Debug.Log("ÆÀÁ¤º¸ ¾øÀ½");
+            }
         }
     }
 
