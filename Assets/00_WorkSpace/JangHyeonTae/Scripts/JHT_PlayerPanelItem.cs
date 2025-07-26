@@ -15,7 +15,8 @@ public class JHT_PlayerPanelItem : JHT_BaseUI
     string team;
     public void Init(Player player)
     {
-        player.NickName = PhotonNetwork.LocalPlayer.ActorNumber.ToString(); //FirebaseManager.Auth.CurrentUser.DisplayName;
+        PhotonNetwork.LocalPlayer.NickName = PhotonNetwork.LocalPlayer.ActorNumber.ToString(); //FirebaseManager.Auth.CurrentUser.DisplayName;
+        player.NickName = PhotonNetwork.LocalPlayer.NickName;
         playerNameText.text = player.NickName;
         hostImage.enabled = player.IsMasterClient;
         readyButton.interactable = player.IsLocal;
