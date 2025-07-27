@@ -139,7 +139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &9478865
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1233,6 +1233,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 419526392}
   m_CullTransparentMesh: 1
+--- !u!1 &471917352
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 471917354}
+  - component: {fileID: 471917353}
+  m_Layer: 0
+  m_Name: TeamManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &471917353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 471917352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65680a3ebba6bb44aa5c4a1114a4a00e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  redTeam: {fileID: 241997334}
+  blueTeam: {fileID: 363056907}
+--- !u!4 &471917354
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 471917352}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1126.5579, y: 501.22125, z: -7.8485556}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &496342071
 GameObject:
   m_ObjectHideFlags: 0
@@ -2161,6 +2207,7 @@ MonoBehaviour:
   roomListParent: {fileID: 1192191553}
   roomPanelPrefab: {fileID: 4335362264787364909, guid: 54bfd109290dbff49be3e112e8dc5a7e, type: 3}
   roomManager: {fileID: 1507226707}
+  teamManager: {fileID: 471917353}
 --- !u!4 &862841095
 Transform:
   m_ObjectHideFlags: 0
@@ -4213,7 +4260,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1580774167
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5501,3 +5548,4 @@ SceneRoots:
   - {fileID: 1220409105}
   - {fileID: 1507226708}
   - {fileID: 862841095}
+  - {fileID: 471917354}
