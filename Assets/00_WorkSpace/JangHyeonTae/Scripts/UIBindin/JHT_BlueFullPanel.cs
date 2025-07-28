@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class JHT_BlueFullPanel : JHT_BaseUI
 {
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        GetEvent("BlueBackButton").Click += data =>
+        {
+            JHT_UIManager.UIInstance.ClosePopUp();
+        };
     }
 }

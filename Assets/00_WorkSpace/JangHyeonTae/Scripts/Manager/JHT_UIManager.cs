@@ -26,24 +26,10 @@ public class JHT_UIManager : MonoBehaviour
     }
     #endregion
 
-    private void Update()
+    private void Start()
     {
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    JHT_PopupCanvas obj = Instantiate(Resources.Load<JHT_PopupCanvas>("PopUpCanvas"));
-        //    obj.GetOrAddComponent<JHT_PopupCanvas>();
-        //
-        //
-        //}
-        //if (Input.GetKeyDown(KeyCode.Alpha1))
-        //{
-        //    isTest = !isTest;
-        //}
-        //
-        //if (isTest)
-        //{
-        //    ShowPopUp<JHT_TestUI>("Test");
-        //}
+        GameObject obj = Resources.Load($"PopUpCanvas").GameObject();
+        obj.transform.SetParent(transform);
     }
 
     private JHT_PopupCanvas popUpCanvas;
