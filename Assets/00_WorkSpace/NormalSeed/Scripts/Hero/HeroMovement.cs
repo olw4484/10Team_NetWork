@@ -15,7 +15,7 @@ public class HeroMovement : MonoBehaviour
     public bool isMove;
     private Vector3 destination;
 
-    private WaitForSeconds distCheck = new WaitForSeconds(2f);
+    private WaitForSeconds distCheck = new WaitForSeconds(0.2f);
 
     private void Awake() => Init();
 
@@ -37,7 +37,7 @@ public class HeroMovement : MonoBehaviour
     /// <param name="damage"></param>
     /// <param name="atkRange"></param>
 
-    public void HandleRightClick(float moveSpd, int damage, float atkRange)
+    public void HandleRightClick(float moveSpd, int damage, float atkRange, float atkDelay)
     {
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -67,13 +67,12 @@ public class HeroMovement : MonoBehaviour
                     Enum.TryParse(targetTeam.ToString(), out TestTeamSetting targetTeamEnum) &&
                     myTeamEnum != targetTeamEnum)
                 {
-                    StartCoroutine(HeroAttackRoutine(hit.collider.transform, damagable, atkRange, damage, moveSpd));
+                    StartCoroutine(HeroAttackRoutine(hit.collider.transform, damagable, atkRange, atkDelay, damage, moveSpd));
                     return;
                 }
+                // 아군 유닛 클릭 (예: 따라가기 등 커스터마이징 가능)
+                Debug.Log("우클릭된 대상은 아군입니다. 기본 이동 처리 또는 무시.");
             }
-
-            // 아군 유닛 클릭 (예: 따라가기 등 커스터마이징 가능)
-            Debug.Log("우클릭된 대상은 아군입니다. 기본 이동 처리 또는 무시.");
             SetDestination(hit.point, moveSpd);
         }
     }
@@ -127,24 +126,30 @@ public class HeroMovement : MonoBehaviour
     //    }
     //}
 
-    private IEnumerator HeroAttackRoutine(Transform target, LGH_IDamagable damagable, float atkRange, int damage, float moveSpd)
+    private IEnumerator HeroAttackRoutine(Transform target, LGH_IDamagable damagable, float atkRange, float atkDelay, int damage, float moveSpd)
     {
         while (true)
         {
             float dist = Vector3.Distance(transform.position, target.position);
-            if (dist <= atkRange)
+
+            if (dist <= atkRange && atkDelay <= 0f)
             {
                 // TakeDamage를 RPC로 만들어야 함
+                agent.isStopped = true;
+                agent.ResetPath();
+
                 damagable.TakeDamage(damage);
                 Debug.Log("Hero1 기본 공격");
-                yield break;
+                break;
             }
             else
             {
+                agent.isStopped = false;
                 SetDestination(target.position, moveSpd);
             }
 
-            yield return distCheck;
+            agent.isStopped = false;
+            yield return null;
         }
     }
 
