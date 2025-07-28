@@ -79,29 +79,38 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnCreatedRoom()
     {
-        StateCustomProperty(CurrentState.InRoom);
-        
+        StateCustomProperty(CurrentState.InRoom); 
+        ExitGames.Client.Photon.Hashtable roomInit = new();
+        roomInit["RedCount"] = 0;
+        roomInit["BlueCount"] = 0;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(roomInit);
+
     }
 
     public override void OnJoinedRoom()
     {
-        //방 초기 커스텀 프로퍼티
-        if (PhotonNetwork.IsMasterClient)
-        {
-            ExitGames.Client.Photon.Hashtable roomInit = new();
-            roomInit["RedCount"] = 0;
-            roomInit["BlueCount"] = 0;
-            PhotonNetwork.CurrentRoom.SetCustomProperties(roomInit);
-        }
-        
+        Debug.Log("JoinRoom");
         lobbyPanel.SetActive(false);
         roomPanel.SetActive(true);
 
-        CallPlayer();
+        StartCoroutine(CallPlayer());
     }
 
-    private void CallPlayer()
+    private IEnumerator CallPlayer()
     {
+        while (!PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("RedCount") ||
+           !PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("BlueCount"))
+        {
+            yield return null;
+        }
+
+        teamManager.SetPlayerTeam(PhotonNetwork.LocalPlayer);
+
+        while (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Team"))
+        {
+            yield return null;
+        }
+
         roomManager.PlayerPanelSpawn();
     }
     
@@ -109,9 +118,26 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
     {
         if (newPlayer != PhotonNetwork.LocalPlayer)
         {
-            roomManager.PlayerPanelSpawn(newPlayer, teamManager.SetTeam());
-            Debug.Log($"{newPlayer.ActorNumber} : {newPlayer.CustomProperties["Team"]}");
+            Debug.Log("OnPlayerEnterdRoom 시작");
+            StartCoroutine(CallOtherPlayer(newPlayer));
         }
+    }
+
+    private IEnumerator CallOtherPlayer(Player newPlayer)
+    {
+        while (!PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("RedCount") ||
+           !PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("BlueCount"))
+        {
+            yield return null;
+        }
+
+        teamManager.SetPlayerTeam(newPlayer);
+
+        while (!newPlayer.CustomProperties.ContainsKey("Team"))
+            yield return null;
+
+        roomManager.PlayerPanelSpawn(newPlayer);
+        Debug.Log($"{newPlayer.ActorNumber} : {newPlayer.CustomProperties["Team"]}");
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -124,7 +150,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
     public override void OnMasterClientSwitched(Player newClientPlayer)
     {
         Debug.Log($"MasterSwitch : {newClientPlayer}번으로 바뀜");
-        roomManager.PlayerPanelSpawn(newClientPlayer, teamManager.SetTeam());
+        roomManager.PlayerPanelSpawn(newClientPlayer);
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -170,9 +196,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
         curState["CurState"] = curPlayerState; // 위에까지 작성과정
         PhotonNetwork.LocalPlayer.SetCustomProperties(curState); //전역변수 저장 느낌
     }
-
-
-
+    
     // 프로퍼티 변화가 생겼을때 호출, 호출이 되어야할 로직이 있을떄 사용
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
@@ -185,5 +209,4 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
-   
 }

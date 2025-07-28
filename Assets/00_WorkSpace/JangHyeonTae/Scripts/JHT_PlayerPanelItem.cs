@@ -12,7 +12,7 @@ public class JHT_PlayerPanelItem : JHT_BaseUI
     private Image hostImage => GetUI<Image>("HostImage");
     private Button readyButton => GetUI<Button>("PlayerReadyButton");
 
-    string team;
+    TeamSetting team;
     public void Init(Player player)
     {
         PhotonNetwork.LocalPlayer.NickName = PhotonNetwork.LocalPlayer.ActorNumber.ToString(); //FirebaseManager.Auth.CurrentUser.DisplayName;
