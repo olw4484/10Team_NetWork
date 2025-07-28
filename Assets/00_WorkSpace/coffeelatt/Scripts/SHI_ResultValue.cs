@@ -42,9 +42,9 @@ public class SHI_ResultValue : MonoBehaviour
     }
     void Start()
     {
-        stat = GetComponent<HeroModel>();
-        addstat = GetComponent<SHI_ItemManager>();
-        skillSO = GetComponent<SkillSO>();
+        //stat = GetComponent<HeroModel>();
+        //addstat = GetComponent<SHI_ItemManager>();
+        //skillSO = GetComponent<SkillSO>();
         Init();
         if(!isconnect)
         {

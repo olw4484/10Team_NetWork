@@ -6,16 +6,16 @@ public class SHI_InventorySlot : MonoBehaviour
 {
     public Image icon;
     public Button useButton;
-
-    private SHI_ItemBase currentItem;
+    [Header("Á¤»óÂø¿ëDebug")]
+    [SerializeField] private SHI_ItemBase currentItem;
     private SHI_ItemManager inventoryManager;
 
     private void Start()
     {
-        inventoryManager = GetComponent<SHI_ItemManager>();
+        inventoryManager = GameObject.Find("itemmanager").GetComponent<SHI_ItemManager>();
         useButton.onClick.AddListener(OnUseButtonClicked);
         currentItem = GetComponent<SHI_ItemBase>();
-        icon = GetComponent<Image>();
+        
     }
 
     public void SetItem(SHI_ItemBase item)
@@ -41,6 +41,8 @@ public class SHI_InventorySlot : MonoBehaviour
         {
             inventoryManager.UseItem(currentItem);
             SHI_Inventory.instance.RemoveItem(currentItem);
+            if (currentItem.type == 0)
+            ClearSlot();
         }
     }
 }
