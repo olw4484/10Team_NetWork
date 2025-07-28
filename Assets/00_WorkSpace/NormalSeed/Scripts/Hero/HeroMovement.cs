@@ -1,4 +1,5 @@
 using Photon.Pun;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -44,7 +45,7 @@ public class HeroMovement : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             // 땅 클릭 시 이동
-            if (hit.collider.CompareTag("Ground"))
+            if (hit.collider.CompareTag("Ground") || hit.collider.CompareTag("Obstacle"))
             {
                 SetDestination(hit.point, moveSpd);
                 return;
@@ -60,14 +61,18 @@ public class HeroMovement : MonoBehaviour
                 bool hasMyTeam = PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam);
                 bool hasTargetTeam = targetView.Owner.CustomProperties.TryGetValue("Team", out targetTeam);
 
-                if (hasMyTeam && hasTargetTeam && !targetTeam.Equals(myTeam))
+                // 팀 구분이 구조체로 되어있기 떄문에 구조체를 string으로 TryParse 추가
+                if (hasMyTeam && hasTargetTeam &&
+                    Enum.TryParse(myTeam.ToString(), out TestTeamSetting myTeamEnum) &&
+                    Enum.TryParse(targetTeam.ToString(), out TestTeamSetting targetTeamEnum) &&
+                    myTeamEnum != targetTeamEnum)
                 {
                     StartCoroutine(HeroAttackRoutine(hit.collider.transform, damagable, atkRange, damage, moveSpd));
                     return;
                 }
             }
 
-            // ③ 아군 유닛 클릭 (예: 따라가기 등 커스터마이징 가능)
+            // 아군 유닛 클릭 (예: 따라가기 등 커스터마이징 가능)
             Debug.Log("우클릭된 대상은 아군입니다. 기본 이동 처리 또는 무시.");
             SetDestination(hit.point, moveSpd);
         }

@@ -86,7 +86,7 @@ public class Hero1SkillSet : SkillSet
 
     private IEnumerator BashRoutine()
     {
-        // 마우스 방향으로 돌진하고 경로상에 부딪힌 적에 데미지를 주고 적 Hero와 부딪히면 멈추는 스킬
+        // 마우스 방향으로 돌진하고 경로상에 부딪힌 적에 데미지를 주고 적 Hero나 장애물과 부딪히면 멈추는 스킬
         Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
         Collider heroCollider = hero.GetComponent<Collider>();
         RaycastHit hit;
@@ -107,27 +107,34 @@ public class Hero1SkillSet : SkillSet
 
             while (timer < dashDuration)
             {
-                Collider[] hits = Physics.OverlapSphere(transform.position, 1f);
+                Collider[] hits = Physics.OverlapSphere(transform.position, 0.6f);
                 bool hitDetected = false;
 
                 foreach (Collider collider in hits)
                 {
                     LGH_IDamagable damagable = collider.GetComponent<LGH_IDamagable>();
                     PhotonView view = collider.GetComponent<PhotonView>();
+                    bool isPlayerOrObstacle = collider.CompareTag("Player") || collider.CompareTag("Obstacle");
 
-                    if (damagable == null || view == null || view.IsMine) continue;
+                    // 자신은 collider에서 제외
+                    if (collider.gameObject == gameObject) continue;
 
-                    object targetTeam, myTeam;
-                    if (view.Owner.CustomProperties.TryGetValue("Team", out targetTeam) &&
-                        PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam))
+                    // 먼저 데미지를 줄 수 있는 충돌인지 체크
+                    if (damagable != null && view != null && !view.IsMine)
                     {
-                        if (targetTeam == myTeam) continue;
+                        object targetTeam, myTeam;
+                        if (view.Owner.CustomProperties.TryGetValue("Team", out targetTeam) &&
+                            PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam))
+                        {
+                            if (targetTeam == myTeam) continue;
+                        }
+
+                        damagable.TakeDamage(skill_E.damage);
+                        Debug.Log("Bash Hit");
                     }
 
-                    damagable.TakeDamage(skill_E.damage);
-                    Debug.Log("Bash Hit");
-
-                    if (collider.gameObject.CompareTag("Hero") || collider.gameObject.CompareTag("Ground"))
+                    // 만약 벽 또는 상대 영웅과 충돌했다면 멈춤
+                    if (isPlayerOrObstacle)
                     {
                         Debug.Log("벽 또는 상대 영웅과 충돌 감지");
                         hitDetected = true;
@@ -137,8 +144,11 @@ public class Hero1SkillSet : SkillSet
 
                 if (hitDetected)
                 {
-                    transform.position -= dashDir * 0.2f;
+                    //transform.position -= dashDir * 0.2f;
                     dashSpeed = 0f;
+
+                    agent.enabled = true;
+                    agent.isStopped = false;
                     yield break;
                 }
 

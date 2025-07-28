@@ -8,9 +8,9 @@ public class TestSkillManager : MonoBehaviour
     [SerializeField] private HeroController controller;
     [SerializeField] private SkillSet skillSet;
 
-    private void Start()
+    public void InitSkillManager(GameObject targetPlayer)
     {
-        hero = GameObject.FindWithTag("Player");
+        hero = targetPlayer;
         controller = hero.GetComponent<HeroController>();
         skillSet = hero.GetComponent<SkillSet>();
     }

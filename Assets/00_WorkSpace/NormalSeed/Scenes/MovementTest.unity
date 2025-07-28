@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camController: {fileID: 460937113}
+  skillManager: {fileID: 215427060}
 --- !u!4 &67734609
 Transform:
   m_ObjectHideFlags: 0
@@ -335,7 +336,7 @@ GameObject:
   - component: {fileID: 624599332}
   m_Layer: 0
   m_Name: Wall3
-  m_TagString: Ground
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -440,7 +441,7 @@ GameObject:
   - component: {fileID: 675900592}
   m_Layer: 0
   m_Name: Wall4
-  m_TagString: Ground
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -777,7 +778,7 @@ GameObject:
   - component: {fileID: 952197666}
   m_Layer: 0
   m_Name: Wall1
-  m_TagString: Ground
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -918,7 +919,7 @@ GameObject:
   - component: {fileID: 1214583330}
   m_Layer: 0
   m_Name: Wall2
-  m_TagString: Ground
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

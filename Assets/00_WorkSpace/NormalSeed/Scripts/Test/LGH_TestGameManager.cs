@@ -6,6 +6,7 @@ using UnityEngine;
 public class LGH_TestGameManager : MonoBehaviourPunCallbacks
 {
     public CameraController camController;
+    public TestSkillManager skillManager;
 
     public override void OnJoinedRoom()
     {
@@ -31,6 +32,7 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks
         }
 
         camController.InitCamera(localPlayer);  // 플레이어 전달
+        skillManager.InitSkillManager(localPlayer);
     }
 
 }
