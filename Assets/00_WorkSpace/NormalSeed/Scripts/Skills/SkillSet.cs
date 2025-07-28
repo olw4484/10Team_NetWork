@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class SkillSet : MonoBehaviour
 {
@@ -11,10 +12,12 @@ public class SkillSet : MonoBehaviour
 
     protected Camera mainCam;
     protected HeroController hero;
+    protected NavMeshAgent agent;
 
     private void Start()
     {
         hero = GetComponent<HeroController>();
+        agent = GetComponent<NavMeshAgent>();
         mainCam = Camera.main;
     }
 

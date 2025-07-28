@@ -2,6 +2,7 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Hero1SkillSet : SkillSet
 {
@@ -80,11 +81,120 @@ public class Hero1SkillSet : SkillSet
 
     public override void UseE()
     {
+        StartCoroutine(BashRoutine());
+    }
+
+    private IEnumerator BashRoutine()
+    {
         // 마우스 방향으로 돌진하고 경로상에 부딪힌 적에 데미지를 주고 적 Hero와 부딪히면 멈추는 스킬
+        Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
+        Collider heroCollider = hero.GetComponent<Collider>();
+        RaycastHit hit;
+
+        agent.isStopped = true;
+        agent.enabled = false;
+
+        if (Physics.Raycast(mainCam.ScreenPointToRay(Input.mousePosition), out hit))
+        {
+            Vector3 dashDir = (hit.point - originPos).normalized;
+            float dashSpeed = 10f;
+            float dashDuration = 0.5f;
+            float timer = 0f;
+
+            heroCollider.isTrigger = true;
+
+            transform.forward = new Vector3(dashDir.x, 0, dashDir.z);
+
+            while (timer < dashDuration)
+            {
+                Collider[] hits = Physics.OverlapSphere(transform.position, 1f);
+                bool hitDetected = false;
+
+                foreach (Collider collider in hits)
+                {
+                    LGH_IDamagable damagable = collider.GetComponent<LGH_IDamagable>();
+                    PhotonView view = collider.GetComponent<PhotonView>();
+
+                    if (damagable == null || view == null || view.IsMine) continue;
+
+                    object targetTeam, myTeam;
+                    if (view.Owner.CustomProperties.TryGetValue("Team", out targetTeam) &&
+                        PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam))
+                    {
+                        if (targetTeam == myTeam) continue;
+                    }
+
+                    damagable.TakeDamage(skill_E.damage);
+                    Debug.Log("Bash Hit");
+
+                    if (collider.gameObject.CompareTag("Hero") || collider.gameObject.CompareTag("Ground"))
+                    {
+                        Debug.Log("벽 또는 상대 영웅과 충돌 감지");
+                        hitDetected = true;
+                        break;
+                    }
+                }
+
+                if (hitDetected)
+                {
+                    transform.position -= dashDir * 0.2f;
+                    dashSpeed = 0f;
+                    yield break;
+                }
+
+                timer += Time.deltaTime;
+                transform.position += dashDir * dashSpeed * Time.deltaTime;
+                yield return null;
+            }
+
+            agent.enabled = true;
+            agent.isStopped = false;
+            agent.ResetPath();
+            heroCollider.isTrigger = false;
+        }
     }
 
     public override void UseR()
     {
         // 사정거리 안의 Hero를 선택해서 공격 가능, 적에게 큰 데미지를 주고 이동속도를 1초동안 감소시키는 스킬
+        StartCoroutine(BrutalSmiteRoutine());
     }
+
+    private IEnumerator BrutalSmiteRoutine()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(mainCam.ScreenPointToRay(Input.mousePosition), out hit))
+        {
+            LGH_IDamagable damagable = hit.collider.GetComponent<LGH_IDamagable>();
+            PhotonView view = hit.collider.GetComponent<PhotonView>();
+
+            if (damagable == null || view == null || view.IsMine) yield break;
+
+            object targetTeam, myTeam;
+            if (view.Owner.CustomProperties.TryGetValue("Team", out targetTeam) &&
+                PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam))
+            {
+                if (targetTeam == myTeam) yield break;
+            }
+
+            // 타겟을 바라보게 설정
+            Vector3 targetPos = new Vector3(hit.collider.transform.position.x, transform.position.y, hit.collider.transform.position.z);
+            transform.forward = (targetPos - transform.position).normalized;
+
+            // 데미지 부여
+            damagable.TakeDamage(skill_R.damage);
+            Debug.Log("Brutal Smite Hit");
+
+            // 이동속도 감소 적용
+            HeroController targetHero = hit.collider.GetComponent<HeroController>();
+            if (targetHero != null)
+            {
+                float originalSpeed = targetHero.model.MoveSpd;
+                targetHero.model.MoveSpd *= 0.5f;
+                yield return new WaitForSeconds(1f);
+                targetHero.model.MoveSpd = originalSpeed;
+            }
+        }
+    }
+
 }

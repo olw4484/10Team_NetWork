@@ -1,12 +1,16 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class HeroController : MonoBehaviour, LGH_IDamagable
 {
     public HeroModel model;
     public HeroView view;
     public HeroMovement mov;
+    public NavMeshAgent agent;
+    private PhotonView pv;
 
     [SerializeField] private int heroType;
     private bool isInCombat;
@@ -28,6 +32,8 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         model = GetComponent<HeroModel>();
         view = GetComponent<HeroView>();
         mov = GetComponent<HeroMovement>();
+        agent = GetComponent<NavMeshAgent>();
+        pv = GetComponent<PhotonView>();
 
         atkDelay = 0f;
 
@@ -38,13 +44,22 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
 
     private void Update()
     {
+        if (!pv.IsMine) return;
+
         if (Input.GetMouseButton(1))
         {
-            if (atkDelay <= 0f)
-            {
-                mov.HeroAttack(model.MoveSpd, (int)model.Atk, model.AtkRange); // 추후 damage 변수는 데미지 공식에 따라 바꿔줄 필요가 있음
-                atkDelay = 1 / model.AtkSpd;
-            }
+            //if (atkDelay <= 0f)
+            //{
+            //    mov.HeroAttack(model.MoveSpd, (int)model.Atk, model.AtkRange); // 추후 damage 변수는 데미지 공식에 따라 바꿔줄 필요가 있음
+            //    atkDelay = 1 / model.AtkSpd;
+            //}
+            mov.HandleRightClick(model.MoveSpd, (int)model.Atk, model.AtkRange);
+
+        }
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            agent.ResetPath();
         }
 
         if (atkDelay > 0f)
@@ -55,11 +70,7 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
 
     private void FixedUpdate()
     {
-        // 우클릭하면 우클릭한 지점으로 이동
-        if (Input.GetMouseButton(1))
-        {
-            mov.GetMoveDestination(model.MoveSpd);
-        }
+        if (!pv.IsMine) return;
 
         mov.LookMoveDir();
     }
