@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1088430148228",
+    "project_id": "team-network-208c0",
+    "storage_bucket": "team-network-208c0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088430148228:android:975b274eec2272893a90d1",
+        "android_client_info": {
+          "package_name": "com.TenTeam.Network"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1088430148228-nim1gi5nmfh8ullaau1n4a48godspvd4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9MPz87ByRyHmaggFxpYcz2ofQWi0RNa8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1088430148228-84bhjeu7fd4ucocs761bvt1o0aomhg0g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

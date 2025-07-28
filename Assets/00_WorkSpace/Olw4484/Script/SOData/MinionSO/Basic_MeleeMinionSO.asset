@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6864bc45ee52e724da4248ca6bfd4b66, type: 3}
+  m_Name: Basic_MeleeMinionSO
+  m_EditorClassIdentifier: 
+  minionType: 0
+  maxHP: 100
+  attackPower: 15
+  moveSpeed: 2
+  attackRange: 1
+  attackCooldown: 1.2
+  goldReward: 5
+  gearReward: 0
+  expReward: 8
+  detectRange: 5
+  prefab: {fileID: 6848852395963227363, guid: 36f56811c0ab59f44b9558d261201ce8, type: 3}
