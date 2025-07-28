@@ -78,3 +78,4 @@ crashlytics-build.properties
 Assets/Firebase
 Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_10_1.bundle.meta
 Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_10_1.so.meta
+/Assets/ExternalDependencyManager

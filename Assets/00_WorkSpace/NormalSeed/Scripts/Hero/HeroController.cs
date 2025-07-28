@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class HeroController : MonoBehaviour, LGH_IDamagable
 {
-    protected HeroModel model;
-    protected HeroView view;
-    protected HeroMovement mov;
+    public HeroModel model;
+    public HeroView view;
+    public HeroMovement mov;
 
-    private int heroType;
+    [SerializeField] private int heroType;
     private bool isInCombat;
 
     private Vector3 cameraOffset = new Vector3(5f, 19f, -5f);
+
+    private float atkDelay;
 
     public readonly int IDLE_HASH = Animator.StringToHash("Idle");
     public readonly int MOVE_HASH = Animator.StringToHash("Move");
@@ -27,9 +29,28 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         view = GetComponent<HeroView>();
         mov = GetComponent<HeroMovement>();
 
-        // 임시로 Hero1을 선택한 것으로 가정
+        atkDelay = 0f;
+
+        // 임시로 Hero1을 선택한 것으로 가정 -> Lobby에서 HeroType을 받아오는 방식으로 만들고 싶음
         heroType = 0;
         model.GetInitStats(heroType);
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButton(1))
+        {
+            if (atkDelay <= 0f)
+            {
+                mov.HeroAttack(model.MoveSpd, (int)model.Atk, model.AtkRange); // 추후 damage 변수는 데미지 공식에 따라 바꿔줄 필요가 있음
+                atkDelay = 1 / model.AtkSpd;
+            }
+        }
+
+        if (atkDelay > 0f)
+        {
+            atkDelay -= Time.deltaTime;
+        }
     }
 
     private void FixedUpdate()
@@ -41,20 +62,6 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         }
 
         mov.LookMoveDir();
-
-        // 스페이스바를 누르면 카메라를 플레이어 위에 고정함
-        if (Input.GetKey(KeyCode.Space))
-        {
-            SetCameraOnHero();
-        }
-    }
-
-    /// <summary>
-    /// 카메라를 플레이어 위치에 고정하는 메서드
-    /// </summary>
-    private void SetCameraOnHero()
-    {
-        mov.camera.transform.position = transform.position + cameraOffset;
     }
 
     public void GetHeal(int amount)

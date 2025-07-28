@@ -1,31 +1,36 @@
 using Firebase.Auth;
 using Firebase.Extensions;
+using Google;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class LoginPanel : MonoBehaviour
 {
+    [Header("Panels")]
     [SerializeField] GameObject signUpPanel;
     [SerializeField] GameObject lobbyPanel;
 	[SerializeField] GameObject emailPanel;
 	[SerializeField] GameObject nicknamePanel;
 	[SerializeField] GameObject LoginFailPanel;
-
+    [Header("Input Fields")]
     [SerializeField] TMP_InputField idInput;
     [SerializeField] TMP_InputField passInput;
-
+    [Header("Buttons")]
     [SerializeField] Button signUpButton;
     [SerializeField] Button loginButton;
 	[SerializeField] Button resetPassButton;
+    [SerializeField] Button googleLoginButton;
 
     private void Awake()
     {
         signUpButton.onClick.AddListener(SignUp);
         loginButton.onClick.AddListener(Login);
 		resetPassButton.onClick.AddListener(ResetPass);
+        googleLoginButton.onClick.AddListener(GoogleLogin);
     }
 
     private void SignUp()
@@ -104,4 +109,28 @@ public class LoginPanel : MonoBehaviour
 				Debug.Log("패스워드 재설정 이메일 전송 성공");
 			});
 	}
+
+    // Google 로그인 버튼 클릭 시 호출되는 함수
+    private void GoogleLogin()
+    {
+        //Firebase.Auth.Credential credential =
+        //    Firebase.Auth.GoogleAuthProvider.GetCredential(googleIdToken, googleAccessToken);
+
+        //auth.CurrentUser.LinkWithCredentialAsync(credential).ContinueWith(task => {
+        //    if (task.IsCanceled)
+        //    {
+        //        Debug.LogError("LinkWithCredentialAsync was canceled.");
+        //        return;
+        //    }
+        //    if (task.IsFaulted)
+        //    {
+        //        Debug.LogError("LinkWithCredentialAsync encountered an error: " + task.Exception);
+        //        return;
+        //    }
+
+        //    Firebase.Auth.AuthResult result = task.Result;
+        //    Debug.LogFormat("Credentials successfully linked to Firebase user: {0} ({1})",
+        //        result.User.DisplayName, result.User.UserId);
+        //});
+    }
 }

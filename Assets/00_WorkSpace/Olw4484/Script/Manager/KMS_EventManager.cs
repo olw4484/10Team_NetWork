@@ -36,4 +36,20 @@ public class EventManager : MonoBehaviour
     {
         OnMinionDead?.Invoke(victim, killer);
     }
+
+    // HQ가 파괴되었을 때 - 팀ID를 넘겨서 패배처리
+
+    public event Action<int> OnHQDestroyed;
+    public void HQDestroyed(int destroyedTeamId)
+    {
+        OnHQDestroyed?.Invoke(destroyedTeamId);
+    }
+
+    // 자원의 변화가 있을 때 
+
+    public event Action<int, int> OnResourceChanged;
+    public void ResourceChanged(int teamId, int currentGold)
+    {
+        OnResourceChanged?.Invoke(teamId, currentGold);
+    }
 }

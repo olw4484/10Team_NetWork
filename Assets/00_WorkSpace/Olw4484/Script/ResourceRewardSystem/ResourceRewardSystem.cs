@@ -20,13 +20,10 @@ public class KMS_MinionRewardSystem : MonoBehaviour
     {
         var data = minion.data;
 
-        if (KMS_ResourceSystem.Instance != null)
+        var commendPlayer = killer.GetComponent<KMS_CommandPlayer>();
+        if (commendPlayer != null && data.goldReward > 0)
         {
-            if (data.goldReward > 0)
-                KMS_ResourceSystem.Instance.AddResource(KMS_ResourceSystem.ResourceType.Gold, data.goldReward);
-
-            if (data.gearReward > 0)
-                KMS_ResourceSystem.Instance.AddResource(KMS_ResourceSystem.ResourceType.Gear, data.gearReward);
+            commendPlayer.AddGold(data.goldReward);
         }
 
         // 경험치 지급 //경험치 시스템 필요시 주석 해제후 사용 가능

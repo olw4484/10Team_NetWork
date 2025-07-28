@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MinionView : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class MinionView : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private ParticleSystem hitEffect;
     [SerializeField] private AudioSource audioSource;
+    [SerializeField] private Outline highlightEffect;
 
     [Header("Audio Clips")]
     [SerializeField] private AudioClip attackSound;
@@ -19,10 +21,13 @@ public class MinionView : MonoBehaviour
 
     private void Awake()
     {
-        animator = avatar.GetComponent<Animator>();
+        if (avatar == null)
+            Debug.LogError("[MinionView] Avatar가 설정되지 않았습니다.");
+
+        animator = avatar != null ? avatar.GetComponent<Animator>() : GetComponentInChildren<Animator>();
     }
 
-    public void PlayMinionAttackAnimation( )
+    public void PlayMinionAttackAnimation()
     {
         if (animator != null)
         {
@@ -36,5 +41,11 @@ public class MinionView : MonoBehaviour
     {
         if (animator != null)
             animator.SetTrigger("Dead");
+    }
+
+    public void SetHighlight(bool active)
+    {
+        if (highlightEffect != null)
+            highlightEffect.enabled = active;
     }
 }
