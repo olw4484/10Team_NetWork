@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-// 중복 스크립트 방지
+
 [DisallowMultipleComponent]
 public class YSJ_SpawnObjectLifeCycle : MonoBehaviour
 {
