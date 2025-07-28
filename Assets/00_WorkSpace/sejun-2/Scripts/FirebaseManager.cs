@@ -43,6 +43,8 @@ public class FirebaseManager : MonoBehaviour
                 app = FirebaseApp.DefaultInstance;
                 auth = FirebaseAuth.DefaultInstance;
                 database = FirebaseDatabase.DefaultInstance;    // Firebase Database 인스턴스 초기화
+
+                database.GoOnline(); // 데이터베이스를 온라인 상태로 설정
             }
             else
             {
