@@ -3,63 +3,109 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Realtime;
 using Photon.Pun;
+using System;
+using TMPro;
 
 public class JHT_TeamManager : MonoBehaviour
 {
     [SerializeField] private Transform redTeam;
     [SerializeField] private Transform blueTeam;
-    public void TeamInit()
+
+    public int redCount;
+    public int blueCount;
+
+
+    public Action OnRedSelect;
+    public Action OnBlueSelect;
+    public Action OnCantChangeRed;
+    public Action OnCantChangeBlue;
+    private void Awake()
     {
-        SetTeam();
+        OnRedSelect += RedTeamSelect;
+        OnBlueSelect += BlueTeamSelect;
+        OnCantChangeRed += CantRedChange;
+        OnCantChangeBlue += CantBlueChange;
     }
 
-    public Transform SetTeam()
+    private void OnDestroy()
     {
-        //모두가 공유해야하기 때문에 두개의 카운트 customproperty로 설정
-        int red = PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("RedCount") 
-            ? (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] : 0;
+        OnRedSelect -= RedTeamSelect;
+        OnBlueSelect -= BlueTeamSelect;
+        OnCantChangeRed -= CantRedChange;
+        OnCantChangeBlue -= CantBlueChange;
+    }
 
-        int blue = PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("BlueCount") 
-            ? (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] : 0;
-
-        ExitGames.Client.Photon.Hashtable roomProps = new();
-
-        if (blue < red)
+    //blueCount 값만 올리기
+    public void BlueTeamSelect()
+    {
+        if (blueCount >= 2)
         {
-            // Blue팀으로 배정
-            SetTeamCustomProperty(TeamSetting.Blue);
-            blue++;
-            roomProps["BlueCount"] = blue;
-            PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
-            return blueTeam;
+            OnCantChangeBlue?.Invoke();
+            return;
+        }
+
+        blueCount++;
+
+        ExitGames.Client.Photon.Hashtable teamCount = new();
+        teamCount["BlueCount"] = blueCount;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(teamCount);
+    }
+
+    //redCount 값만 올리기
+    public void RedTeamSelect()
+    {
+        if (redCount >= 2)
+        {
+            OnCantChangeRed?.Invoke();
+            return;
+        }
+
+        redCount++;
+
+        ExitGames.Client.Photon.Hashtable teamCount = new();
+        teamCount["RedCount"] = redCount;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(teamCount);
+    }
+
+    public void CantRedChange()
+    {
+        JHT_UIManager.UIInstance.ShowPopUp<JHT_RedFullPanel>("RedFullText");
+    }
+
+    public void CantBlueChange()
+    {
+        JHT_UIManager.UIInstance.ShowPopUp<JHT_BlueFullPanel>("BlueFullText");
+    }
+
+    //red,blue Count 받아온 값으로 team정하기
+    public void SetPlayerTeam(Player player)
+    {
+        TeamSetting setting;
+
+        int red = (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"];
+        int blue = (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"];
+
+        if (red > blue)
+        {
+            OnBlueSelect?.Invoke();
+            setting = TeamSetting.Blue;
         }
         else
         {
-            // Red팀으로 배정
-            SetTeamCustomProperty(TeamSetting.Red);
-            red++;
-            roomProps["RedCount"] = red;
-            PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
-            return redTeam;
+            OnRedSelect?.Invoke();
+            setting = TeamSetting.Red;
         }
+
+        ExitGames.Client.Photon.Hashtable props = new();
+        props["Team"] = setting;
+        player.SetCustomProperties(props);
     }
 
-
-    private void SetTeamCustomProperty(TeamSetting teamSettng)
-    {
-        ExitGames.Client.Photon.Hashtable team = new();
-        team["Team"] = teamSettng;
-        PhotonNetwork.LocalPlayer.SetCustomProperties(team);
-    }
-
-    public void SetPlayerView()
-    {
-
-    }
 }
 
 public enum TeamSetting
 {
+    None,
     Red,
     Blue
 }

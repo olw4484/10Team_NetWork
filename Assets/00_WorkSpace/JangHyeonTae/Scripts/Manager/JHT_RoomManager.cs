@@ -19,12 +19,7 @@ public class JHT_RoomManager : MonoBehaviour
     [SerializeField] private Button redButton;
     [SerializeField] private Button blueButton;
 
-    private bool isRed;
     public Dictionary<int, JHT_PlayerPanelItem> playerPanelDic = new();
-
-    private int blueCount;
-    private int redCount;
-
 
     private void Start()
     {
@@ -32,7 +27,7 @@ public class JHT_RoomManager : MonoBehaviour
         leaveRoomButton.onClick.AddListener(LeaveRoom);
     }
 
-    public void PlayerPanelSpawn(Player player,Transform parent)
+    public void PlayerPanelSpawn(Player player)
     {
         if (playerPanelDic.TryGetValue(player.ActorNumber, out JHT_PlayerPanelItem panel))
         {
@@ -42,7 +37,7 @@ public class JHT_RoomManager : MonoBehaviour
         }
 
         GameObject obj = Instantiate(playerPanelPrefab);
-        obj.transform.SetParent(parent);
+        obj.transform.SetParent(SetPanelParent(player));
         JHT_PlayerPanelItem playerPanel = obj.GetComponent<JHT_PlayerPanelItem>();
         playerPanel.Init(player);
         playerPanelDic.Add(player.ActorNumber, playerPanel);
@@ -59,38 +54,12 @@ public class JHT_RoomManager : MonoBehaviour
 
         foreach (Player player in PhotonNetwork.PlayerList)
         {
-            if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("Team", out object team))
+            if (player.CustomProperties.TryGetValue("Team", out object team))
             {
-                if (team == null)
-                {
-                    Debug.Log($"PlayerPanelSpawn : team null");
-                }
-
-                TeamSetting setting = (TeamSetting)team;
-                Transform _parent = setting == TeamSetting.Red ? playerRedPanelParent : playerBluePanelParent;
-
-                if (_parent == null)
-                {
-                    Debug.Log($"PlayerPanelSpawn : {_parent} null");
-                }
-
-                // 오브젝트 생성 및 지정한 부모에 넣기
                 GameObject obj = Instantiate(playerPanelPrefab);
-                obj.transform.SetParent(_parent);
-                if (obj == null)
-                {
-                    Debug.Log($"PlayerPanelSpawn : {obj} null");
-                }
-                
+                obj.transform.SetParent(SetPanelParent(player));
                 JHT_PlayerPanelItem playerPanel = obj.GetComponent<JHT_PlayerPanelItem>();
                 playerPanel.Init(player);
-
-                if (playerPanel == null)
-                {
-                    Debug.Log($"PlayerPanelSpawn : {playerPanel} null");
-                }
-                
-                //딕셔너리에 넣기
                 playerPanelDic.Add(player.ActorNumber, playerPanel);
             }
             else
@@ -101,26 +70,25 @@ public class JHT_RoomManager : MonoBehaviour
         }
     }
 
-
-    #region 팀 : 팀나누기
-    //public void SeparateTeamCustomProperty(Player player)
-    //{
-    //    blueCount = 0;
-    //    redCount = 0;
-    //    string team = blueCount >= redCount ? "Red" : "Blue";
-    //
-    //    ExitGames.Client.Photon.Hashtable teamProp = new();
-    //    teamProp["Team"] = team;
-    //    PhotonNetwork.LocalPlayer.SetCustomProperties(teamProp);
-    //
-    //    if (team == "Blue")
-    //        blueCount++;
-    //    else 
-    //        redCount++;
-    //}
-
-    #endregion
-
+    public Transform SetPanelParent(Player player)
+    {
+        if (player.CustomProperties.TryGetValue("Team", out object value))
+        {
+            if ((int)value == (int)TeamSetting.Blue)
+            {
+                return playerBluePanelParent;
+            }
+            else
+            {
+                return playerRedPanelParent;
+            }
+        }
+        else
+        {
+            Debug.Log($"TeamManager SetParentFromCustomProperty 팀 정보 없음 {PhotonNetwork.LocalPlayer.ActorNumber}");
+            return null;
+        }
+    }
 
 
     //플레이어가 방을 떠났을 때
@@ -156,7 +124,7 @@ public class JHT_RoomManager : MonoBehaviour
         {
             if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out object teamObj) && teamObj != null)
             {
-                Debug.Log($"{PhotonNetwork.LocalPlayer.NickName} : {teamObj.ToString()}");
+                Debug.Log($"{PhotonNetwork.LocalPlayer.NickName} 번 팀원 , 팀 : {teamObj.ToString()}");
             }
             else
             {
