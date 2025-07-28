@@ -1,11 +1,12 @@
-using Firebase.Database;
 using Firebase.Auth;
+using Firebase.Database;
+using Firebase.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Firebase.Extensions;
 
 public class DatabaseTester : MonoBehaviour
 {
@@ -27,9 +28,10 @@ public class DatabaseTester : MonoBehaviour
     private void Awake()    // 스크립트가 활성화될 때 호출되는 함수
     {
         GetUserinfo(); // Firebase에서 사용자 정보를 가져오는 함수를 호출합니다.
-        testButton.onClick.AddListener(Test); // 버튼 클릭 시 Test() 함수를 호출하도록 리스너를 추가합니다.
-        upButton.onClick.AddListener(LevelUp); // Up 버튼 클릭 시 Up() 함수를 호출하도록 리스너를 추가합니다.
-        downButton.onClick.AddListener(LevelDown); // Down 버튼 클릭 시 Down() 함수를 호출하도록 리스너를 추가합니다.
+
+        testButton.onClick.AddListener(CheckLeaderBoard); 
+        upButton.onClick.AddListener(LevelUp); 
+        downButton.onClick.AddListener(LevelDown); 
     }
 
     private void OnEnable() // Firebase 인증 상태가 변경될 때마다 호출되는 이벤트를 구독합니다.
@@ -52,6 +54,7 @@ public class DatabaseTester : MonoBehaviour
         winsCount.ValueChanged -= winsCount_ValueChanged; // 승리 횟수 데이터베이스의 값이 변경될 때마다 호출되는 이벤트를 구독 해제합니다.
     }
 
+    // 승리 횟수 데이터베이스의 값이 변경될 때마다 호출되는 이벤트 핸들러입니다.
     private void winsCount_ValueChanged(object sender, ValueChangedEventArgs args)
     {
         DataSnapshot snapshot = args.Snapshot;
@@ -59,6 +62,7 @@ public class DatabaseTester : MonoBehaviour
         Debug.Log($"winsCount가 {data.gameCount} 로 변경됨"); // 게임 횟수가 변경될 때마다 로그를 출력합니다.
     }
 
+    // 게임 횟수 데이터베이스의 값이 변경될 때마다 호출되는 이벤트 핸들러입니다.
     private void gameCount_ValueChanged(object sender, ValueChangedEventArgs args)
     {
         DataSnapshot snapshot = args.Snapshot;
@@ -66,7 +70,7 @@ public class DatabaseTester : MonoBehaviour
         Debug.Log($"gameCount가 {data.gameCount} 로 변경됨"); // 게임 횟수가 변경될 때마다 로그를 출력합니다.
     }
 
-    // 버튼 클릭 시 호출되는 함수
+    // 데이터베이스의 레벨 값이 변경될 때마다 호출되는 이벤트 핸들러입니다.
     private void userLevel_ValueChanged(object sender, ValueChangedEventArgs args)
     {
         DataSnapshot snapshot = args.Snapshot;
@@ -74,7 +78,7 @@ public class DatabaseTester : MonoBehaviour
         Debug.Log($"level이 {data.level} 로 변경됨"); // 레벨이 변경될 때마다 로그를 출력합니다.
     }
 
-    private void LevelUp()
+    private void LevelUp()  // 레벨업 버튼 클릭 시 호출되는 함수
     {
         userlevel.SetValueAsync(data.level + 1); // 현재 레벨에 1을 더하여 데이터베이스에 저장합니다.
         gameCount.SetValueAsync(data.gameCount + 1); // 게임 횟수를 1 증가시킵니다.
@@ -82,7 +86,7 @@ public class DatabaseTester : MonoBehaviour
         Debug.Log("서버에 레벨업을 신청함");
     }
 
-    private void LevelDown()
+    private void LevelDown()    // 레벨다운 버튼 클릭 시 호출되는 함수
     {
         userlevel.SetValueAsync(data.level - 1); // 현재 레벨에 1을 마이너스 하여 데이터베이스에 저장합니다.
         gameCount.SetValueAsync(data.gameCount - 1); // 게임 횟수를 1 감소시킵니다.
@@ -257,14 +261,34 @@ public class DatabaseTester : MonoBehaviour
     }
 
 
-    private void Test() // 버튼 클릭 시 호출되는 함수
+    private void CheckLeaderBoard() // 버튼 클릭 시 호출되는 함수
     {
-        Debug.Log("버튼 클릭됨");
-        //SetData(); // 딕셔너리 사용하여 Firebase에 데이터를 저장하는 함수 호출
-        //SetJsonData(); // PlayerData 객체를 JSON 문자열로 변환하여 Firebase에 저장하는 함수 호출
-        //DataUpdate(); // UpdateChildrenAsync로 특정 키에 대한 값만을 업데이트하는 함수 호출
-        //Delete(); // "clear" 키를 삭제하는 함수 호출
-        UpdateTransaction(); // RunTransaction으로 데이터베이스의 값을 업데이트하는 함수 호출
+        DatabaseReference root = FirebaseManager.Database.RootReference; // Firebase 데이터베이스의 루트 참조를 가져옵니다.
+        DatabaseReference wordRef = root.Child("UserData"); // "Word"라는 하위 참조를 만듭니다.
+
+        wordRef.OrderByChild("winsCount").GetValueAsync().ContinueWithOnMainThread(task => // GetValueAsync 메서드를 사용하여 데이터를 가져옵니다.
+        {
+            if (task.IsCanceled) // 작업이 취소된 경우
+            {
+                Debug.LogError("데이터 가져오기 작업이 취소되었습니다.");
+                return;
+            }
+            if (task.IsFaulted) // 작업이 실패한 경우
+            {
+                Debug.LogError("데이터를 가져오는 데 실패했습니다: " + task.Exception);
+                return;
+            }
+            Debug.Log("데이터 베이스 읽기 성공");
+            DataSnapshot snapshot = task.Result; // 결과를 DataSnapshot으로 가져옵니다.
+
+            // DataSnapshot의 자식들을 역순으로 가져옵니다.
+            var children = snapshot.Children.Reverse().ToList(); // .ToList() 로 변환해야 for문에서 사용할 수 있습니다.
+            for (int i = 0; i < children.Count; i++)
+            {
+                var child = children[i];
+                Debug.Log($"{i+1}등 {child.Child("name").Value} :  {child.Child("winsCount").Value} 승");
+            }
+        });
     }
 
 
