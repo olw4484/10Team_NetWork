@@ -78,22 +78,27 @@ public class DatabaseTester : MonoBehaviour
         Debug.Log($"level이 {data.level} 로 변경됨"); // 레벨이 변경될 때마다 로그를 출력합니다.
     }
 
-    private void LevelUp()  // 레벨업 버튼 클릭 시 호출되는 함수
+    private void LevelUp()  // 서버에 레벨업을 신청함
     {
         userlevel.SetValueAsync(data.level + 1); // 현재 레벨에 1을 더하여 데이터베이스에 저장합니다.
-        gameCount.SetValueAsync(data.gameCount + 1); // 게임 횟수를 1 증가시킵니다.
-        winsCount.SetValueAsync(data.winsCount + 1); // 승리 횟수를 1 증가시킵니다.
-        Debug.Log("서버에 레벨업을 신청함");
     }
 
-    private void LevelDown()    // 레벨다운 버튼 클릭 시 호출되는 함수
+    private void LevelDown()    // 서버에 레벨다운을 신청함
     {
         userlevel.SetValueAsync(data.level - 1); // 현재 레벨에 1을 마이너스 하여 데이터베이스에 저장합니다.
-        gameCount.SetValueAsync(data.gameCount - 1); // 게임 횟수를 1 감소시킵니다.
-        winsCount.SetValueAsync(data.winsCount - 1); // 승리 횟수를 1 감소시킵니다.
-        Debug.Log("서버에 레벨다운을 신청함");
     }
 
+    private void GameCountUp()
+    {
+        gameCount.SetValueAsync(data.gameCount + 1); // 게임 횟수를 1 증가시킵니다.
+        //gameCount.SetValueAsync(data.gameCount - 1); // 게임 횟수를 1 감소시킵니다.
+    }
+
+    private void WinsCountUp()
+    {
+        winsCount.SetValueAsync(data.winsCount + 1); // 승리 횟수를 1 증가시킵니다.
+        //winsCount.SetValueAsync(data.winsCount - 1); // 승리 횟수를 1 감소시킵니다.
+    }
 
 
     //private void SetData() // dictionary 사용하여 Firebase에 데이터를 저장하는 함수
@@ -261,12 +266,15 @@ public class DatabaseTester : MonoBehaviour
     }
 
 
-    private void CheckLeaderBoard() // 버튼 클릭 시 호출되는 함수
+    private void CheckLeaderBoard()     // Firebase에서 OrderByChild, GetValueAsync를 사용하여 랭킹 데이터를 가져오는 함수
     {
         DatabaseReference root = FirebaseManager.Database.RootReference; // Firebase 데이터베이스의 루트 참조를 가져옵니다.
-        DatabaseReference wordRef = root.Child("UserData"); // "Word"라는 하위 참조를 만듭니다.
+        DatabaseReference UserRef = root.Child("UserData"); // "UserData"라는 하위 참조를 wordRef에 할당합니다.
 
-        wordRef.OrderByChild("winsCount").GetValueAsync().ContinueWithOnMainThread(task => // GetValueAsync 메서드를 사용하여 데이터를 가져옵니다.
+        // wordRef에 OrderByChild("winsCount")를 사용하여 "winsCount" 키를 기준으로 정렬된 데이터를 가져옵니다.
+        // LimitToFirst(10)을 추가하여 상위 10개의 데이터를 가져올 수 있다.
+        // .StartAt("B").EndAt("E") B부터 E까지의 범위로 가져올 수 있다.
+        UserRef.OrderByChild("winsCount").GetValueAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsCanceled) // 작업이 취소된 경우
             {
@@ -303,7 +311,6 @@ public class PlayerData
 {
     public string name;
     public int level;
-    //public int strength;
     public int speed;
     public int gameCount;
     public int winsCount;
