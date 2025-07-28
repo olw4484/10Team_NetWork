@@ -15,68 +15,77 @@ public class CameraController : MonoBehaviour
     private float zoomSpd;
     private float mouseScrollInput;
 
-    private void Awake() => Init();
-
-    private void Init()
+    private void Start()
     {
-        // 모든 플레이어를 검색한 후 Photon을 이용해서 자신의 Player만 참조해 옴
-        players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject obj in players)
-        {
-            PhotonView pv = obj.GetComponent<PhotonView>();
-            if (pv != null && pv.IsMine)
-            {
-                player = obj;
-                break;
-            }
-        }
+        //// 모든 플레이어를 검색한 후 Photon을 이용해서 자신의 Player만 참조해 옴
+        //players = GameObject.FindGameObjectsWithTag("Player");
+        //foreach (GameObject obj in players)
+        //{
+        //    PhotonView pv = obj.GetComponent<PhotonView>();
+        //    if (pv != null && pv.IsMine)
+        //    {
+        //        player = obj;
+        //        break;
+        //    }
+        //}
+        //isFollowing = true;
+        //camSpd = 20f;
+        //screenBoarderThickness = 10f;
+        //zoomSpd = 10f;
+        //// 카메라의 시야각 가져오기
+        //camFov = gameObject.GetComponent<Camera>().fieldOfView;
+        //transform.position = new Vector3(player.transform.position.x + 5f, 20, player.transform.position.z - 5f);
+    }
+
+    public void InitCamera(GameObject targetPlayer)
+    {
+        player = targetPlayer;
         isFollowing = true;
         camSpd = 20f;
         screenBoarderThickness = 10f;
         zoomSpd = 10f;
-    }
+        camFov = GetComponent<Camera>().fieldOfView;
 
-    private void Start()
-    {
-        // 카메라의 시야각 가져오기
-        camFov = gameObject.GetComponent<Camera>().fieldOfView;
-        transform.position = new Vector3(player.transform.position.x + 5f, 20, player.transform.position.z - 5f);
+        SetCameraOnPlayer();  // 첫 위치 설정
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Y))
+        if (player != null)
         {
+            if (Input.GetKeyDown(KeyCode.Y))
+            {
+                if (isFollowing)
+                {
+                    isFollowing = false;
+                }
+                else
+                {
+                    isFollowing = true;
+                }
+            }
+
+            // Y토글이 켜졌다면
             if (isFollowing)
             {
-                isFollowing = false;
+                SetCameraOnPlayer();
             }
-            else
+
+            // Y토글이 꺼져있고 스페이스바를 누르고 있는 상태라면
+            if (!isFollowing && Input.GetKey(KeyCode.Space))
             {
-                isFollowing = true;
+                SetCameraOnPlayer();
             }
-        }
 
-        // Y토글이 켜졌다면
-        if (isFollowing)
-        {
-            SetCameraOnPlayer();
-        }
+            // Y토글이 꺼져있고 스페이스바를 누르고 있지 않은 상태라면
+            if (!isFollowing && !Input.GetKey(KeyCode.Space))
+            {
+                MoveCamera();
+            }
 
-        // Y토글이 꺼져있고 스페이스바를 누르고 있는 상태라면
-        if (!isFollowing && Input.GetKey(KeyCode.Space))
-        {
-            SetCameraOnPlayer();
+            // 카메라 줌인/줌아웃
+            ZoomCamera();
         }
-        
-        // Y토글이 꺼져있고 스페이스바를 누르고 있지 않은 상태라면
-        if (!isFollowing && !Input.GetKey(KeyCode.Space))
-        {
-            MoveCamera();
-        }
-
-        // 카메라 줌인/줌아웃
-        ZoomCamera();
     }
 
     /// <summary>
