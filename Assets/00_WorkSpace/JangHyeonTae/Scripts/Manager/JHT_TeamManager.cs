@@ -19,6 +19,8 @@ public class JHT_TeamManager : MonoBehaviour
     public Action OnBlueSelect;
     public Action OnCantChangeRed;
     public Action OnCantChangeBlue;
+    public Action OnChangeTeam;
+
     private void Awake()
     {
         OnRedSelect += RedTeamSelect;
@@ -101,6 +103,10 @@ public class JHT_TeamManager : MonoBehaviour
         player.SetCustomProperties(props);
     }
 
+    public void ChangeTeam()
+    {
+
+    }
 }
 
 public enum TeamSetting

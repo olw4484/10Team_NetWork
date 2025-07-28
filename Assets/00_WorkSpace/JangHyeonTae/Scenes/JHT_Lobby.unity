@@ -741,6 +741,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomManager: {fileID: 1507226707}
+  teamManager: {fileID: 471917353}
 --- !u!1 &274577268
 GameObject:
   m_ObjectHideFlags: 0
@@ -1264,6 +1265,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   redTeam: {fileID: 241997334}
   blueTeam: {fileID: 363056907}
+  redCount: 0
+  blueCount: 0
 --- !u!4 &471917354
 Transform:
   m_ObjectHideFlags: 0
