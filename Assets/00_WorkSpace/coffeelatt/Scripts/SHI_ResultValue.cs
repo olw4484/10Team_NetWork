@@ -66,13 +66,14 @@ public class SHI_ResultValue : MonoBehaviour
         //크리티컬 확률이 필요함. 하지만 기본 크리티컬을 없게 만든다면 이또한 그대로 작동함.
                                                                  // 랜덤수가 크리티컬 찬스보다 낮을때 크리티컬이 발동
                                                                  // 크리티컬데미지는 기본 2배로고정 크리티컬 찬스를 먼저계산후 해당되지 않을때 일반공격력으로 계산됨.
-        ApDamage = (skillSO.damage *addstat.TskillPower); // 스킬 공격력 증가
+        //********스킬데이터 미연결중*********
+        //ApDamage = (skillSO.damage *addstat.TskillPower); // 스킬 공격력 증가
         //스킬 공격력 데이터 계산방식이 안정해 졌음으로 임시임.
-        SkillTimeDown = (skillSO.cooldown *addstat.TcoolDown);//약간 애매..?
+        //SkillTimeDown = (skillSO.cooldown *addstat.TcoolDown);//약간 애매..?
         LifeSteal = (/*stat.LifeSteal*/ +addstat.TlifeSteal); //공격할때 흡혈하는 함수로직 추가 만들기
         //기본 흡혈량을 줘도 됨. 밸붕금지 기초엔 없다가 렙업했을때 줘도되고 스탤치 없어도 작동함.
                                                               //공격력* 이 값이 곱해짐. 의 값은 현재체력이며 현재체력은 maxhp를 넘을수 없다 계산.
-        MinionHitup = (addstat.TminionHitup2);
+        MinionHitup = (addstat.TminionHitup2+addstat.TminionHitup);
         NexusHitUp = (addstat.TnexusHitUp); //넥서스를 공격할때 공격력 * 이 값이 곱해짐.
         DefByMinion = (1-addstat.TminionDamageDown); // 계산식에서 미니언이 공격하는 계수 맨 뒤에 * 이 값. 
         MinionAttackRegeneration = (/*stat.Regeneration*/ addstat.TminionAttackRegeneration); // 체력마력 재생 속도 증가

@@ -34,7 +34,7 @@ public class SHI_Inventory : MonoBehaviour
 
     public void RemoveItem(SHI_ItemBase item)
     {
-        if (items.Contains(item)&&item.type==0)
+        if (items.Contains(item)&&item.type<=0)
         {
             items.Remove(item);
             itemremove.Invoke();

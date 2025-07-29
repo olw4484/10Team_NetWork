@@ -1,5 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using static SHI_ItemBase;
 
 
 
@@ -23,7 +26,7 @@ public class SHI_ItemManager : MonoBehaviour
     public float Tallup = 1; // 아이템이 증가시키는 전체 스탯 양
     public float TminionDamageDown = 1; // 아이템이 감소 시키는 미니언 공격력 양
     public float TminionAttackRegeneration = 0;// 아이템이 증가시키는 미니언 공격시 재생 속도 증가
-    [SerializeField] float BuffItemCoolDown = 0; // 버프 아이템의 쿨타임 감소 양
+    private HashSet<ItemName> activeBuffs = new HashSet<ItemName>();
 
     public Events.VoidEvent refrash = new Events.VoidEvent();
     private void Awake()
@@ -36,19 +39,16 @@ public class SHI_ItemManager : MonoBehaviour
         //{
         //    Destroy(gameObject);
         //}
-
+        
     }
     private void Update()
     {
-        if (BuffItemCoolDown > 0)
-        {
-            BuffItemCoolDown -= Time.deltaTime; // 버프 아이템의 쿨타임 감소
-        }
+
     }
-    public void UseItem(SHI_ItemBase item)
+    public bool UseItem(SHI_ItemBase item)
     {
 
-        if (item.type == 0) // 소비 아이템
+        if (item.type <= 0) // 소비 아이템
         {
             // if (현재체력 <= 0) // 플레이어의 hp가 0일때는 사용불가 혹은 플레이어 다이드 불값 받아옴
             // {
@@ -60,31 +60,42 @@ public class SHI_ItemManager : MonoBehaviour
             MpUp(item.Healmp); // 플레이어의 MP 회복
             ExpUp(item.GainExp); // 플레이어의 경험치 증가
             refrash.Invoke(); //유니티이벤트
-            if (BuffItemCoolDown > 0)
+            if (item.Duration <= 0)
             {
-                return; // 버프 아이템의 쿨타임이 남아있으면 아이템 사용 중지
+                return true; // 버프 아이템이 아닐경우 돌아감.
             }
-            if (BuffItemCoolDown <= 0) // 버프 아이템의 쿨타임이 있다면
+            if (activeBuffs.Contains(item.itemNameEnum))
             {
-
-                if (item.lifeSteal > 0 || item.nexusHitUp > 1 || item.minionHitup > 1)
-                {
-                    Buff(item); // 아이템의 버프 효과 적용
-
-                }
+                Debug.Log("이미 적용 중인 버프입니다.");
+                return false; // 이미 적용 중인 버프 아이템일 경우, 다시 적용하지 않음
+                
             }
-            Destroy(item.gameObject); // 아이템 사용 후 제거
+
+            if (item.lifeSteal > 0 || item.allup > 1 || item.minionHitup > 1)
+            {
+                Buff(item); // 아이템의 버프 효과 적용
+
+            }
+
+            return true; // 아이템 사용 성공
         }
 
         else if (item.type == 1) // 장비 아이템
         {
             Equip(item); // 플레이어의 스탯을 아이템의 스탯으로 증가
             refrash.Invoke(); //유니티이벤트
+            return true;
         }
-        else if (item.type == 2) // 장착된 아이템
+        else if (item.type == 2)  // 장착된 아이템
         {
             UnEquip(item); // 플레이어의 스탯을 아이템의 스탯으로 감소
             refrash.Invoke(); //유니티이벤트
+            return true;
+        }
+        else
+        {
+            Debug.LogError("알 수 없는 아이템 타입입니다.");
+            return false; // 알 수 없는 아이템 타입일 경우, 실패 처리
         }
 
     }
@@ -112,9 +123,10 @@ public class SHI_ItemManager : MonoBehaviour
     }
     void Buff(SHI_ItemBase item)
     {
+        activeBuffs.Add(item.itemNameEnum);
         //현재 플레이어의 atk
         TlifeSteal += item.lifeSteal; // 생명력 흡수 증가
-        TminionHitup2 = (item.minionHitup2 + TminionHitup); // 미니언 공격력 증가
+        TminionHitup2 += item.minionHitup2 ; // 미니언 공격력 증가
         TnexusHitUp *= item.nexusHitUp; // 넥서스 공격력 증가
         Tallup *= item.allup; // 전체 스탯 증가
         refrash.Invoke(); //유니티이벤트
@@ -154,14 +166,31 @@ public class SHI_ItemManager : MonoBehaviour
     }
     IEnumerator BuffDuration(SHI_ItemBase item)
     {
-        BuffItemCoolDown = item.Duration; // 버프 아이템의 쿨타임 설정
+        
         yield return new WaitForSeconds(item.Duration); // 버프 지속 시간 동안 대기
 
-        TlifeSteal = 0; // 생명력 흡수 감소
-        TminionHitup2 = TminionHitup; // 미니언 공격력 감소
-        TnexusHitUp = 1; // 넥서스 공격력 감소
-        Tallup = 1; // 전체 스탯 감소
+        switch(item.itemNameEnum)
+        {
+            case ItemName.BuffLifeSteal:
+                TlifeSteal -= item.lifeSteal; // 생명력 흡수 감소
+                break;
+            
+            case ItemName.BuffSlayer:
+                TminionHitup2 -= item.minionHitup2; // 미니언 공격력 감소2
+                TnexusHitUp /= item.nexusHitUp; // 넥서스 공격력 감소
+                break;
+            case ItemName.BuffImmortal:
+                Tallup /= item.allup; // 전체 스탯 감소
+                break;
+        }
+        
+        RemoveBuff(item.itemNameEnum);
         refrash.Invoke(); //유니티이벤트
+    }
+    public void RemoveBuff(ItemName name)
+    {
+        activeBuffs.Remove(name);
+        Debug.Log($"{name} 버프 종료됨");
     }
 
 }

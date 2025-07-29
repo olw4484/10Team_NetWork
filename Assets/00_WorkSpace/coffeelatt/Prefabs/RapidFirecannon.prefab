@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Image: {fileID: 21300000, guid: 1b49616700607ef40a1a959c261ffb93, type: 3}
-  itemNameEnum: 2
+  itemNameEnum: 4
   Duration: 0
   type: 1
   Healhp: 0
