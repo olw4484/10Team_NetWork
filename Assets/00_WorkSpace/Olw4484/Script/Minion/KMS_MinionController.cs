@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Resources;
 using TMPro;
@@ -29,16 +30,20 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     private int currentWaypointIndex = 0;
     
     private Coroutine moveCoroutine;
-    public bool IsManual { get; private set; } = false;
+
 
     // 상태
     private bool isDead = false;
     private bool isAttackMove = false;
     private bool isMovingToPosition = false;
+    public bool IsManual { get; private set; } = false;
+
+    public PhotonView photonView;
 
 
     private void Awake()
     {
+        photonView = GetComponent<PhotonView>();
         view = GetComponentInChildren<MinionView>();
     }
 
@@ -256,7 +261,11 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
             EventManager.Instance.MinionKillConfirmed(killer, this);
         }
 
-        Destroy(gameObject, 1f);
+        // 삭제 시 동기화
+        if (PhotonNetwork.InRoom)
+            PhotonNetwork.Destroy(gameObject);
+        else
+            Destroy(gameObject, 1f);
     }
 
     public void SetManualControl(bool isManual)
@@ -281,5 +290,20 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     }
 
     public SelectableType GetSelectableType() => SelectableType.Unit;
+    #endregion
+    #region RPC_Minion
+    [PunRPC]
+    public void RpcMoveToPosition(Vector3 position)
+    {
+        MoveToPosition(position);
+    }
+
+    [PunRPC]
+    public void RpcSetTarget(int targetViewID)
+    {
+        var targetObj = PhotonView.Find(targetViewID);
+        if (targetObj != null)
+            SetTarget(targetObj.transform);
+    }
     #endregion
 }

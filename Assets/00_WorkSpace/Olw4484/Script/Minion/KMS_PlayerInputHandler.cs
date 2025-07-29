@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
@@ -18,6 +19,7 @@ public class KMS_PlayerInputHandler : MonoBehaviour
 
     private KMS_ISelectable currentSelected;
     private List<MinionController> selectedMinions = new();
+ 
 
     void Update()
     {
@@ -178,27 +180,37 @@ public class KMS_PlayerInputHandler : MonoBehaviour
         }
         else
         {
-           
+
         }
     }
 
     private void IssueCommand(RaycastHit hit)
     {
-        Debug.Log($"[Input] 명령 발송: {hit.collider.gameObject.name} 위치 {hit.point}");
-        Debug.Log($"[우클릭] Ray Hit: {hit.collider.name} / Tag: {hit.collider.tag} / Layer: {LayerMask.LayerToName(hit.collider.gameObject.layer)} / Pos: {hit.point}");
         foreach (var minion in selectedMinions)
         {
             if (minion != null)
             {
-                // 바닥(Ground)라면 좌표 이동
-                if (hit.collider.CompareTag("Ground"))
+                if (PhotonNetwork.InRoom)
                 {
-                    minion.MoveToPosition(hit.point);
+                    // 온라인 상태일 경우 포톤함수
+                    if (hit.collider.CompareTag("Ground"))
+                    {
+                        minion.photonView.RPC("RpcMoveToPosition", RpcTarget.All, hit.point);
+                    }
+                    else
+                    {
+                        PhotonView targetView = hit.transform.GetComponent<PhotonView>();
+                        if (targetView != null)
+                            minion.photonView.RPC("RpcSetTarget", RpcTarget.All, targetView.ViewID);
+                    }
                 }
-                // 적, HQ, 기타 오브젝트라면 Transform 타겟팅
                 else
                 {
-                    minion.SetTarget(hit.transform);
+                    // 오프라인 상태일 경우 로컬 함수
+                    if (hit.collider.CompareTag("Ground"))
+                        minion.MoveToPosition(hit.point);
+                    else
+                        minion.SetTarget(hit.transform);
                 }
             }
         }
