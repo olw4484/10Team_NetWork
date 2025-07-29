@@ -235,13 +235,14 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     // 공격 시도
     private void TryAttack()
     {
+        if (!photonView.IsMine && !PhotonNetwork.IsMasterClient)
+            return; // 권한 없는 클라 무시
+
         if (attackTimer >= attackCooldown)
         {
             attackTimer = 0f;
-            view?.PlayMinionAttackAnimation();
-            // 데미지 처리
-            var damageable = target?.GetComponent<IDamageable>();
-            damageable?.TakeDamage(attackPower, gameObject);
+            // 애니메이션 및 데미지 모두 RPC로 전파
+            photonView.RPC("RPC_TryAttack", RpcTarget.All, targetViewID);
         }
     }
 
@@ -325,6 +326,36 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         var targetObj = PhotonView.Find(targetViewID);
         if (targetObj != null)
             SetTarget(targetObj.transform);
+    }
+    #endregion
+    #region RPC_Attack
+    [PunRPC]
+    void RPC_TryAttack(int targetViewID)
+    {
+        view?.PlayMinionAttackAnimation();
+        var targetPV = PhotonView.Find(targetViewID);
+        if (targetPV != null)
+            targetPV.RPC("RPC_TakeDamage", RpcTarget.All, attackPower, photonView.ViewID);
+    }
+    [PunRPC]
+    void RPC_TakeDamage(int damage, int attackerViewID)
+    {
+        if (isDead) return;
+        currentHP -= damage;
+        if (currentHP <= 0)
+            photonView.RPC("RPC_Die", RpcTarget.All, attackerViewID);
+    }
+    [PunRPC]
+    void RPC_Die(int attackerViewID)
+    {
+        if (isDead) return;
+        isDead = true;
+        // 사망 연출, 보상, 삭제 등
+        // ...
+        if (PhotonNetwork.InRoom)
+            PhotonNetwork.Destroy(gameObject);
+        else
+            Destroy(gameObject, 1f);
     }
     #endregion
 }
