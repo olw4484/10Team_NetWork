@@ -78,12 +78,13 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
     private IEnumerator CallPlayer()
     {
         while (!PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("RedCount") ||
-           !PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("BlueCount"))
+           !PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("BlueCount")) 
         {
             yield return null;
         }
 
-        teamManager.SetPlayerTeam(PhotonNetwork.LocalPlayer);
+        if (PhotonNetwork.IsMasterClient)
+            teamManager.SetPlayerTeam(PhotonNetwork.LocalPlayer);
 
         while (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Team"))
         {
@@ -110,13 +111,12 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
             yield return null;
         }
 
-        teamManager.SetPlayerTeam(newPlayer);
+        if (PhotonNetwork.IsMasterClient)
+            teamManager.SetPlayerTeam(newPlayer);
 
         while (!newPlayer.CustomProperties.ContainsKey("Team"))
             yield return null;
 
-        roomManager.PlayerPanelSpawn(newPlayer);
-        Debug.Log($"{newPlayer.ActorNumber} : {newPlayer.CustomProperties["Team"]}");
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -175,16 +175,43 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
         curState["CurState"] = curPlayerState; // 위에까지 작성과정
         PhotonNetwork.LocalPlayer.SetCustomProperties(curState); //전역변수 저장 느낌
     }
-    
+
     // 프로퍼티 변화가 생겼을때 호출, 호출이 되어야할 로직이 있을떄 사용
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
-        
+        if (propertiesThatChanged.ContainsKey("RedCount"))
+            teamManager.redCount = (int)propertiesThatChanged["RedCount"];
+        if (propertiesThatChanged.ContainsKey("BlueCount"))
+            teamManager.blueCount = (int)propertiesThatChanged["BlueCount"];
     }
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
     {
-        
+        if (changedProps.ContainsKey("Team"))
+        {
+            Debug.Log($"{targetPlayer.ActorNumber}에 해당하는 플레이어 {targetPlayer.CustomProperties["Team"].ToString()}으로 팀이동");
+            roomManager.OtherPlayerChangeTeam(targetPlayer);
+        }
+
+        StartCoroutine(WaitForAddDic(targetPlayer, changedProps));
+    }
+
+    IEnumerator WaitForAddDic(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    {
+        while (!roomManager.playerPanelDic.ContainsKey(targetPlayer.ActorNumber))
+            yield return null;
+
+        if (changedProps.ContainsKey("IsReady"))
+        {
+            if (roomManager.playerPanelDic.TryGetValue(targetPlayer.ActorNumber, out var panel))
+            {
+                panel.CheckReady(targetPlayer);
+            }
+            else
+            {
+                Debug.LogWarning($"[IsReady] 패널 없음: {targetPlayer.ActorNumber}");
+            }
+        }
     }
     #endregion
 

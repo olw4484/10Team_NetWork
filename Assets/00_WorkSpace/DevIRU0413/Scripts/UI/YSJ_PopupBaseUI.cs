@@ -14,13 +14,13 @@ public class YSJ_PopupBaseUI : JHT_BaseUI
     protected virtual void Start()
     {
         CreateBackground();
-        YSJ_UIManager.Instance.ShowPopup(this.gameObject);
+        YSJ_UIManager.Instance.RegisterPopup(this.gameObject);
         StartCoroutine(ShowAnimation());
     }
 
     public virtual void Close()
     {
-        YSJ_UIManager.Instance.ClosePopup(this.gameObject);
+        YSJ_UIManager.Instance.UnregisterPopup(this.gameObject);
 
         if (_background != null)
             Destroy(_background);

@@ -8,7 +8,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
 {
     #region Fields
 
-    private readonly Dictionary<YSJ_UIEnums, Canvas> _canvasMap = new();
+    private readonly Dictionary<YSJ_UITypes, Canvas> _canvasMap = new();
     private YSJ_PopupController _popupController = new();
 
     #endregion
@@ -24,7 +24,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
 
     private void InitCanvasLayers()
     {
-        foreach (YSJ_UIEnums layer in System.Enum.GetValues(typeof(YSJ_UIEnums)))
+        foreach (YSJ_UITypes layer in System.Enum.GetValues(typeof(YSJ_UITypes)))
         {
             CreateCanvasIfNotExists(layer);
         }
@@ -34,7 +34,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
 
     #region Canvas Management
 
-    private void CreateCanvasIfNotExists(YSJ_UIEnums layer)
+    private void CreateCanvasIfNotExists(YSJ_UITypes layer)
     {
         if (_canvasMap.ContainsKey(layer)) return;
 
@@ -61,7 +61,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
         return canvas;
     }
 
-    public Canvas GetCanvas(YSJ_UIEnums layer)
+    public Canvas GetCanvas(YSJ_UITypes layer)
     {
         if (_canvasMap.TryGetValue(layer, out Canvas canvas))
             return canvas;
@@ -74,9 +74,9 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
 
     #region Clear Methods
 
-    public void TypeClear(YSJ_UIEnums layer)
+    public void TypeClear(YSJ_UITypes layer)
     {
-        if (layer == YSJ_UIEnums.Popup)
+        if (layer == YSJ_UITypes.Popup)
         {
             var count = _popupController.GetPopupCount();
 #if UNITY_EDITOR
@@ -122,7 +122,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
 
     #region Popup Methods
 
-    public void ShowPopup(GameObject popup)
+    public void RegisterPopup(GameObject popup)
     {
         _popupController.Register(popup);
     }
@@ -132,7 +132,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
         _popupController.CloseTop();
     }
 
-    public void ClosePopup(GameObject popup)
+    public void UnregisterPopup(GameObject popup)
     {
         _popupController.Unregister(popup);
     }
