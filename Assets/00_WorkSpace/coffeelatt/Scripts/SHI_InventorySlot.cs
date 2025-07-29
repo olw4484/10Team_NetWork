@@ -39,10 +39,14 @@ public class SHI_InventorySlot : MonoBehaviour
     {
         if (currentItem != null)
         {
-            inventoryManager.UseItem(currentItem);
+            
+            bool success = inventoryManager.UseItem(currentItem);
+            if (success)
+            { 
             SHI_Inventory.instance.RemoveItem(currentItem);
-            if (currentItem.type == 0)
+            if (currentItem.type <= 0)
             ClearSlot();
+            }
         }
     }
 }

@@ -167,7 +167,6 @@ MonoBehaviour:
   Tallup: 1
   TminionDamageDown: 1
   TminionAttackRegeneration: 0
-  BuffItemCoolDown: 0
   refrash:
     m_PersistentCalls:
       m_Calls:
@@ -339,7 +338,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1496524815}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1907254421}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1820,7 +1819,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 256115925}
   m_Father: {fileID: 1438374969}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1907254422
@@ -1921,6 +1921,5 @@ SceneRoots:
   - {fileID: 1438374969}
   - {fileID: 215427059}
   - {fileID: 1090969386}
-  - {fileID: 256115925}
   - {fileID: 1953645227}
   - {fileID: 670093675}
