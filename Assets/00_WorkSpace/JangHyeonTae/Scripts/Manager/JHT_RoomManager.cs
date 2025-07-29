@@ -20,13 +20,22 @@ public class JHT_RoomManager : MonoBehaviour
     [SerializeField] private Button blueButton;
 
     public Dictionary<int, JHT_PlayerPanelItem> playerPanelDic = new();
-
+    [SerializeField] private JHT_TeamManager teamManager;
     private void Start()
     {
         startButton.onClick.AddListener(GameStart);
         leaveRoomButton.onClick.AddListener(LeaveRoom);
+        teamManager.OnChangeTeam += ChangeTeam;
     }
 
+    private void OnDestroy()
+    {
+        startButton.onClick.RemoveListener(GameStart);
+        leaveRoomButton.onClick.RemoveListener(LeaveRoom);
+        teamManager.OnChangeTeam -= ChangeTeam;
+    }
+
+    #region 플레이어 패널 생성
     public void PlayerPanelSpawn(Player player)
     {
         if (playerPanelDic.TryGetValue(player.ActorNumber, out JHT_PlayerPanelItem panel))
@@ -66,9 +75,54 @@ public class JHT_RoomManager : MonoBehaviour
             {
                 Debug.Log($"플레이어 {player.NickName}에 대한 정보 없음");
             }
-            Debug.Log($"RoomCount : {PhotonNetwork.PlayerList.Length}");
         }
     }
+    #endregion
+
+
+    #region 팀바꾸기
+    public void ChangeTeam(Player player, int red, int blue)
+    {
+        PhotonNetwork.AutomaticallySyncScene = true;
+
+        if (playerPanelDic.TryGetValue(player.ActorNumber, out var panel))
+        {
+            Destroy(panel.gameObject);
+            playerPanelDic.Remove(player.ActorNumber);
+        }
+
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            startButton.interactable = false;
+        }
+
+        StartCoroutine(SetTeamCor(player,red,blue));
+
+    }
+
+    private IEnumerator SetTeamCor(Player player,int _red,int _blue)
+    {
+
+        while (!PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("RedCount") ||
+           !PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("BlueCount"))
+        {
+            yield return null;
+        }
+
+        teamManager.SetChangePlayerTeam(player, _red, _blue);
+
+        while (!player.CustomProperties.ContainsKey("Team"))
+            yield return null;
+
+        yield return new WaitForSeconds(0.2f);
+        GameObject obj = Instantiate(playerPanelPrefab);
+        obj.transform.SetParent(SetPanelParent(player));
+        JHT_PlayerPanelItem playerPanel = obj.GetComponent<JHT_PlayerPanelItem>();
+        playerPanel.Init(player);
+        playerPanelDic.Add(player.ActorNumber, playerPanel);
+    }
+    #endregion
+
 
     public Transform SetPanelParent(Player player)
     {
