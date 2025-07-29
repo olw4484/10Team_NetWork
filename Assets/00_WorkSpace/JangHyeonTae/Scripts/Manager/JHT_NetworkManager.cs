@@ -17,27 +17,7 @@ public enum CurrentState
 
 public class JHT_NetworkManager : MonoBehaviourPunCallbacks
 {
-    #region singleton
-    //private static JHT_NetworkManager networkInstance;
-    //public static JHT_NetworkManager NetworkInstance
-    //{
-    //    get { return networkInstance;}
-    //}
-    //
-    //private void Awake()
-    //{
-    //    if (networkInstance == null)
-    //    {
-    //        networkInstance = this;
-    //        DontDestroyOnLoad(gameObject);
-    //    }
-    //    else
-    //    {
-    //        Destroy(gameObject);
-    //    }
-    //}
-    #endregion
-
+    
     [SerializeField] private GameObject loadingPanel;
     [SerializeField] private GameObject lobbyPanel;
     [SerializeField] private GameObject roomPanel;
@@ -56,7 +36,8 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.ConnectUsingSettings();
     }
 
-    #region ConnectNetwork & Lobby
+
+    #region Photon Callbacks
     public override void OnConnectedToMaster()
     {
         if (loadingPanel.activeSelf)
@@ -79,7 +60,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnCreatedRoom()
     {
-        StateCustomProperty(CurrentState.InRoom); 
         ExitGames.Client.Photon.Hashtable roomInit = new();
         roomInit["RedCount"] = 0;
         roomInit["BlueCount"] = 0;
@@ -89,7 +69,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        Debug.Log("JoinRoom");
         lobbyPanel.SetActive(false);
         roomPanel.SetActive(true);
 
@@ -112,13 +91,13 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
         }
 
         roomManager.PlayerPanelSpawn();
+        StateCustomProperty(CurrentState.InRoom);
     }
     
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         if (newPlayer != PhotonNetwork.LocalPlayer)
         {
-            Debug.Log("OnPlayerEnterdRoom 시작");
             StartCoroutine(CallOtherPlayer(newPlayer));
         }
     }
@@ -149,8 +128,8 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
     }
     public override void OnMasterClientSwitched(Player newClientPlayer)
     {
-        Debug.Log($"MasterSwitch : {newClientPlayer}번으로 바뀜");
         roomManager.PlayerPanelSpawn(newClientPlayer);
+        Debug.Log($"마스터 클라이언트 변경 : {newClientPlayer.ActorNumber}");
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)

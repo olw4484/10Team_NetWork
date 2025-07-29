@@ -109,21 +109,17 @@ public class JHT_NetworkUIPanel : JHT_BaseUI
 
         GetEvent("RedTeamPanel").Click += data =>
         {
-            teamManager.OnRedSelect?.Invoke();
+            teamManager.OnRedSelect?.Invoke(PhotonNetwork.LocalPlayer);
 
         };
 
         GetEvent("BlueTeamPanel").Click += data =>
         {
-            teamManager.OnBlueSelect?.Invoke();
+            teamManager.OnBlueSelect?.Invoke(PhotonNetwork.LocalPlayer);
 
         };
     }
 
-    private void PanelDestroy()
-    {
-
-    }
 
     private IEnumerator ButtonColorChange()
     {
@@ -132,8 +128,4 @@ public class JHT_NetworkUIPanel : JHT_BaseUI
         secretImage.color = isSecret ? Color.red : Color.green;
     }
 
-    private void PlayerTeamColor()
-    {
-
-    }
 }
