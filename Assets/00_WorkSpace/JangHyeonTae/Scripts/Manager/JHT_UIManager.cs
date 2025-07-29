@@ -8,43 +8,24 @@ using UnityEngine;
 
 public class JHT_UIManager : MonoBehaviour
 {
-    #region singleton
-    private static JHT_UIManager uiInstance;
-    public static JHT_UIManager UIInstance { get { return uiInstance; } }
+    //#region singleton
+    //private static JHT_UIManager uiInstance;
+    //public static JHT_UIManager UIInstance { get { return uiInstance; } }
+    //
+    //private void Awake()
+    //{
+    //    if (uiInstance == null)
+    //    {
+    //        uiInstance = this;
+    //        DontDestroyOnLoad(gameObject);
+    //    }
+    //    else
+    //    {
+    //        Destroy(gameObject);
+    //    }
+    //}
+    //#endregion
 
-    private void Awake()
-    {
-        if (uiInstance == null)
-        {
-            uiInstance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-    #endregion
-
-    private void Update()
-    {
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    JHT_PopupCanvas obj = Instantiate(Resources.Load<JHT_PopupCanvas>("PopUpCanvas"));
-        //    obj.GetOrAddComponent<JHT_PopupCanvas>();
-        //
-        //
-        //}
-        //if (Input.GetKeyDown(KeyCode.Alpha1))
-        //{
-        //    isTest = !isTest;
-        //}
-        //
-        //if (isTest)
-        //{
-        //    ShowPopUp<JHT_TestUI>("Test");
-        //}
-    }
 
     private JHT_PopupCanvas popUpCanvas;
     public JHT_PopupCanvas PopUpCanvas

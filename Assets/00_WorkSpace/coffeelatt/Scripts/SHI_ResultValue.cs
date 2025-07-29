@@ -24,6 +24,8 @@ public class SHI_ResultValue : MonoBehaviour
     public float AtkRange; // 공격 사거리
 
 
+    bool isconnect = false;
+
 
     // Start is called before the first frame update
     private void Awake()
@@ -40,10 +42,17 @@ public class SHI_ResultValue : MonoBehaviour
     }
     void Start()
     {
-        stat = GetComponent<HeroModel>();
-        addstat = GetComponent<SHI_ItemManager>();
-        skillSO = GetComponent<SkillSO>();
+        //stat = GetComponent<HeroModel>();
+        //addstat = GetComponent<SHI_ItemManager>();
+        //skillSO = GetComponent<SkillSO>();
         Init();
+        if(!isconnect)
+        {
+            addstat.refrash.AddListener(Init);
+            //stat.refrash.AddListener(Init);
+            //skillSO.refrash.AddListener(Init);
+            isconnect = true;
+        }
     }
     private void Init()
     {
@@ -71,8 +80,8 @@ public class SHI_ResultValue : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        Init();
-    }
+    //void Update()
+    //{
+    //    Init();
+    //}
 }

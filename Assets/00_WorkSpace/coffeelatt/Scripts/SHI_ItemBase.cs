@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SHI_ItemBase : MonoBehaviour
 {
-
+    public Sprite _Image;
     public enum ItemName
     {
        HealHp,
@@ -59,4 +59,8 @@ public class SHI_ItemBase : MonoBehaviour
     [Range(1, 5)]
     public float minionAttackRegeneration; // 아이템이 증가시키는 미니언 공격시 재생 속도 증가
 
+    private void Awake()
+    {
+        gameObject.GetComponent<SpriteRenderer>().sprite = _Image;
+    }
 }

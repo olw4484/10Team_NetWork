@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 862ee8b6f985ebb44bef11e8c3746edd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Image: {fileID: 21300000, guid: dc577187bdf4cca47a26164ebc605250, type: 3}
   itemNameEnum: 3
   Duration: 0
   type: 1
