@@ -30,7 +30,6 @@ public class JHT_TeamManager : MonoBehaviour
 
     private CurrentState curState;
 
-
     private void Awake()
     {
         OnRedSelect += RedTeamSelect;
@@ -52,10 +51,12 @@ public class JHT_TeamManager : MonoBehaviour
     }
 
 
-
+    #region Red/Blue 팀 값설정
     //blueCount 값만 올리기
     public void BlueTeamSelect(Player player)
     {
+        StartCoroutine(AddBlueValueCor());
+
         if (blueCount >= 2)
         {
             OnCantChangeBlue?.Invoke();
@@ -84,11 +85,18 @@ public class JHT_TeamManager : MonoBehaviour
         }
     }
 
+    IEnumerator AddBlueValueCor()
+    {
+        yield return new WaitForSeconds(0.1f);
+        blueCount = (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"];
+    }
 
 
     //redCount 값만 올리기
     public void RedTeamSelect(Player player)
     {
+        StartCoroutine(AddRedValueCor());
+
         if (redCount >= 2)
         {
             OnCantChangeRed?.Invoke();
@@ -116,6 +124,14 @@ public class JHT_TeamManager : MonoBehaviour
             Debug.Log($"현재 {player.NickName}에 대한 상태 없음");
         }
     }
+
+    IEnumerator AddRedValueCor()
+    {
+        yield return new WaitForSeconds(0.1f);
+
+        redCount = (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"];
+    }
+    #endregion
 
     #region 플레이어 시작시 팀 구분
     //red,blue Count 받아온 값으로 team정하기
@@ -185,6 +201,7 @@ public class JHT_TeamManager : MonoBehaviour
         teamCount["BlueCount"] = blueCount;
         PhotonNetwork.CurrentRoom.SetCustomProperties(teamCount);
     }
+
     #endregion
 
     #region PopUp
