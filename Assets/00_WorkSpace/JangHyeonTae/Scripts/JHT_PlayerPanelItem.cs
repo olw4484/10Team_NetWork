@@ -10,10 +10,12 @@ public class JHT_PlayerPanelItem : JHT_BaseUI
 {
     private TextMeshProUGUI playerNameText => GetUI<TextMeshProUGUI>("PlayerNameText");
     private Image hostImage => GetUI<Image>("HostImage");
+    private Image playerCharacterImage => GetUI<Image>("PlayerCharacterImage");
+    private Image readyButtonImage => GetUI<Image>("PlayerReadyButton");
 
     private TextMeshProUGUI readyText => GetUI<TextMeshProUGUI>("PlayerReadyText");
-    private Image readyButtonImage => GetUI<Image>("PlayerReadyButton");
     private Button readyButton => GetUI<Button>("PlayerReadyButton");
+
 
     TeamSetting team;
     private bool isReady;
