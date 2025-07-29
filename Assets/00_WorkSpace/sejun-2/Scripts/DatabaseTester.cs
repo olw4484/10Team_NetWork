@@ -29,7 +29,7 @@ public class DatabaseTester : MonoBehaviour
     {
         GetUserinfo(); // Firebase에서 사용자 정보를 가져오는 함수를 호출합니다.
 
-        testButton.onClick.AddListener(CheckLeaderBoard); 
+        testButton.onClick.AddListener(SetJsonData); 
         upButton.onClick.AddListener(LevelUp); 
         downButton.onClick.AddListener(LevelDown); 
     }
@@ -105,32 +105,29 @@ public class DatabaseTester : MonoBehaviour
     //{
     //    // Firebase 데이터베이스의 루트 참조를 가져옵니다.
     //    DatabaseReference reference = FirebaseDatabase.DefaultInstance.RootReference;
-
     //    dictionary["이름"] = "김전사";
     //    dictionary["레벨"] = 1;
     //    dictionary["힘"] = 10;
     //    dictionary["속도"] = 20;
     //    dictionary["크리티컬"] = 0.2;
-
     //    reference.SetValueAsync(dictionary);// Firebase 데이터베이스에 text 변수를 저장합니다.
     //}
 
 
-    //private void SetJsonData() //PlayerData 객체를 JSON 문자열을 모두 덮어씌워 저장 하는 함수
-    //{
-    //    FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // 현재 로그인된 Firebase 사용자를 가져옵니다.
-    //    // Firebase 데이터베이스의 루트 참조를 가져옵니다.
-    //    DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference;
-    //    DatabaseReference userInfo = root.Child("UserData").Child(user.UserId);
+    private void SetJsonData() //PlayerData 객체를 JSON 문자열을 모두 덮어씌워 저장 하는 함수
+    {
+        FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // 현재 로그인된 Firebase 사용자를 가져옵니다.
+        // Firebase 데이터베이스의 루트 참조를 가져옵니다.
+        DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference;
+        DatabaseReference userInfo = root.Child("UserData").Child(user.UserId);
 
-    //    string json = JsonUtility.ToJson(data); // PlayerData 객체를 JSON 문자열로 변환합니다.
-    //    Debug.Log(json);
-    //    userInfo.SetRawJsonValueAsync(json);    // Firebase 데이터베이스에 JSON 문자열을 모두 덮어씌워 저장합니다.
+        string json = JsonUtility.ToJson(data); // PlayerData 객체를 JSON 문자열로 변환합니다.
+        Debug.Log(json);
+        userInfo.SetRawJsonValueAsync(json);    // Firebase 데이터베이스에 JSON 문자열을 모두 덮어씌워 저장합니다.
 
-    //    //DatabaseReference levelRef = userInfo.Child("level");   // 하나만 바꾸고 싶을때
-    //    //levelRef.SetValueAsync(3);  
-
-    //}
+        //DatabaseReference levelRef = userInfo.Child("level");   // 하나만 바꾸고 싶을때
+        //levelRef.SetValueAsync(3);  
+    }
 
 
     //private void DataUpdate()     // UpdateChildrenAsync 로 특정 키에 대한 값만을 업데이트하는 함수
@@ -148,40 +145,17 @@ public class DatabaseTester : MonoBehaviour
     //}
 
 
-    //private void Delete()     // "clear" 키를 삭제하는 함수 -> null을 넣어서 삭제 가능
-    //{
-    //    //target = GameObject.Find("Player").transform; // "Player"라는 이름의 게임 오브젝트를 찾아서 그 트랜스폼을 target에 할당합니다.
+    private void Delete(string value)     // "value" 키를 삭제하는 함수 -> null을 넣어서 삭제 가능
+    {
+        //target = GameObject.Find("Player").transform; // "Player"라는 이름의 게임 오브젝트를 찾아서 그 트랜스폼을 target에 할당합니다.
 
-    //    FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // 현재 로그인된 Firebase 사용자를 가져옵니다.
-    //    DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference; // Firebase 데이터베이스의 루트 참조를 가져옵니다.
-    //    DatabaseReference userInfo = root.Child("UserData").Child(user.UserId); // UserData 아래에 현재 사용자의 ID로 하위 참조를 만듭니다.
+        FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // 현재 로그인된 Firebase 사용자를 가져옵니다.
+        DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference; // Firebase 데이터베이스의 루트 참조를 가져옵니다.
+        DatabaseReference userInfo = root.Child("UserData").Child(user.UserId); // UserData 아래에 현재 사용자의 ID로 하위 참조를 만듭니다.
 
-    //    //userInfo.Child("clear").SetValueAsync(null);    // "clear" 키의 값을 null로 설정하여 해당 키를 삭제합니다.
-    //    userInfo.Child("clear").RemoveValueAsync(); // "clear" 키를 삭제하는 또 다른 방법
-    //}
-
-
-    //private void DataTransaction()     // RunTransaction -> 트랜잭션을 실행하여 데이터베이스의 값을 업데이트하는 함수
-    //{
-    //    DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference; // Firebase 데이터베이스의 루트 참조를 가져옵니다.
-    //    DatabaseReference leaderBoardRef = root.Child("LeaderBoard"); // "LeaderBoard"라는 하위 참조를 만듭니다.
-
-    //    leaderBoardRef.RunTransaction(mutableData =>
-    //    {
-    //        List<object> leaders = mutableData.Value as List<object>; // mutableData를 List<object>로 변환합니다.
-    //        Debug.Log(leaders.Count);
-
-    //        if (leaders == null) // leaders가 null인 경우
-    //        {
-    //            Debug.Log("리더보드가 비어 있습니다.");
-    //            return TransactionResult.Abort(); // 트랜잭션을 중단합니다. (변경 취소)
-    //        }
-
-
-    //        //return TransactionResult.Abort(); // 트랜잭션을 중단합니다. (변경 취소)
-    //        return TransactionResult.Success(mutableData);
-    //    });
-    //}
+        //userInfo.Child("value").SetValueAsync(null);    // "clear" 키의 값을 null로 설정하여 해당 키를 삭제합니다.
+        userInfo.Child("value").RemoveValueAsync(); // "value" 키를 삭제하는 또 다른 방법
+    }
 
 
     private void GetUserinfo() // Firebase에서 GetValueAsync, GetRawJsonValue로 데이터를 가져오는 함수
@@ -207,16 +181,12 @@ public class DatabaseTester : MonoBehaviour
             //Debug.Log($"스넵샷 child count : {snapshot.ChildrenCount}");
             //bool clear = (bool)snapshot.Child("clear").Value;   // "clear" 키의 값을 가져옵니다. 형변환 필요.
             //Debug.Log($"clear : {clear}"); // "clear" 키의 값을 출력합니다.
-
             //long level = (long)snapshot.Child("level").Value; // "level" 키의 값을 가져옵니다. 형변환 필요.
             //Debug.Log($"level : {level}"); // "level" 키의 값을 출력합니다.
-
             //string name = (string)snapshot.Child("name").Value; // "name" 키의 값을 가져옵니다. 형변환 필요.
             //Debug.Log($"name : {name}"); // "name" 키의 값을 출력합니다.
-
             //float speed = (float)(double)snapshot.Child("speed").Value; // "speed" 키의 값을 가져옵니다. 형변환 필요.
             //Debug.Log($"speed : {speed}"); // "speed" 키의 값을 출력합니다.
-
             //List<object> skill = (List<object>)snapshot.Child("skill").Value; // "skill" 키의 값을 가져옵니다. 형변환 필요.
             //for (int i = 0; i < skill.Count; i++) // skill 리스트의 각 요소를 출력합니다.
             //{
@@ -227,6 +197,7 @@ public class DatabaseTester : MonoBehaviour
             //Debug.Log($"JSON 데이터: {json}");
             PlayerData playerData = JsonUtility.FromJson<PlayerData>(json); // JSON 문자열을 PlayerData 객체로 변환합니다.
             data = playerData; // 가져온 데이터를 data 변수에 저장합니다.
+            
             Debug.Log($"Clear: {playerData.clear}");
             Debug.Log($"name: {playerData.name}");
             Debug.Log($"speed: {playerData.speed}");
@@ -242,28 +213,28 @@ public class DatabaseTester : MonoBehaviour
     }
 
 
-    private void UpdateTransaction() // RunTransaction -> 트랜잭션을 실행하여 데이터베이스의 값을 업데이트하는 함수
-    {
-        FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // 현재 로그인된 Firebase 사용자를 가져옵니다.
+    //private void UpdateTransaction() // RunTransaction -> 트랜잭션을 실행하여 데이터베이스의 값을 업데이트하는 함수
+    //{
+    //    FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // 현재 로그인된 Firebase 사용자를 가져옵니다.
 
-        DatabaseReference root = FirebaseManager.Database.RootReference; // Firebase 데이터베이스의 루트 참조를 가져옵니다.
-        DatabaseReference userCount = root.Child("GameData").Child("TotalUser"); // "GameData" 아래에 "TotalUser"라는 하위 참조를 만듭니다.
+    //    DatabaseReference root = FirebaseManager.Database.RootReference; // Firebase 데이터베이스의 루트 참조를 가져옵니다.
+    //    DatabaseReference userCount = root.Child("GameData").Child("TotalUser"); // "GameData" 아래에 "TotalUser"라는 하위 참조를 만듭니다.
 
-        userCount.RunTransaction(mutableData =>
-        {
-            if (mutableData.Value == null) // mutableData의 값이 null인 경우 예외처리 꼭 해야함.!
-            {
-                Debug.Log("TotalUser가 비어 있습니다. 초기값을 설정합니다.");
-                mutableData.Value = 1; // 초기값을 1으로 설정합니다. 나 한명 있을테니.
-                return TransactionResult.Success(mutableData); // 트랜잭션을 성공으로 반환합니다.
-            }
+    //    userCount.RunTransaction(mutableData =>
+    //    {
+    //        if (mutableData.Value == null) // mutableData의 값이 null인 경우 예외처리 꼭 해야함.!
+    //        {
+    //            Debug.Log("TotalUser가 비어 있습니다. 초기값을 설정합니다.");
+    //            mutableData.Value = 1; // 초기값을 1으로 설정합니다. 나 한명 있을테니.
+    //            return TransactionResult.Success(mutableData); // 트랜잭션을 성공으로 반환합니다.
+    //        }
 
-            long totaluserCount = (long)mutableData.Value;
-            mutableData.Value = totaluserCount + 1; // 현재 사용자 수를 증가시킵니다.
+    //        long totaluserCount = (long)mutableData.Value;
+    //        mutableData.Value = totaluserCount + 1; // 현재 사용자 수를 증가시킵니다.
 
-            return TransactionResult.Success(mutableData); // 트랜잭션을 성공으로 반환합니다.
-        });
-    }
+    //        return TransactionResult.Success(mutableData); // 트랜잭션을 성공으로 반환합니다.
+    //    });
+    //}
 
 
     private void CheckLeaderBoard()     // Firebase에서 OrderByChild, GetValueAsync를 사용하여 랭킹 데이터를 가져오는 함수
@@ -298,12 +269,7 @@ public class DatabaseTester : MonoBehaviour
             }
         });
     }
-
-
-
 }
-
-
 
 
 [Serializable]  // Serializable 어트리뷰트를 사용하여 이 클래스가 JSON으로 직렬화될 수 있도록 합니다.
