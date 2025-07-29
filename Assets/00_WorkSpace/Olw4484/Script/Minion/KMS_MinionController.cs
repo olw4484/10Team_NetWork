@@ -4,6 +4,7 @@ using System.Resources;
 using TMPro;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.AI;
 using static KMS_ISelectable;
 using static KMS_ResourceSystem;
 
@@ -26,6 +27,7 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     private Vector3 targetPosition;
     private float attackTimer = 0f;
 
+    // 이동 그룹
     public KMS_WaypointGroup waypointGroup;
     private int currentWaypointIndex = 0;
     
@@ -39,10 +41,11 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     public bool IsManual { get; private set; } = false;
 
     public PhotonView photonView;
-
+    private NavMeshAgent agent;
 
     private void Awake()
     {
+        agent = GetComponent<NavMeshAgent>();
         photonView = GetComponent<PhotonView>();
         view = GetComponentInChildren<MinionView>();
     }
@@ -51,7 +54,14 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     void Start()
     {
         currentHP = maxHP;
-
+        if (agent != null)
+        {
+            agent.speed = moveSpeed;
+            agent.angularSpeed = 999f;
+            agent.acceleration = 99f;
+            agent.stoppingDistance = attackRange * 0.8f;
+            agent.updateRotation = false;
+        }
         if (waypointGroup != null && waypointGroup.GetWaypointCount() > 0)
         {
             MoveToNextWaypoint();
@@ -62,47 +72,65 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     {
         if (isDead) return;
 
+        if (agent.velocity.sqrMagnitude > 0.01f)
+            transform.forward = agent.velocity.normalized;
+
         if (isMovingToPosition)
         {
-            MoveTowards(targetPosition);
-            if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
+            // agent.pathPending: 경로 계산 중이면 true
+            if (!agent.pathPending && agent.remainingDistance < 0.1f)
+            {
                 isMovingToPosition = false;
+                agent.isStopped = true;
+            }
         }
 
-        // 공격 이동 중이면
+        // 공격이동
         if (isAttackMove)
         {
-            // 주변 적 탐색
             var enemy = FindClosestEnemyInRange();
             if (enemy != null)
             {
                 target = enemy.transform;
-                isAttackMove = false; // 공격 상태로 전환
+                isAttackMove = false;
             }
             else
             {
-                // 목적지로 이동
-                MoveTowards(attackMoveTarget);
-                if (Vector3.Distance(transform.position, attackMoveTarget) < attackMoveStopDistance)
+                // 목적지까지 이동
+                if (agent.destination != attackMoveTarget)
+                    agent.SetDestination(attackMoveTarget);
+
+                if (!agent.pathPending && agent.remainingDistance < attackMoveStopDistance)
                 {
-                    isAttackMove = false; // 도착하면 종료
+                    isAttackMove = false;
+                    agent.isStopped = true;
                 }
             }
-            return; // 공격이동 중에는 아래 일반 AI 생략
+            return;
         }
 
-        // 기존 AI 로직 (타겟 지정 등)
+        // 타겟 공격
         if (target != null)
         {
             float distance = Vector3.Distance(transform.position, target.position);
-
             if (distance > attackRange)
-                MoveTowards(target.position);
+            {
+                if (agent.destination != target.position)
+                    agent.SetDestination(target.position);
+            }
             else
+            {
+                agent.isStopped = true;
                 TryAttack();
+            }
         }
 
         attackTimer += Time.deltaTime;
+
+        if (waypointGroup != null && currentWaypointIndex > 0 && !agent.pathPending && agent.remainingDistance < 0.1f)
+        {
+            MoveToNextWaypoint();
+        }
     }
 
     public void Initialize(MinionDataSO data, Transform target, KMS_WaypointGroup waypointGroup = null)
@@ -115,41 +143,34 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         this.maxHP = data.maxHP;
         this.currentHP = maxHP;
         this.target = target;
-
         this.waypointGroup = waypointGroup;
         this.currentWaypointIndex = 0;
 
-        if (target != null)
-            StartCoroutine(MoveToTarget());
-    }
-
-    private void MoveTowards(Vector3 destination)
-    {
-        transform.position = Vector3.MoveTowards(transform.position, destination, moveSpeed * Time.deltaTime);
-    }
-
-    private IEnumerator MoveTo(Transform point)
-    {
-        while (point != null && Vector3.Distance(transform.position, point.position) > 0.1f)
+        if (this.waypointGroup != null && this.waypointGroup.GetWaypointCount() > 0)
         {
-            transform.position = Vector3.MoveTowards(transform.position, point.position, moveSpeed * Time.deltaTime);
-            yield return null;
+            var firstPoint = this.waypointGroup.GetWaypoint(0);
+            if (firstPoint != null)
+            {
+                agent.isStopped = false;
+                agent.SetDestination(firstPoint.position);
+                currentWaypointIndex = 1; // 다음 이동 때 1번 인덱스부터
+            }
         }
-
-        MoveToNextWaypoint(); // 다음 경로로
     }
 
     private void MoveToNextWaypoint()
     {
+        if (waypointGroup == null) return;
         if (currentWaypointIndex >= waypointGroup.GetWaypointCount()) return;
 
         Transform nextPoint = waypointGroup.GetWaypoint(currentWaypointIndex);
         currentWaypointIndex++;
 
-        if (moveCoroutine != null)
-            StopCoroutine(moveCoroutine);
-
-        moveCoroutine = StartCoroutine(MoveTo(nextPoint));
+        if (nextPoint != null)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(nextPoint.position);
+        }
     }
 
     private Transform FindClosestEnemyInRange()
@@ -172,24 +193,14 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         return closest;
     }
 
-
-    private IEnumerator MoveToTarget()
-    {
-        while (target != null && Vector3.Distance(transform.position, target.position) > 0.1f)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
-            yield return null;
-        }
-
-        moveCoroutine = null;
-    }
-
     public void MoveToPosition(Vector3 position)
     {
         target = null;
         isAttackMove = false;
         isMovingToPosition = true;
         targetPosition = position;
+        agent.isStopped = false;
+        agent.SetDestination(position);
     }
 
     public void SetAttackMoveTarget(Vector3 point)
@@ -198,6 +209,8 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         isMovingToPosition = false;
         isAttackMove = true;
         attackMoveTarget = point;
+        agent.isStopped = false;
+        agent.SetDestination(point);
     }
 
     public void SetTarget(Transform newTarget)
@@ -205,6 +218,11 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         isMovingToPosition = false;
         isAttackMove = false;
         target = newTarget;
+        if (newTarget != null)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(newTarget.position);
+        }
     }
 
 
@@ -289,7 +307,7 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         view?.SetHighlight(false);
     }
 
-    public SelectableType GetSelectableType() => SelectableType.Unit;
+    public SelectableType GetSelectableType() => SelectableType.Minion;
     #endregion
     #region RPC_Minion
     [PunRPC]

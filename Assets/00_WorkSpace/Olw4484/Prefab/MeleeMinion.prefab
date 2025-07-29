@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 3710991509967529625}
   - component: {fileID: 6487472600886067132}
   - component: {fileID: 7669475558958984856}
-  - component: {fileID: 9186808658338174640}
   m_Layer: 22
   m_Name: MeleeMinion_Root
   m_TagString: Untagged
@@ -106,33 +105,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &9186808658338174640
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2169954652733448934}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 84
-  m_CollisionDetection: 0
 --- !u!1 &6493776319354194957
 GameObject:
   m_ObjectHideFlags: 0
@@ -176,6 +148,7 @@ GameObject:
   - component: {fileID: 695254961395116840}
   - component: {fileID: 6767216568130689818}
   - component: {fileID: -1934948245341657593}
+  - component: {fileID: 5434556195519555941}
   m_Layer: 22
   m_Name: MeleeMinion
   m_TagString: Untagged
@@ -223,6 +196,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   waypointGroup: {fileID: 0}
+  photonView: {fileID: 0}
 --- !u!114 &6767216568130689818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -265,3 +239,25 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!195 &5434556195519555941
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6848852395963227363}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4

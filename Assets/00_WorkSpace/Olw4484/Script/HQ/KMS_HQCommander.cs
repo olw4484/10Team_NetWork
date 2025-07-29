@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using static KMS_ISelectable;
 using static UnityEngine.GraphicsBuffer;
 
@@ -34,6 +35,20 @@ public class KMS_HQCommander : MonoBehaviour, KMS_ISelectable
     {
         var minionType = (MinionType)type;
         var spawnPos = defaultSpawnPoint.position;
+
+        // NavMesh 위로 위치 보정
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(spawnPos, out hit, 3f, NavMesh.AllAreas))
+        {
+            spawnPos = hit.position;
+            Debug.Log($"[HQCommander] NavMesh 스폰 성공: 위치={spawnPos}");
+        }
+        else
+        {
+            Debug.LogError("[HQCommander] NavMesh 위에서 미니언을 스폰할 수 없습니다! 스폰 포인트 위치 재확인 필요");
+            return; // NavMesh 위가 아닐 경우 스폰 중단
+        }
+
         var target = rallyPointTarget != null ? rallyPointTarget : null;
         KMS_MinionFactory.Instance.TrySpawnMinion(minionType, spawnPos, target, player);
     }

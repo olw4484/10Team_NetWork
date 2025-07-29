@@ -108,8 +108,13 @@ public class KMS_PlayerInputHandler : MonoBehaviour
                 {
                     hq.SetRallyPoint(hit.point);
                 }
+                else if (selectedMinions.Count == 1)
+                {
+                    // 단일 선택일 때
+                    IssueCommand(hit);
+                }
                 // 미니언 여러 마리 선택된 상태면 IssueCommand로 분기 처리
-                else if (selectedMinions.Count > 0)
+                else if (selectedMinions.Count > 1)
                 {
                     IssueCommand(hit);
                 }
@@ -169,7 +174,7 @@ public class KMS_PlayerInputHandler : MonoBehaviour
 
                 switch (selectable.GetSelectableType())
                 {
-                    case SelectableType.Unit:
+                    case SelectableType.Minion:
                         Debug.Log("유닛 선택됨");
                         break;
                     case SelectableType.Building:
