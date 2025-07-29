@@ -81,87 +81,93 @@ public class Hero1SkillSet : SkillSet
 
     public override void UseE()
     {
-        StartCoroutine(BashRoutine());
+        Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
+        RaycastHit hit;
+        if (Physics.Raycast(mainCam.ScreenPointToRay(Input.mousePosition), out hit))
+        {
+            Vector3 dashDir = (hit.point - originPos).normalized;
+            pv.RPC(nameof(RPC_StartBash), RpcTarget.All, dashDir);
+        }
     }
 
-    private IEnumerator BashRoutine()
+    private IEnumerator BashRoutine(Vector3 dashDir)
     {
         // 마우스 방향으로 돌진하고 경로상에 부딪힌 적에 데미지를 주고 적 Hero나 장애물과 부딪히면 멈추는 스킬
-        Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
+        float dashSpeed = 10f;
+        float dashDuration = 0.5f;
+        float timer = 0f;
+
         Collider heroCollider = hero.GetComponent<Collider>();
-        RaycastHit hit;
+        heroCollider.isTrigger = true;
 
         agent.isStopped = true;
         agent.enabled = false;
 
-        if (Physics.Raycast(mainCam.ScreenPointToRay(Input.mousePosition), out hit))
+        transform.forward = new Vector3(dashDir.x, 0, dashDir.z);
+
+        while (timer < dashDuration)
         {
-            Vector3 dashDir = (hit.point - originPos).normalized;
-            float dashSpeed = 10f;
-            float dashDuration = 0.5f;
-            float timer = 0f;
+            Collider[] hits = Physics.OverlapSphere(transform.position, 0.6f);
+            bool hitDetected = false;
 
-            heroCollider.isTrigger = true;
-
-            transform.forward = new Vector3(dashDir.x, 0, dashDir.z);
-
-            while (timer < dashDuration)
+            foreach (Collider collider in hits)
             {
-                Collider[] hits = Physics.OverlapSphere(transform.position, 0.6f);
-                bool hitDetected = false;
+                LGH_IDamagable damagable = collider.GetComponent<LGH_IDamagable>();
+                PhotonView view = collider.GetComponent<PhotonView>();
+                bool isPlayerOrObstacle = collider.CompareTag("Player") || collider.CompareTag("Obstacle");
 
-                foreach (Collider collider in hits)
+                // 자신은 collider에서 제외
+                if (collider.gameObject == gameObject) continue;
+
+                // 먼저 데미지를 줄 수 있는 충돌인지 체크
+                if (damagable != null && view != null && !view.IsMine)
                 {
-                    LGH_IDamagable damagable = collider.GetComponent<LGH_IDamagable>();
-                    PhotonView view = collider.GetComponent<PhotonView>();
-                    bool isPlayerOrObstacle = collider.CompareTag("Player") || collider.CompareTag("Obstacle");
-
-                    // 자신은 collider에서 제외
-                    if (collider.gameObject == gameObject) continue;
-
-                    // 먼저 데미지를 줄 수 있는 충돌인지 체크
-                    if (damagable != null && view != null && !view.IsMine)
+                    object targetTeam, myTeam;
+                    if (view.Owner.CustomProperties.TryGetValue("Team", out targetTeam) &&
+                        PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam))
                     {
-                        object targetTeam, myTeam;
-                        if (view.Owner.CustomProperties.TryGetValue("Team", out targetTeam) &&
-                            PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam))
-                        {
-                            if (targetTeam == myTeam) continue;
-                        }
-
-                        damagable.TakeDamage(skill_E.damage);
-                        Debug.Log("Bash Hit");
+                        if (targetTeam == myTeam) continue;
                     }
 
-                    // 만약 벽 또는 상대 영웅과 충돌했다면 멈춤
-                    if (isPlayerOrObstacle)
-                    {
-                        Debug.Log("벽 또는 상대 영웅과 충돌 감지");
-                        hitDetected = true;
-                        break;
-                    }
+                    damagable.TakeDamage(skill_E.damage);
+                    Debug.Log("Bash Hit");
                 }
 
-                if (hitDetected)
+                // 만약 벽 또는 상대 영웅과 충돌했다면 멈춤
+                if (isPlayerOrObstacle)
                 {
-                    //transform.position -= dashDir * 0.2f;
-                    dashSpeed = 0f;
-
-                    agent.enabled = true;
-                    agent.isStopped = false;
-                    yield break;
+                    Debug.Log("벽 또는 상대 영웅과 충돌 감지");
+                    hitDetected = true;
+                    break;
                 }
-
-                timer += Time.deltaTime;
-                transform.position += dashDir * dashSpeed * Time.deltaTime;
-                yield return null;
             }
 
-            agent.enabled = true;
-            agent.isStopped = false;
-            agent.ResetPath();
-            heroCollider.isTrigger = false;
+            if (hitDetected)
+            {
+                //transform.position -= dashDir * 0.2f;
+                dashSpeed = 0f;
+
+                agent.enabled = true;
+                agent.isStopped = false;
+                yield break;
+            }
+
+            transform.position += dashDir * dashSpeed * Time.deltaTime;
+            timer += Time.deltaTime;
+            yield return null;
         }
+
+        agent.enabled = true;
+        agent.isStopped = false;
+        agent.ResetPath();
+        heroCollider.isTrigger = false;
+    }
+
+    [PunRPC]
+
+    public void RPC_StartBash(Vector3 dashDir)
+    {
+        StartCoroutine(BashRoutine(dashDir));
     }
 
     public override void UseR()

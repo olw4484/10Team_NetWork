@@ -40,13 +40,16 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         // 임시로 Hero1을 선택한 것으로 가정 -> 게임이 시작되면 HeroType을 결정하게
         heroType = 0;
         model.GetInitStats(heroType);
+
+        model.CurHP.Value = model.MaxHP;
+        model.CurMP.Value = model.MaxMP;
     }
 
     private void Update()
     {
         if (!pv.IsMine) return;
 
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButtonDown(1))
         {
             //if (atkDelay <= 0f)
             //{
@@ -76,13 +79,16 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         mov.LookMoveDir();
     }
 
+    [PunRPC]
     public void GetHeal(int amount)
     {
         
     }
 
+    [PunRPC]
     public void TakeDamage(int amount)
     {
-        
+        model.CurHP.Value -= amount;
+        Debug.Log($"{amount}의 데미지를 입음. 현재 HP : {model.CurHP.Value}");
     }
 }

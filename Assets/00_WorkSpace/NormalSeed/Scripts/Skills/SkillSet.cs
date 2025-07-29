@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,11 +14,13 @@ public class SkillSet : MonoBehaviour
     protected Camera mainCam;
     protected HeroController hero;
     protected NavMeshAgent agent;
+    protected PhotonView pv;
 
     private void Start()
     {
         hero = GetComponent<HeroController>();
         agent = GetComponent<NavMeshAgent>();
+        pv = GetComponent<PhotonView>();
         mainCam = Camera.main;
     }
 

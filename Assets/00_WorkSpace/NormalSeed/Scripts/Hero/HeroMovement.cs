@@ -18,6 +18,7 @@ public class HeroMovement : MonoBehaviour
     private bool isAttacking = false;
     private Vector3 destination;
 
+    private Coroutine attackCoroutine;
     private WaitForSeconds distCheck = new WaitForSeconds(0.1f);
 
     private void Awake() => Init();
@@ -71,7 +72,13 @@ public class HeroMovement : MonoBehaviour
                     Enum.TryParse(targetTeam.ToString(), out TestTeamSetting targetTeamEnum) &&
                     myTeamEnum != targetTeamEnum)
                 {
-                    StartCoroutine(HeroAttackRoutine(hit.collider.transform, damagable, atkRange, atkDelay, damage, moveSpd));
+                    if (attackCoroutine != null)
+                    {
+                        return;
+                    }
+
+                    attackCoroutine = StartCoroutine(HeroAttackRoutine(hit.collider.transform, damagable, atkRange, atkDelay, damage, moveSpd));
+
                     return;
                 }
                 // 아군 유닛 클릭 (예: 따라가기 등 커스터마이징 가능)
@@ -93,6 +100,9 @@ public class HeroMovement : MonoBehaviour
     /// <returns></returns>
     private IEnumerator HeroAttackRoutine(Transform target, LGH_IDamagable damagable, float atkRange, float atkDelay, int damage, float moveSpd)
     {
+        Debug.Log("기본공격 코루틴 시작됨");
+        if (isAttacking) yield break;
+
         isAttacking = true;
         while (true)
         {
@@ -102,6 +112,7 @@ public class HeroMovement : MonoBehaviour
             {
                 // 멈춤 동기화를 위해 RPC 실행
                 ExecuteAttack(target, damagable, damage);
+                attackCoroutine = null;
                 break;
             }
             else
@@ -113,6 +124,7 @@ public class HeroMovement : MonoBehaviour
             yield return distCheck;
         }
         isAttacking = false;
+        attackCoroutine = null;
     }
 
     /// <summary>
@@ -124,7 +136,13 @@ public class HeroMovement : MonoBehaviour
     private void ExecuteAttack(Transform target, LGH_IDamagable damagable, int damage)
     {
         pv.RPC(nameof(RPC_StopAndFace), RpcTarget.All, target.position);
-        damagable.TakeDamage(damage);
+        
+        // 타겟이 갖고 있는 HeroControlelr 안의 TakeDamage RPC 실행
+        PhotonView targetPv = target.gameObject.GetComponent<PhotonView>();
+        if (targetPv != null)
+        {
+            targetPv.RPC(nameof(HeroController.TakeDamage), RpcTarget.All, damage);
+        }
         Debug.Log("Hero1 기본 공격");
     }
 
