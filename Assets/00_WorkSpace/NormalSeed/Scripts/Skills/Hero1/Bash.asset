@@ -15,7 +15,7 @@ MonoBehaviour:
   skillName: Bash
   skillLevel: 1
   isPassive: 0
-  damage: 50
+  damage: 20
   skillRange: 5
   buffAmount: []
   mana: 30

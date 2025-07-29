@@ -1,12 +1,16 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class HeroController : MonoBehaviour, LGH_IDamagable
 {
     public HeroModel model;
     public HeroView view;
     public HeroMovement mov;
+    public NavMeshAgent agent;
+    private PhotonView pv;
 
     [SerializeField] private int heroType;
     private bool isInCombat;
@@ -28,49 +32,56 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         model = GetComponent<HeroModel>();
         view = GetComponent<HeroView>();
         mov = GetComponent<HeroMovement>();
+        agent = GetComponent<NavMeshAgent>();
+        pv = GetComponent<PhotonView>();
 
         atkDelay = 0f;
 
-        // 임시로 Hero1을 선택한 것으로 가정 -> Lobby에서 HeroType을 받아오는 방식으로 만들고 싶음
+        // 임시로 Hero1을 선택한 것으로 가정 -> 게임이 시작되면 HeroType을 결정하게
         heroType = 0;
         model.GetInitStats(heroType);
+
+        model.CurHP.Value = model.MaxHP;
+        model.CurMP.Value = model.MaxMP;
     }
 
     private void Update()
     {
-        if (Input.GetMouseButton(1))
+        if (!pv.IsMine) return;
+
+        if (Input.GetMouseButtonDown(1))
         {
-            if (atkDelay <= 0f)
-            {
-                mov.HeroAttack(model.MoveSpd, (int)model.Atk, model.AtkRange); // 추후 damage 변수는 데미지 공식에 따라 바꿔줄 필요가 있음
-                atkDelay = 1 / model.AtkSpd;
-            }
+            //if (atkDelay <= 0f)
+            //{
+            //    mov.HeroAttack(model.MoveSpd, (int)model.Atk, model.AtkRange); // 추후 damage 변수는 데미지 공식에 따라 바꿔줄 필요가 있음
+            //    atkDelay = 1 / model.AtkSpd;
+            //}
+            mov.HandleRightClick(model.MoveSpd, (int)model.Atk, model.AtkRange, atkDelay);
         }
 
-        if (atkDelay > 0f)
+        if (Input.GetKeyDown(KeyCode.S))
         {
-            atkDelay -= Time.deltaTime;
+            agent.ResetPath();
         }
     }
 
     private void FixedUpdate()
     {
-        // 우클릭하면 우클릭한 지점으로 이동
-        if (Input.GetMouseButton(1))
-        {
-            mov.GetMoveDestination(model.MoveSpd);
-        }
+        if (!pv.IsMine) return;
 
         mov.LookMoveDir();
     }
 
+    [PunRPC]
     public void GetHeal(int amount)
     {
         
     }
 
+    [PunRPC]
     public void TakeDamage(int amount)
     {
-        
+        model.CurHP.Value -= amount;
+        Debug.Log($"{amount}의 데미지를 입음. 현재 HP : {model.CurHP.Value}");
     }
 }

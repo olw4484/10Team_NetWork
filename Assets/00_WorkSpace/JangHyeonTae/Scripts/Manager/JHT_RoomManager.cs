@@ -15,7 +15,7 @@ public class JHT_RoomManager : MonoBehaviour
     [SerializeField] private Button startButton;
     [SerializeField] private Button leaveRoomButton;
 
-    //º¸·ù
+    //ë³´ë¥˜
     [SerializeField] private Button redButton;
     [SerializeField] private Button blueButton;
 
@@ -36,7 +36,7 @@ public class JHT_RoomManager : MonoBehaviour
         teamManager.OnChangeTeam -= ChangeTeam;
     }
 
-    #region ¿ø·¡´Â ´Ù¸¥ÇÃ·¹ÀÌ¾î ÆĞ³Î »ı¼º ÀÌ¾úÁö¸¸ Áö±İÀº ¸¶½ºÅÍ Å¬¶óÀÌ¾ğÆ®°¡ ¹Ù²ğ½Ã¿¡¸¸ »ç¿ë(OnPlayerPropertiesUpdate¿¡¼­ ´Ù¸¥ ÇÃ·¹ÀÌ¾î »ı¼º)
+    #region ì›ë˜ëŠ” ë‹¤ë¥¸í”Œë ˆì´ì–´ íŒ¨ë„ ìƒì„± ì´ì—ˆì§€ë§Œ ì§€ê¸ˆì€ ë§ˆìŠ¤í„° í´ë¼ì´ì–¸íŠ¸ê°€ ë°”ë€”ì‹œì—ë§Œ ì‚¬ìš©(OnPlayerPropertiesUpdateì—ì„œ ë‹¤ë¥¸ í”Œë ˆì´ì–´ ìƒì„±)
     public void PlayerPanelSpawn(Player player)
     {
         if (playerPanelDic.TryGetValue(player.ActorNumber, out JHT_PlayerPanelItem panel))
@@ -54,7 +54,7 @@ public class JHT_RoomManager : MonoBehaviour
     }
     #endregion
 
-    #region ÇÃ·¹ÀÌ¾î ÆĞ³Î »ı¼º
+    #region í”Œë ˆì´ì–´ íŒ¨ë„ ìƒì„±
     public void PlayerPanelSpawn()
     {
         PhotonNetwork.AutomaticallySyncScene = true;
@@ -73,18 +73,18 @@ public class JHT_RoomManager : MonoBehaviour
                 JHT_PlayerPanelItem playerPanel = obj.GetComponent<JHT_PlayerPanelItem>();
                 playerPanel.Init(player);
                 playerPanelDic.Add(player.ActorNumber, playerPanel);
-                Debug.Log($"My Player µñ¼Å³Ê¸®¿¡ Ãß°¡  : Key - {player.ActorNumber}, Value - {playerPanel}");
+                Debug.Log($"My Player ë”•ì…”ë„ˆë¦¬ì— ì¶”ê°€  : Key - {player.ActorNumber}, Value - {playerPanel}");
             }
             else
             {
-                Debug.Log($"ÇÃ·¹ÀÌ¾î {player.NickName}¿¡ ´ëÇÑ Á¤º¸ ¾øÀ½");
+                Debug.Log($"í”Œë ˆì´ì–´ {player.NickName}ì— ëŒ€í•œ ì •ë³´ ì—†ìŒ");
             }
         }
     }
     #endregion
 
 
-    #region ÆÀ¹Ù²Ù±â
+    #region íŒ€ë°”ê¾¸ê¸°
     public void ChangeTeam(Player player, int red, int blue)
     {
         PhotonNetwork.AutomaticallySyncScene = true;
@@ -127,8 +127,8 @@ public class JHT_RoomManager : MonoBehaviour
     }
 
 
-    //ÆÀ¹Ù²Ù±â µ¿±âÈ­(OnPlayerPropertiesUpdate¿¡¼­ »ı¼º) -> °¢ ÇÃ·¹ÀÌ¾î°¡ ¿ªÇÒÀ» ÆÀÀ» ¹èÁ¤¹ŞÀ» ¶§ »ı¼º
-    // -> PlayerPanelSpawn(Player player)ÀÇ ¿ªÇÒ ´ëÃ¼
+    //íŒ€ë°”ê¾¸ê¸° ë™ê¸°í™”(OnPlayerPropertiesUpdateì—ì„œ ìƒì„±) -> ê° í”Œë ˆì´ì–´ê°€ ì—­í• ì„ íŒ€ì„ ë°°ì •ë°›ì„ ë•Œ ìƒì„±
+    // -> PlayerPanelSpawn(Player player)ì˜ ì—­í•  ëŒ€ì²´
     public void OtherPlayerChangeTeam(Player player)
     {
         if (player == PhotonNetwork.LocalPlayer)
@@ -162,7 +162,7 @@ public class JHT_RoomManager : MonoBehaviour
     }
     #endregion
 
-    #region ¸ğµç ¿ÀºêÁ§Æ®ÀÇ ºÎ¸ğ ¼³Á¤ -> CustomProperty¿¡¼­ ¹Ş¾Æ¼­ »ç¿ë
+    #region ëª¨ë“  ì˜¤ë¸Œì íŠ¸ì˜ ë¶€ëª¨ ì„¤ì • -> CustomPropertyì—ì„œ ë°›ì•„ì„œ ì‚¬ìš©
     public Transform SetPanelParent(Player player)
     {
         if (player.CustomProperties.TryGetValue("Team", out object value))
@@ -178,13 +178,13 @@ public class JHT_RoomManager : MonoBehaviour
         }
         else
         {
-            Debug.Log($"TeamManager SetParentFromCustomProperty ÆÀ Á¤º¸ ¾øÀ½ {PhotonNetwork.LocalPlayer.ActorNumber}");
+            Debug.Log($"TeamManager SetParentFromCustomProperty íŒ€ ì •ë³´ ì—†ìŒ {PhotonNetwork.LocalPlayer.ActorNumber}");
             return null;
         }
     }
     #endregion
 
-    #region ´Ù¸¥ ÇÃ·¹ÀÌ¾î°¡ ¶°³µÀ»°æ¿ì
+    #region ë‹¤ë¥¸ í”Œë ˆì´ì–´ê°€ ë– ë‚¬ì„ê²½ìš°
     public void PlayerLeaveRoom(Player player)
     {
         if (playerPanelDic.TryGetValue(player.ActorNumber, out JHT_PlayerPanelItem obj))
@@ -222,14 +222,14 @@ public class JHT_RoomManager : MonoBehaviour
     }
     #endregion
 
-    #region °ÔÀÓ½ÃÀÛ
+    #region ê²Œì„ì‹œì‘
     public void GameStart()
     {
         if (PhotonNetwork.IsMasterClient && AdllPlayerReadyCheck()
             && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] == 2
             && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] == 2)
         {
-            PhotonNetwork.LoadLevel("GameScene"); //ÇØ´ç °ÔÀÓ¾À ³Ö±â 
+            PhotonNetwork.LoadLevel("GameScene"); //í•´ë‹¹ ê²Œì„ì”¬ ë„£ê¸° 
         }
     }
 
@@ -247,7 +247,7 @@ public class JHT_RoomManager : MonoBehaviour
     }
     #endregion
 
-    #region ³»°¡ ¹æÀ» ³ª°¬À»°æ¿ì
+    #region ë‚´ê°€ ë°©ì„ ë‚˜ê°”ì„ê²½ìš°
     public void LeaveRoom()
     {
         foreach (Player player in PhotonNetwork.PlayerList)
@@ -268,18 +268,18 @@ public class JHT_RoomManager : MonoBehaviour
     }
     #endregion
 
-    //½ºÆäÀÌ½º¹Ù ´©¸£¸é ÇØ´ç ÇÃ·¹ÀÌ¾î - ÆÀ Á¤º¸ ³ª¿È
+    //ìŠ¤í˜ì´ìŠ¤ë°” ëˆ„ë¥´ë©´ í•´ë‹¹ í”Œë ˆì´ì–´ - íŒ€ ì •ë³´ ë‚˜ì˜´
     public void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out object teamObj) && teamObj != null)
             {
-                Debug.Log($"{PhotonNetwork.LocalPlayer.NickName} ¹ø ÆÀ¿ø , ÆÀ : {teamObj.ToString()}");
+                Debug.Log($"{PhotonNetwork.LocalPlayer.NickName} ë²ˆ íŒ€ì› , íŒ€ : {teamObj.ToString()}");
             }
             else
             {
-                Debug.Log($"{PhotonNetwork.LocalPlayer.NickName}ÀÇ ÆÀ Á¤º¸ ¾øÀ½.");
+                Debug.Log($"{PhotonNetwork.LocalPlayer.NickName}ì˜ íŒ€ ì •ë³´ ì—†ìŒ.");
             }
         }
     }

@@ -35,7 +35,7 @@ public class JHT_TeamManager : MonoBehaviour
         OnRedSelect += RedTeamSelect;
         OnBlueSelect += BlueTeamSelect;
 
-        // ÆÀ¹Ù²Ù±â ½ÇÆĞ½Ã
+        // íŒ€ë°”ê¾¸ê¸° ì‹¤íŒ¨ì‹œ
         OnCantChangeRed += CantRedChange;
         OnCantChangeBlue += CantBlueChange;
     }
@@ -45,14 +45,14 @@ public class JHT_TeamManager : MonoBehaviour
         OnRedSelect -= RedTeamSelect;
         OnBlueSelect -= BlueTeamSelect;
 
-        // ÆÀ¹Ù²Ù±â ½ÇÆĞ½Ã
+        // íŒ€ë°”ê¾¸ê¸° ì‹¤íŒ¨ì‹œ
         OnCantChangeRed -= CantRedChange;
         OnCantChangeBlue -= CantBlueChange;
     }
 
 
-    #region Red/Blue ÆÀ °ª¼³Á¤
-    //blueCount °ª¸¸ ¿Ã¸®±â
+    #region Red/Blue íŒ€ ê°’ì„¤ì •
+    //blueCount ê°’ë§Œ ì˜¬ë¦¬ê¸°
     public void BlueTeamSelect(Player player)
     {
         StartCoroutine(AddBlueValueCor());
@@ -65,7 +65,7 @@ public class JHT_TeamManager : MonoBehaviour
 
         if (player.CustomProperties.TryGetValue("CurState", out object value))
         {
-            //ÇÃ·¹ÀÌ¾î °ÔÀÓ»óÅÂ °¡Á®¿Í¼­ ±¸ºĞ
+            //í”Œë ˆì´ì–´ ê²Œì„ìƒíƒœ ê°€ì ¸ì™€ì„œ êµ¬ë¶„
             if ((CurrentState)value == CurrentState.InRoom)
             {
                 if ((TeamSetting)player.CustomProperties["Team"] == TeamSetting.Blue)
@@ -81,7 +81,7 @@ public class JHT_TeamManager : MonoBehaviour
         }
         else
         {
-            Debug.Log($"ÇöÀç {player.NickName}¿¡ ´ëÇÑ »óÅÂ ¾øÀ½");
+            Debug.Log($"í˜„ì¬ {player.NickName}ì— ëŒ€í•œ ìƒíƒœ ì—†ìŒ");
         }
     }
 
@@ -92,7 +92,7 @@ public class JHT_TeamManager : MonoBehaviour
     }
 
 
-    //redCount °ª¸¸ ¿Ã¸®±â
+    //redCount ê°’ë§Œ ì˜¬ë¦¬ê¸°
     public void RedTeamSelect(Player player)
     {
         StartCoroutine(AddRedValueCor());
@@ -105,7 +105,7 @@ public class JHT_TeamManager : MonoBehaviour
 
         if (player.CustomProperties.TryGetValue("CurState", out object value))
         {
-            //ÇÃ·¹ÀÌ¾î °ÔÀÓ»óÅÂ °¡Á®¿Í¼­ ±¸ºĞ
+            //í”Œë ˆì´ì–´ ê²Œì„ìƒíƒœ ê°€ì ¸ì™€ì„œ êµ¬ë¶„
             if ((CurrentState)value == CurrentState.InRoom)
             {
                 if ((TeamSetting)player.CustomProperties["Team"] == TeamSetting.Red)
@@ -121,7 +121,7 @@ public class JHT_TeamManager : MonoBehaviour
         }
         else
         {
-            Debug.Log($"ÇöÀç {player.NickName}¿¡ ´ëÇÑ »óÅÂ ¾øÀ½");
+            Debug.Log($"í˜„ì¬ {player.NickName}ì— ëŒ€í•œ ìƒíƒœ ì—†ìŒ");
         }
     }
 
@@ -133,8 +133,8 @@ public class JHT_TeamManager : MonoBehaviour
     }
     #endregion
 
-    #region ÇÃ·¹ÀÌ¾î ½ÃÀÛ½Ã ÆÀ ±¸ºĞ
-    //red,blue Count ¹Ş¾Æ¿Â °ªÀ¸·Î teamÁ¤ÇÏ±â
+    #region í”Œë ˆì´ì–´ ì‹œì‘ì‹œ íŒ€ êµ¬ë¶„
+    //red,blue Count ë°›ì•„ì˜¨ ê°’ìœ¼ë¡œ teamì •í•˜ê¸°
     public void SetPlayerTeam(Player player)
     {
         TeamSetting setting;
@@ -159,7 +159,7 @@ public class JHT_TeamManager : MonoBehaviour
     }
     #endregion
 
-    #region ÇÃ·¹ÀÌ¾î ÆÀ ¼±ÅÃ½Ã ÆÀ º¯°æ
+    #region í”Œë ˆì´ì–´ íŒ€ ì„ íƒì‹œ íŒ€ ë³€ê²½
     public void SetChangePlayerTeam(Player player,int redSelect, int blueSelect)
     {
         TeamSetting setting;
@@ -190,7 +190,7 @@ public class JHT_TeamManager : MonoBehaviour
     }
     #endregion
 
-    #region ·ë¿¡ red,blue Count »ı¼º
+    #region ë£¸ì— red,blue Count ìƒì„±
     public void SetTeamCount(int red, int blue)
     {
         redCount = red;

@@ -52,7 +52,7 @@ public class JHT_UIManager : MonoBehaviour
     public T ShowPopUp<T>(string objName) where T : JHT_BaseUI
     {
         Transform child = PopUpCanvas.GetComponentsInChildren<Transform>(true)
-                                .FirstOrDefault(t => t.name == objName); //¹°¾îº¼°Å
+                                .FirstOrDefault(t => t.name == objName); //Â¹Â°Â¾Ã®ÂºÂ¼Â°Ã…
 
         T instance = child.GetComponent<T>();
 
