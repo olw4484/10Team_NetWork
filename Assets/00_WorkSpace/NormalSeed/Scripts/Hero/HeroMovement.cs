@@ -2,9 +2,11 @@ using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.TextCore.Text;
+using static UnityEngine.GraphicsBuffer;
 
 public class HeroMovement : MonoBehaviour
 {
@@ -13,9 +15,10 @@ public class HeroMovement : MonoBehaviour
     private PhotonView pv;
 
     public bool isMove;
+    private bool isAttacking = false;
     private Vector3 destination;
 
-    private WaitForSeconds distCheck = new WaitForSeconds(0.2f);
+    private WaitForSeconds distCheck = new WaitForSeconds(0.1f);
 
     private void Awake() => Init();
 
@@ -47,6 +50,7 @@ public class HeroMovement : MonoBehaviour
             // 땅 클릭 시 이동
             if (hit.collider.CompareTag("Ground") || hit.collider.CompareTag("Obstacle"))
             {
+                isAttacking = false;
                 SetDestination(hit.point, moveSpd);
                 return;
             }
@@ -77,81 +81,50 @@ public class HeroMovement : MonoBehaviour
         }
     }
 
-
-    ///// <summary>
-    ///// 이동지점을 Raycast로 지정해서 이동지점을 향해 움직이게 하는 메서드
-    ///// </summary>
-    ///// <param name="moveSpd"></param>
-    //public void GetMoveDestination(float moveSpd)
-    //{
-    //    // 카메라에서 빛을 쏴서 Ground에 맞았을 때 그곳을 목표지점으로 설정 
-    //    RaycastHit hit;
-    //    if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
-    //    {
-    //        if (hit.collider.CompareTag("Ground"))
-    //        {
-    //            SetDestination(hit.point, moveSpd);
-    //        }
-    //    }
-    //}
-
-    ///// <summary>
-    ///// 히어로 기본공격 메서드
-    ///// </summary>
-    ///// <param name="moveSpd"></param>
-    ///// <param name="damage"></param>
-    ///// <param name="atkRange"></param>
-    //public void HeroAttack(float moveSpd, int damage, float atkRange)
-    //{
-    //    RaycastHit hit;
-    //    if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
-    //    {
-    //        LGH_IDamagable damagable = hit.collider.GetComponent<LGH_IDamagable>();
-    //        PhotonView view = hit.collider.GetComponent<PhotonView>();
-
-    //        if (damagable != null && view != null && !view.IsMine)
-    //        {
-    //            object targetTeam, myTeam;
-    //            if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam) &&
-    //                view.Owner.CustomProperties.TryGetValue("Team", out targetTeam))
-    //            {
-    //                if (!targetTeam.Equals(myTeam))
-    //                {
-    //                    // 공격 사거리 안에 있다면 기본공격 실행(애니메이션 재생, TakeDamage로 데미지 줌)
-    //                    StartCoroutine(HeroAttackRoutine(hit.collider.transform, damagable, atkRange, damage, moveSpd));
-    //                    return;
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
-
     private IEnumerator HeroAttackRoutine(Transform target, LGH_IDamagable damagable, float atkRange, float atkDelay, int damage, float moveSpd)
     {
+        isAttacking = true;
         while (true)
         {
             float dist = Vector3.Distance(transform.position, target.position);
 
             if (dist <= atkRange && atkDelay <= 0f)
             {
-                // TakeDamage를 RPC로 만들어야 함
-                agent.isStopped = true;
-                agent.ResetPath();
-
-                damagable.TakeDamage(damage);
-                Debug.Log("Hero1 기본 공격");
+                // 멈춤 동기화를 위해 RPC 실행
+                ExecuteAttack(target, damagable, damage);
                 break;
             }
             else
             {
+                isAttacking = false;
                 agent.isStopped = false;
                 SetDestination(target.position, moveSpd);
             }
-
-            agent.isStopped = false;
-            yield return null;
+            yield return distCheck;
         }
+        isAttacking = false;
     }
+
+    private void ExecuteAttack(Transform target, LGH_IDamagable damagable, int damage)
+    {
+        pv.RPC(nameof(RPC_StopAndFace), RpcTarget.All, target.position);
+        damagable.TakeDamage(damage);
+        Debug.Log("Hero1 기본 공격");
+    }
+
+    [PunRPC]
+    public void RPC_StopAndFace(Vector3 lookPos)
+    {
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.ResetPath();
+
+        // 회전 동기화
+        Vector3 dir = (lookPos - transform.position).normalized;
+        if (dir.sqrMagnitude > 0.1f)
+            transform.forward = new Vector3(dir.x, 0, dir.z);
+    }
+
 
     /// <summary>
     /// Hero의 이동 지점을 결정한 후 이동중임을 알려주는 메서드
@@ -160,7 +133,7 @@ public class HeroMovement : MonoBehaviour
     /// <param name="moveSpd"></param>
     public void SetDestination(Vector3 dest, float moveSpd)
     {
-        if (pv.IsMine)
+        if (pv.IsMine && !isAttacking)
         {
             pv.RPC("RPC_SetDestination", RpcTarget.All, dest, moveSpd);
         }
@@ -170,19 +143,9 @@ public class HeroMovement : MonoBehaviour
     public void RPC_SetDestination(Vector3 dest, float moveSpd)
     {
         agent.speed = moveSpd;
-        //agent.SetDestination(dest);
         destination = dest;
         isMove = true;
-
-        //// Lag Compensation
-        //float lag = (float)(PhotonNetwork.Time - timestamp);
-        //Vector3 direction = (dest - transform.position).normalized;
-        //float predictedDistance = moveSpd * lag;
-        //Vector3 compensatedPosition = transform.position + direction * predictedDistance;
-
-        //agent.Warp(compensatedPosition);  // 순간 보정
         agent.SetDestination(dest);
-        //Debug.Log($"[RPC] 목적지 동기화: {dest}, 지연 보정 거리: {predictedDistance:F2}");
     }
 
 
