@@ -4,14 +4,23 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class JHT_RedFullPanel : JHT_BaseUI
+public class JHT_RedFullPanel : YSJ_PopupBaseUI
 {
-
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
+        // 커스텀 초기화
         GetEvent("RedBackButton").Click += data =>
         {
-            JHT_UIManager.UIInstance.ClosePopUp();
+            YSJ_UIManager.Instance.ClosePopup(gameObject);
         };
     }
+
+    public override void Close()
+    {
+        base.Close();
+        // 닫기 후 로직
+    }
+
+
 }

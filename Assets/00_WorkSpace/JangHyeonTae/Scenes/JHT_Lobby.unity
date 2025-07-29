@@ -1263,8 +1263,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65680a3ebba6bb44aa5c4a1114a4a00e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  redTeam: {fileID: 241997334}
-  blueTeam: {fileID: 363056907}
+  blueFullPopup: {fileID: 237313657743981041, guid: 193d7ed1bc7001e45825b98f29d142a7, type: 3}
+  redFullPopup: {fileID: 6319061284540467043, guid: b68513c2011a0a3419a60b7939879c54, type: 3}
   redCount: 0
   blueCount: 0
 --- !u!4 &471917354
@@ -3126,7 +3126,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1220409104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3955,6 +3955,7 @@ MonoBehaviour:
   leaveRoomButton: {fileID: 596641540}
   redButton: {fileID: 0}
   blueButton: {fileID: 0}
+  teamManager: {fileID: 471917353}
 --- !u!4 &1507226708
 Transform:
   m_ObjectHideFlags: 0
