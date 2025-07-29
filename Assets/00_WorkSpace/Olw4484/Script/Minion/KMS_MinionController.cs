@@ -238,10 +238,10 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         if (!photonView.IsMine && !PhotonNetwork.IsMasterClient)
             return; // 권한 없는 클라 무시
 
-        if (attackTimer >= attackCooldown)
+        if (attackTimer >= attackCooldown && target != null)
         {
             attackTimer = 0f;
-            // 애니메이션 및 데미지 모두 RPC로 전파
+            int targetViewID = target.GetComponent<PhotonView>().ViewID;
             photonView.RPC("RPC_TryAttack", RpcTarget.All, targetViewID);
         }
     }
