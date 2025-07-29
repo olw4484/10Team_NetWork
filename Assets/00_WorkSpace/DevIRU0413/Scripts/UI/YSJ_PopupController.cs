@@ -7,7 +7,7 @@ public class YSJ_PopupController
     #region Constants
 
     private const int DESTROY_POPUP_INDEX_VALUE = -2;
-    private const int POPUP_LAYER_INDEX_VALUE = (int)YSJ_UIEnums.Popup;
+    private const int POPUP_LAYER_INDEX_VALUE = (int)YSJ_UITypes.Popup;
 
     #endregion
 
@@ -25,7 +25,7 @@ public class YSJ_PopupController
     {
         if (_isInit) return;
 
-        _popupCanvas = YSJ_UIManager.Instance.GetCanvas(YSJ_UIEnums.Popup);
+        _popupCanvas = YSJ_UIManager.Instance.GetCanvas(YSJ_UITypes.Popup);
         _isInit = _popupCanvas != null;
     }
 
