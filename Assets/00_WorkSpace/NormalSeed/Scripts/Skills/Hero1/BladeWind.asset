@@ -15,9 +15,9 @@ MonoBehaviour:
   skillName: BladeWind
   skillLevel: 1
   isPassive: 0
-  damage: 0
-  skillRange: 0
+  damage: 20
+  skillRange: 3
   buffAmount: []
   mana: 0
-  cooldown: 10
+  cooldown: 5
   icon: {fileID: 0}

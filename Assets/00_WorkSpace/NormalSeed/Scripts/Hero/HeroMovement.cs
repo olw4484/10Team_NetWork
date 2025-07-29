@@ -16,6 +16,7 @@ public class HeroMovement : MonoBehaviour
 
     public bool isMove;
     private bool isAttacking = false;
+    private float attackDelay;
     private Vector3 destination;
 
     private Coroutine attackCoroutine;
@@ -104,15 +105,16 @@ public class HeroMovement : MonoBehaviour
         if (isAttacking) yield break;
 
         isAttacking = true;
+
         while (true)
         {
             float dist = Vector3.Distance(transform.position, target.position);
 
-            if (dist <= atkRange && atkDelay <= 0f)
+            if (dist <= atkRange)
             {
-                // 멈춤 동기화를 위해 RPC 실행
                 ExecuteAttack(target, damagable, damage);
                 attackCoroutine = null;
+                attackDelay = atkDelay;
                 break;
             }
             else
@@ -133,8 +135,9 @@ public class HeroMovement : MonoBehaviour
     /// <param name="target"></param>
     /// <param name="damagable"></param>
     /// <param name="damage"></param>
-    private void ExecuteAttack(Transform target, LGH_IDamagable damagable, int damage)
+    public void ExecuteAttack(Transform target, LGH_IDamagable damagable, int damage)
     {
+        // 멈춤 동기화를 위해 RPC 실행
         pv.RPC(nameof(RPC_StopAndFace), RpcTarget.All, target.position);
         
         // 타겟이 갖고 있는 HeroControlelr 안의 TakeDamage RPC 실행

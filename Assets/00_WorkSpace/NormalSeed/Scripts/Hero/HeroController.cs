@@ -56,19 +56,12 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
             //    mov.HeroAttack(model.MoveSpd, (int)model.Atk, model.AtkRange); // 추후 damage 변수는 데미지 공식에 따라 바꿔줄 필요가 있음
             //    atkDelay = 1 / model.AtkSpd;
             //}
-            
             mov.HandleRightClick(model.MoveSpd, (int)model.Atk, model.AtkRange, atkDelay);
-            //atkDelay = 1 / model.AtkSpd; // 공격속도에 따른 공격 딜레이 설정 필요
         }
 
         if (Input.GetKeyDown(KeyCode.S))
         {
             agent.ResetPath();
-        }
-
-        if (atkDelay > 0f)
-        {
-            atkDelay -= Time.deltaTime;
         }
     }
 

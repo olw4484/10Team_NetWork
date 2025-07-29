@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
@@ -55,7 +56,7 @@ public class Hero1SkillSet : SkillSet
                 if (angle <= 30)
                 {
                     // 일단 데미지 계산식 없이 깡 스킬 데미지 부여
-                    damagable.TakeDamage(skill_Q.damage);
+                    view.RPC(nameof(HeroController.TakeDamage), RpcTarget.All, skill_Q.damage);
                 }
             }
             Debug.Log("BladeWind");
@@ -87,14 +88,18 @@ public class Hero1SkillSet : SkillSet
         {
             Vector3 dashDir = (hit.point - originPos).normalized;
             pv.RPC(nameof(RPC_StartBash), RpcTarget.All, dashDir);
+            Debug.Log("RPC_StartBash 호출됨, dashDir: " + dashDir);
         }
     }
 
     private IEnumerator BashRoutine(Vector3 dashDir)
     {
+        Debug.Log("BashRoutine 시작!");
+
         // 마우스 방향으로 돌진하고 경로상에 부딪힌 적에 데미지를 주고 적 Hero나 장애물과 부딪히면 멈추는 스킬
-        float dashSpeed = 10f;
+
         float dashDuration = 0.5f;
+        float dashSpeed = 10f;
         float timer = 0f;
 
         Collider heroCollider = hero.GetComponent<Collider>();
@@ -191,24 +196,32 @@ public class Hero1SkillSet : SkillSet
                 PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam))
             {
                 if (targetTeam == myTeam) yield break;
-            }
 
-            // 타겟을 바라보게 설정
-            Vector3 targetPos = new Vector3(hit.collider.transform.position.x, transform.position.y, hit.collider.transform.position.z);
-            transform.forward = (targetPos - transform.position).normalized;
+                // 스킬 사정거리 안에 있다면 스킬 실행, 사정거리 밖에 있다면 사정 거리 안에 들어올 때까지 추적
+                while (true)
+                {
+                    if (Vector3.Distance(hit.collider.transform.position, transform.position) <= skill_R.skillRange)
+                    {
+                        hero.mov.ExecuteAttack(hit.collider.transform, damagable, skill_R.damage);
 
-            // 데미지 부여
-            damagable.TakeDamage(skill_R.damage);
-            Debug.Log("Brutal Smite Hit");
-
-            // 이동속도 감소 적용
-            HeroController targetHero = hit.collider.GetComponent<HeroController>();
-            if (targetHero != null)
-            {
-                float originalSpeed = targetHero.model.MoveSpd;
-                targetHero.model.MoveSpd *= 0.5f;
-                yield return new WaitForSeconds(1f);
-                targetHero.model.MoveSpd = originalSpeed;
+                        // 이동속도 감소 적용
+                        HeroController targetHero = hit.collider.GetComponent<HeroController>();
+                        if (targetHero != null)
+                        {
+                            float originalSpeed = targetHero.model.MoveSpd;
+                            targetHero.model.MoveSpd *= 0.5f;
+                            yield return new WaitForSeconds(1f);
+                            targetHero.model.MoveSpd = originalSpeed;
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        hero.agent.isStopped = false;
+                        hero.mov.SetDestination(hit.collider.transform.position, hero.model.MoveSpd);
+                    }
+                    yield return new WaitForSeconds(0.1f);
+                }
             }
         }
     }
