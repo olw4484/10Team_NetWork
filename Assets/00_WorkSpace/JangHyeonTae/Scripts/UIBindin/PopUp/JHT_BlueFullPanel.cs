@@ -10,7 +10,7 @@ public class JHT_BlueFullPanel : YSJ_PopupBaseUI
         // 커스텀 초기화
         GetEvent("BlueBackButton").Click += data =>
         {
-            YSJ_UIManager.Instance.ClosePopup(gameObject);
+            YSJ_UIManager.Instance.UnregisterPopup(gameObject);
         };
     }
 

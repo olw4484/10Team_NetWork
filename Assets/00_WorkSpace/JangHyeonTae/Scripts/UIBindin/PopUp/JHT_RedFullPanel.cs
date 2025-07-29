@@ -12,7 +12,7 @@ public class JHT_RedFullPanel : YSJ_PopupBaseUI
         // 커스텀 초기화
         GetEvent("RedBackButton").Click += data =>
         {
-            YSJ_UIManager.Instance.ClosePopup(gameObject);
+            YSJ_UIManager.Instance.UnregisterPopup(gameObject);
         };
     }
 
