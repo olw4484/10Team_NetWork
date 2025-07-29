@@ -6,25 +6,37 @@ using Photon.Pun;
 using System;
 using TMPro;
 
+public enum TeamSetting
+{
+    None,
+    Red,
+    Blue
+}
+
 public class JHT_TeamManager : MonoBehaviour
 {
-    [SerializeField] private Transform redTeam;
-    [SerializeField] private Transform blueTeam;
+    [SerializeField] private GameObject blueFullPopup;
+    [SerializeField] private GameObject redFullPopup;
 
     public int redCount;
     public int blueCount;
 
 
-    public Action OnRedSelect;
-    public Action OnBlueSelect;
-    public Action OnCantChangeRed;
-    public Action OnCantChangeBlue;
-    public Action OnChangeTeam;
+    public Action<Player> OnRedSelect;
+    public Action<Player> OnBlueSelect;
+    public event Action OnCantChangeRed;
+    public event Action OnCantChangeBlue;
+    public Action<Player,int,int> OnChangeTeam;
+
+    private CurrentState curState;
+
 
     private void Awake()
     {
         OnRedSelect += RedTeamSelect;
         OnBlueSelect += BlueTeamSelect;
+
+        // 팀바꾸기 실패시
         OnCantChangeRed += CantRedChange;
         OnCantChangeBlue += CantBlueChange;
     }
@@ -33,12 +45,16 @@ public class JHT_TeamManager : MonoBehaviour
     {
         OnRedSelect -= RedTeamSelect;
         OnBlueSelect -= BlueTeamSelect;
+
+        // 팀바꾸기 실패시
         OnCantChangeRed -= CantRedChange;
         OnCantChangeBlue -= CantBlueChange;
     }
 
+
+
     //blueCount 값만 올리기
-    public void BlueTeamSelect()
+    public void BlueTeamSelect(Player player)
     {
         if (blueCount >= 2)
         {
@@ -46,15 +62,32 @@ public class JHT_TeamManager : MonoBehaviour
             return;
         }
 
-        blueCount++;
+        if (player.CustomProperties.TryGetValue("CurState", out object value))
+        {
+            //플레이어 게임상태 가져와서 구분
+            if ((CurrentState)value == CurrentState.InRoom)
+            {
+                if ((TeamSetting)player.CustomProperties["Team"] == TeamSetting.Blue)
+                    return;
 
-        ExitGames.Client.Photon.Hashtable teamCount = new();
-        teamCount["BlueCount"] = blueCount;
-        PhotonNetwork.CurrentRoom.SetCustomProperties(teamCount);
+                OnChangeTeam?.Invoke(player,-1,1);
+            }
+            else
+            {
+                blueCount++;
+                SetTeamCount(redCount, blueCount);
+            }
+        }
+        else
+        {
+            Debug.Log($"현재 {player.NickName}에 대한 상태 없음");
+        }
     }
 
+
+
     //redCount 값만 올리기
-    public void RedTeamSelect()
+    public void RedTeamSelect(Player player)
     {
         if (redCount >= 2)
         {
@@ -62,23 +95,29 @@ public class JHT_TeamManager : MonoBehaviour
             return;
         }
 
-        redCount++;
+        if (player.CustomProperties.TryGetValue("CurState", out object value))
+        {
+            //플레이어 게임상태 가져와서 구분
+            if ((CurrentState)value == CurrentState.InRoom)
+            {
+                if ((TeamSetting)player.CustomProperties["Team"] == TeamSetting.Red)
+                    return;
 
-        ExitGames.Client.Photon.Hashtable teamCount = new();
-        teamCount["RedCount"] = redCount;
-        PhotonNetwork.CurrentRoom.SetCustomProperties(teamCount);
+                OnChangeTeam?.Invoke(player,1,-1);
+            }
+            else
+            {
+                redCount++;
+                SetTeamCount(redCount, blueCount);
+            }
+        }
+        else
+        {
+            Debug.Log($"현재 {player.NickName}에 대한 상태 없음");
+        }
     }
 
-    public void CantRedChange()
-    {
-        JHT_UIManager.UIInstance.ShowPopUp<JHT_RedFullPanel>("RedFullText");
-    }
-
-    public void CantBlueChange()
-    {
-        JHT_UIManager.UIInstance.ShowPopUp<JHT_BlueFullPanel>("BlueFullText");
-    }
-
+    #region 플레이어 시작시 팀 구분
     //red,blue Count 받아온 값으로 team정하기
     public void SetPlayerTeam(Player player)
     {
@@ -89,12 +128,12 @@ public class JHT_TeamManager : MonoBehaviour
 
         if (red > blue)
         {
-            OnBlueSelect?.Invoke();
+            OnBlueSelect?.Invoke(player);
             setting = TeamSetting.Blue;
         }
         else
         {
-            OnRedSelect?.Invoke();
+            OnRedSelect?.Invoke(player);
             setting = TeamSetting.Red;
         }
 
@@ -102,16 +141,61 @@ public class JHT_TeamManager : MonoBehaviour
         props["Team"] = setting;
         player.SetCustomProperties(props);
     }
+    #endregion
 
-    public void ChangeTeam()
+    #region 플레이어 팀 선택시 팀 변경
+    public void SetChangePlayerTeam(Player player,int redSelect, int blueSelect)
     {
+        TeamSetting setting;
 
+        int red = (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"];
+        int blue = (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"];
+
+        red += redSelect;
+        blue += blueSelect;
+
+        if (redSelect > 0)
+        {
+            setting = TeamSetting.Red;
+        }
+        else
+        {
+            setting = TeamSetting.Blue; 
+        }
+
+        ExitGames.Client.Photon.Hashtable count = new();
+        count["RedCount"] = red;
+        count["BlueCount"] = blue;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(count);
+
+        ExitGames.Client.Photon.Hashtable props = new();
+        props["Team"] = setting;
+        player.SetCustomProperties(props);
     }
-}
+    #endregion
 
-public enum TeamSetting
-{
-    None,
-    Red,
-    Blue
+    #region 룸에 red,blue Count 생성
+    public void SetTeamCount(int red, int blue)
+    {
+        redCount = red;
+        blueCount = blue;
+
+        ExitGames.Client.Photon.Hashtable teamCount = new();
+        teamCount["RedCount"] = redCount;
+        teamCount["BlueCount"] = blueCount;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(teamCount);
+    }
+    #endregion
+
+    #region PopUp
+    public void CantRedChange()
+    {
+        YSJ_UISpawnFactory.ShowPopup(redFullPopup);
+    }
+
+    public void CantBlueChange()
+    {
+        YSJ_UISpawnFactory.ShowPopup(blueFullPopup);
+    }
+    #endregion
 }

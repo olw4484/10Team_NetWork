@@ -8,29 +8,24 @@ using UnityEngine;
 
 public class JHT_UIManager : MonoBehaviour
 {
-    #region singleton
-    private static JHT_UIManager uiInstance;
-    public static JHT_UIManager UIInstance { get { return uiInstance; } }
+    //#region singleton
+    //private static JHT_UIManager uiInstance;
+    //public static JHT_UIManager UIInstance { get { return uiInstance; } }
+    //
+    //private void Awake()
+    //{
+    //    if (uiInstance == null)
+    //    {
+    //        uiInstance = this;
+    //        DontDestroyOnLoad(gameObject);
+    //    }
+    //    else
+    //    {
+    //        Destroy(gameObject);
+    //    }
+    //}
+    //#endregion
 
-    private void Awake()
-    {
-        if (uiInstance == null)
-        {
-            uiInstance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-    #endregion
-
-    private void Start()
-    {
-        GameObject obj = Resources.Load($"PopUpCanvas").GameObject();
-        obj.transform.SetParent(transform);
-    }
 
     private JHT_PopupCanvas popUpCanvas;
     public JHT_PopupCanvas PopUpCanvas
