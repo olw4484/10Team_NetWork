@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,6 +18,9 @@ public class KMS_MinionAutoSpawner : KMS_BaseMinionSpawner
 
     private void Update()
     {
+        if (PhotonNetwork.InRoom && !PhotonNetwork.IsMasterClient)
+            return; // 마스터만 자동 소환
+
         timer += Time.deltaTime;
 
         if (timer >= spawnInterval)

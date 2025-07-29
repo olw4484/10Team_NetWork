@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -76,6 +77,30 @@ public class KMS_ResourceSystem : MonoBehaviour
         OnResourceChanged?.Invoke(type, GetResource(type));
 
     }
+
+    #region RPC_GOLD
+    /// <summary>
+    /// 네트워크 환경에서 자원 추가
+    /// </summary>
+    [PunRPC]
+    public void RpcAddResource(int type, int amount)
+    {
+        AddResource((ResourceType)type, amount);
+    }
+
+    public void AddResourceNetwork(ResourceType type, int amount, KMS_CommandPlayer commandPlayer)
+    {
+        var photonView = ((MonoBehaviour)commandPlayer).GetComponent<PhotonView>();
+        if (PhotonNetwork.InRoom)
+        {
+            photonView.RPC("RpcAddResource", RpcTarget.All, (int)type, amount);
+        }
+        else
+        {
+            AddResource(type, amount);
+        }
+    }
+    #endregion
 
     public int GetResource(ResourceType type)
     {
