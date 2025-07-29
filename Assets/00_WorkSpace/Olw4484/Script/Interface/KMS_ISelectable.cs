@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface KMS_ISelectable
 {
-    public enum SelectableType { None, Unit, Building }
+    public enum SelectableType { None, Minion, Building }
     void Select();
     void Deselect();
     SelectableType GetSelectableType(); // À¯´Ö, °Ç¹° µî

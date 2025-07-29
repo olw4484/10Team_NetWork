@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,19 +19,27 @@ public class KMS_MinionRewardSystem : MonoBehaviour
 
     private void HandleMinionDead(MinionController minion, GameObject killer)
     {
+        // 골드 지급
         var data = minion.data;
-
-        var commendPlayer = killer.GetComponent<KMS_CommandPlayer>();
-        if (commendPlayer != null && data.goldReward > 0)
+        if (PhotonNetwork.IsMasterClient)
         {
-            commendPlayer.AddGold(data.goldReward);
+            var commendPlayer = killer.GetComponent<KMS_CommandPlayer>();
+            if (commendPlayer != null && data.goldReward > 0)
+            {
+                commendPlayer.photonView.RPC("RpcAddGold", RpcTarget.All, data.goldReward);
+            }
         }
 
-        // 경험치 지급 //경험치 시스템 필요시 주석 해제후 사용 가능
-        //var killerExpHandler = killer.GetComponent<IExpReceiver>();
-        //if (killerExpHandler != null && data.expReward > 0)
-        //{
-        //    killerExpHandler.AddExp(data.expReward);
-        //}
+        // 경험치 지급
+        if (PhotonNetwork.IsMasterClient)
+        {
+            var killerExpHandler = killer.GetComponent<KMS_IExpReceiver>();
+            if (killerExpHandler != null && data.expReward > 0)
+            {
+                var photonView = ((MonoBehaviour)killerExpHandler).GetComponent<PhotonView>();
+                if (photonView != null)
+                    photonView.RPC("RpcAddExp", RpcTarget.All, data.expReward);
+            }
+        }
     }
 }

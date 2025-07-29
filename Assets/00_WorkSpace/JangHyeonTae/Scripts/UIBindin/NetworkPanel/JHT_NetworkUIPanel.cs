@@ -35,7 +35,7 @@ public class JHT_NetworkUIPanel : JHT_BaseUI
     private bool isSecret;
 
     [SerializeField] private JHT_RoomManager roomManager;
-
+    [SerializeField] private JHT_TeamManager teamManager;
     private void Start()
     {
         GetEvent("CreateLobbyButton").Click += data =>
@@ -109,23 +109,17 @@ public class JHT_NetworkUIPanel : JHT_BaseUI
 
         GetEvent("RedTeamPanel").Click += data =>
         {
-            
+            teamManager.OnRedSelect?.Invoke(PhotonNetwork.LocalPlayer);
 
-            Debug.Log("·¹µåÆÀ ´Ù Ã¡À½");
         };
 
         GetEvent("BlueTeamPanel").Click += data =>
         {
-            
+            teamManager.OnBlueSelect?.Invoke(PhotonNetwork.LocalPlayer);
 
-            Debug.Log("ºí·çÆÀ ´Ù Ã¡¾î¿ä");
         };
     }
 
-    private void PanelDestroy()
-    {
-
-    }
 
     private IEnumerator ButtonColorChange()
     {
@@ -134,8 +128,4 @@ public class JHT_NetworkUIPanel : JHT_BaseUI
         secretImage.color = isSecret ? Color.red : Color.green;
     }
 
-    private void PlayerTeamColor()
-    {
-
-    }
 }
