@@ -77,7 +77,7 @@ public class KMS_MinionFactory : MonoBehaviour
     }
 
 
-    public bool TrySpawnMinion(MinionType type, Vector3 position, Transform target, KMS_CommandPlayer player)
+    public bool TrySpawnMinion(MinionType type, Vector3 position, Transform target, KMS_CommandPlayer player, int teamId)
     {
 
         var minionInfo = hqData.manualSpawnList.FirstOrDefault(x => x.type == type);
@@ -121,7 +121,7 @@ public class KMS_MinionFactory : MonoBehaviour
             return false;
         }
 
-        controller.Initialize(data, target, null);
+        controller.Initialize(data, target, null, teamId);
 
         return true;
     }

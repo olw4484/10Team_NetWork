@@ -18,6 +18,7 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     public int maxHP;
     private Vector3 attackMoveTarget;
     private float attackMoveStopDistance = 0.1f;
+    public int teamId;
 
     public MinionView view;
     public MinionDataSO data;
@@ -133,7 +134,7 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         }
     }
 
-    public void Initialize(MinionDataSO data, Transform target, KMS_WaypointGroup waypointGroup = null)
+    public void Initialize(MinionDataSO data, Transform target, KMS_WaypointGroup waypointGroup = null, int teamId = 0)
     {
         this.data = data;
         this.moveSpeed = data.moveSpeed;
@@ -143,6 +144,7 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         this.maxHP = data.maxHP;
         this.currentHP = maxHP;
         this.target = target;
+        this.teamId = teamId;
         this.waypointGroup = waypointGroup;
         this.currentWaypointIndex = 0;
 
@@ -175,14 +177,17 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
 
     private Transform FindClosestEnemyInRange()
     {
-        float searchRadius = attackRange * 1.5f; // 필요에 따라 조절
+        float searchRadius = attackRange * 1.5f; // 필요에따라 조절
         Collider[] colliders = Physics.OverlapSphere(transform.position, searchRadius, enemyLayerMask);
         float minDist = float.MaxValue;
         Transform closest = null;
 
         foreach (var col in colliders)
         {
-            if (col.gameObject == gameObject) continue;
+            var minion = col.GetComponent<MinionController>();
+            if (minion != null && minion.teamId == this.teamId)
+                continue; // 아군이면 패스
+
             float dist = Vector3.Distance(transform.position, col.transform.position);
             if (dist < minDist)
             {
@@ -233,12 +238,10 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         if (attackTimer >= attackCooldown)
         {
             attackTimer = 0f;
-
-            if (view != null && view.Animator != null)
-                //view.Animator.SetFloat("AttackSpeed", data.AttackAnimSpeed); //공격속도가 필요하면 주석 해제하고 사용 가능
-
-            view.PlayMinionAttackAnimation();
-            // 공격 데미지 처리는 애니메이션 이벤트에서
+            view?.PlayMinionAttackAnimation();
+            // 데미지 처리
+            var damageable = target?.GetComponent<IDamageable>();
+            damageable?.TakeDamage(attackPower, gameObject);
         }
     }
 

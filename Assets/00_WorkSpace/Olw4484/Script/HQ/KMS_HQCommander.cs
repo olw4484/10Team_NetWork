@@ -36,6 +36,7 @@ public class KMS_HQCommander : MonoBehaviour, KMS_ISelectable
         var minionType = (MinionType)type;
         var spawnPos = defaultSpawnPoint.position;
 
+
         // NavMesh 위로 위치 보정
         NavMeshHit hit;
         if (NavMesh.SamplePosition(spawnPos, out hit, 3f, NavMesh.AllAreas))
@@ -50,7 +51,8 @@ public class KMS_HQCommander : MonoBehaviour, KMS_ISelectable
         }
 
         var target = rallyPointTarget != null ? rallyPointTarget : null;
-        KMS_MinionFactory.Instance.TrySpawnMinion(minionType, spawnPos, target, player);
+        int teamId = player.teamId;
+        KMS_MinionFactory.Instance.TrySpawnMinion(minionType, spawnPos, target, player, teamId);
     }
 
     public void SetRallyPoint(Vector3 point)
