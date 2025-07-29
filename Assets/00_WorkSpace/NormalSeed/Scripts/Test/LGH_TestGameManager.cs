@@ -34,5 +34,4 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks
         camController.InitCamera(localPlayer);  // 플레이어 전달
         skillManager.InitSkillManager(localPlayer);
     }
-
 }

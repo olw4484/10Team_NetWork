@@ -81,6 +81,16 @@ public class HeroMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 영웅 기본공격 코루틴
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="damagable"></param>
+    /// <param name="atkRange"></param>
+    /// <param name="atkDelay"></param>
+    /// <param name="damage"></param>
+    /// <param name="moveSpd"></param>
+    /// <returns></returns>
     private IEnumerator HeroAttackRoutine(Transform target, LGH_IDamagable damagable, float atkRange, float atkDelay, int damage, float moveSpd)
     {
         isAttacking = true;
@@ -105,6 +115,12 @@ public class HeroMovement : MonoBehaviour
         isAttacking = false;
     }
 
+    /// <summary>
+    /// 실제 공격 실행 메서드
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="damagable"></param>
+    /// <param name="damage"></param>
     private void ExecuteAttack(Transform target, LGH_IDamagable damagable, int damage)
     {
         pv.RPC(nameof(RPC_StopAndFace), RpcTarget.All, target.position);
@@ -112,6 +128,10 @@ public class HeroMovement : MonoBehaviour
         Debug.Log("Hero1 기본 공격");
     }
 
+    /// <summary>
+    /// 이동 멈춤을 네트워크와 동기화하기 위한 RPC 메서드
+    /// </summary>
+    /// <param name="lookPos"></param>
     [PunRPC]
     public void RPC_StopAndFace(Vector3 lookPos)
     {
@@ -139,6 +159,11 @@ public class HeroMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 이동 목표 지점을 네트워크와 동기화하기 위한 RPC 메서드
+    /// </summary>
+    /// <param name="dest"></param>
+    /// <param name="moveSpd"></param>
     [PunRPC]
     public void RPC_SetDestination(Vector3 dest, float moveSpd)
     {
