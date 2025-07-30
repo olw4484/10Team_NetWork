@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class JHT_PlayerPanelItem : JHT_BaseUI
+public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
 {
     private TextMeshProUGUI playerNameText => GetUI<TextMeshProUGUI>("PlayerNameText");
     private Image hostImage => GetUI<Image>("HostImage");
@@ -25,7 +25,7 @@ public class JHT_PlayerPanelItem : JHT_BaseUI
     private string curMyCharacter;
     public void Init(Player player)
     {
-        PhotonNetwork.LocalPlayer.NickName = PhotonNetwork.LocalPlayer.ActorNumber.ToString(); //FirebaseManager.Auth.CurrentUser.DisplayName;
+        PhotonNetwork.LocalPlayer.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
         player.NickName = PhotonNetwork.LocalPlayer.NickName;
         playerNameText.text = player.NickName;
         hostImage.enabled = player.IsMasterClient;

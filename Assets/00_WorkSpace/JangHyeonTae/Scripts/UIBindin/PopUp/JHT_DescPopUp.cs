@@ -7,9 +7,9 @@ public class JHT_DescPopUp : YSJ_PopupBaseUI
 {
     private TextMeshProUGUI descText => GetUI<TextMeshProUGUI>("DescText");
 
-    protected override void Start()
+    public override void Open()
     {
-        base.Start();
+        base.Open();
         // 커스텀 초기화
         
     }

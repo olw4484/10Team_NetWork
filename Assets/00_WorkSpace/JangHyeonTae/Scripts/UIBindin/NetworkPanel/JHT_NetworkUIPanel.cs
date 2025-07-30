@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
-public class JHT_NetworkUIPanel : JHT_BaseUI
+public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
 {
     #region ·Îºñ
     private GameObject lobbyPanel => GetUI("LobbyPanel");

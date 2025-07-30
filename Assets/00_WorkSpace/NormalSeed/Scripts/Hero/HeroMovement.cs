@@ -10,7 +10,7 @@ using static UnityEngine.GraphicsBuffer;
 
 public class HeroMovement : MonoBehaviour
 {
-    [SerializeField] public Camera camera;
+    [SerializeField] public Camera mainCamera;
     private NavMeshAgent agent;
     private PhotonView pv;
 
@@ -26,7 +26,7 @@ public class HeroMovement : MonoBehaviour
 
     private void Init()
     {
-        camera = Camera.main;
+        mainCamera = Camera.main;
         agent = GetComponent<NavMeshAgent>();
         pv = GetComponent<PhotonView>();
 
@@ -44,7 +44,7 @@ public class HeroMovement : MonoBehaviour
 
     public void HandleRightClick(float moveSpd, int damage, float atkRange, float atkDelay)
     {
-        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit))

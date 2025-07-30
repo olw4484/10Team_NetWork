@@ -4,30 +4,41 @@ using UnityEngine.UI;
 
 public class YSJ_PopupBaseUI : JHT_BaseUI
 {
+    #region Field
     [SerializeField] private float _showTime = 1.0f;
     [SerializeField] private Color _backgroundColor = new Color(0f, 0f, 0f, 0.5f); // 반투명 검정
     [SerializeField] private GameObject _popupBody;
 
     private GameObject _background;
+
+    public override YSJ_UIType UIType => YSJ_UIType.Popup;
     public int PopupIndex { get; private set; } = -1;
 
-    protected virtual void Start()
+    #endregion
+
+    #region Unity Method
+    private void Start() => Open();
+
+    #endregion
+
+    #region BaseUI Method
+    public override void Open()
     {
+        base.Open();
         CreateBackground();
-        YSJ_UIManager.Instance.RegisterPopup(this.gameObject);
         StartCoroutine(ShowAnimation());
     }
-
-    public virtual void Close()
+    public override void Close()
     {
-        YSJ_UIManager.Instance.UnregisterPopup(this.gameObject);
-
+        base.Close();
         if (_background != null)
             Destroy(_background);
-
         Destroy(this.gameObject);
     }
 
+    #endregion 
+
+    #region Popup Method
     public void SetPopupIndex(int index)
     {
         PopupIndex = index;
@@ -91,4 +102,6 @@ public class YSJ_PopupBaseUI : JHT_BaseUI
         // 팝업 바로 뒤로 배치
         _background.transform.SetAsFirstSibling();
     }
+
+    #endregion
 }

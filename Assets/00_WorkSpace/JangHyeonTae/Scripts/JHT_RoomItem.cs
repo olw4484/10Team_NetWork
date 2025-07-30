@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class JHT_RoomItem : JHT_BaseUI
+public class JHT_RoomItem : YSJ_PanelBaseUI
 {
     private Image secret => GetUI<Image>("Secret");
     private TextMeshProUGUI roomNameText => GetUI<TextMeshProUGUI>("RoomNameText");

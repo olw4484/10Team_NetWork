@@ -8,12 +8,13 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
 {
     #region Fields
 
-    private readonly Dictionary<YSJ_UITypes, Canvas> _canvasMap = new();
+    private readonly Dictionary<YSJ_UIType, Canvas> _canvasMap = new();
+    private Dictionary<Canvas, List<JHT_BaseUI>> _uiMap = new();
     private YSJ_PopupController _popupController = new();
 
     #endregion
 
-    #region Init
+    #region Init Methods
 
     protected override void Init()
     {
@@ -24,7 +25,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
 
     private void InitCanvasLayers()
     {
-        foreach (YSJ_UITypes layer in System.Enum.GetValues(typeof(YSJ_UITypes)))
+        foreach (YSJ_UIType layer in System.Enum.GetValues(typeof(YSJ_UIType)))
         {
             CreateCanvasIfNotExists(layer);
         }
@@ -34,7 +35,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
 
     #region Canvas Management
 
-    private void CreateCanvasIfNotExists(YSJ_UITypes layer)
+    private void CreateCanvasIfNotExists(YSJ_UIType layer)
     {
         if (_canvasMap.ContainsKey(layer)) return;
 
@@ -58,10 +59,11 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
         go.AddComponent<CanvasScaler>();
         go.AddComponent<GraphicRaycaster>();
 
+        _uiMap.Add(canvas, new List<JHT_BaseUI>());
         return canvas;
     }
 
-    public Canvas GetCanvas(YSJ_UITypes layer)
+    public Canvas GetCanvas(YSJ_UIType layer)
     {
         if (_canvasMap.TryGetValue(layer, out Canvas canvas))
             return canvas;
@@ -74,15 +76,15 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
 
     #region Clear Methods
 
-    public void TypeClear(YSJ_UITypes layer)
+    public void TypeClear(YSJ_UIType layer)
     {
-        if (layer == YSJ_UITypes.Popup)
+        if (layer == YSJ_UIType.Popup)
         {
             var count = _popupController.GetPopupCount();
+            _popupController.CloseAll();
 #if UNITY_EDITOR
             Debug.Log($"[UIManager] {layer} 레이어의 {count}개 UI 오브젝트가 제거되었습니다.");
 #endif
-            _popupController.CloseAll();
             return;
         }
 
@@ -120,21 +122,36 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
 
     #endregion
 
-    #region Popup Methods
+    #region Register / UnRegister
 
-    public void RegisterPopup(GameObject popup)
+    public void RegisterUI(JHT_BaseUI baseUI)
     {
-        _popupController.Register(popup);
+        if (baseUI == null) return;
+        if(baseUI.UIType == YSJ_UIType.Popup)
+            _popupController.Register(baseUI.gameObject);
+
+        Canvas typeCanvas = GetCanvas(baseUI.UIType);
+        baseUI.transform.parent = typeCanvas.transform;
+
+        _uiMap[typeCanvas]?.Add(baseUI);
     }
 
+    public void UnRegisterUI(JHT_BaseUI baseUI)
+    {
+        if (baseUI == null) return;
+        if (baseUI.UIType == YSJ_UIType.Popup)
+            _popupController.Unregister(baseUI.gameObject);
+
+        Canvas typeCanvas = GetCanvas(baseUI.UIType);
+        _uiMap[typeCanvas]?.Remove(baseUI);
+    }
+
+    #endregion
+
+    #region Popup Methods
     public void CloseTopPopup()
     {
         _popupController.CloseTop();
-    }
-
-    public void UnregisterPopup(GameObject popup)
-    {
-        _popupController.Unregister(popup);
     }
 
     #endregion
