@@ -1,9 +1,10 @@
 using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Photon.Realtime;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 
 
 //public enum TestTeamSetting
@@ -22,6 +23,8 @@ public class KMS_TestNetwork : MonoBehaviourPunCallbacks
     public Transform hqBlueSpawnPoint;
     public Transform cmdRedSpawnPoint;
     public Transform cmdBlueSpawnPoint;
+
+    public GameObject canvasPrefab;
 
     private void Start()
     {
@@ -99,6 +102,15 @@ public class KMS_TestNetwork : MonoBehaviourPunCallbacks
         if (commander != null)
             commander.player = cmdObj.GetComponent<CommandPlayer>();
 
+        var commandPlayer = cmdObj.GetComponent<CommandPlayer>();
+
+        if (commandPlayer.photonView.IsMine)
+        {
+            var canvasObj = Instantiate(canvasPrefab);
+            commandPlayer.goldText = canvasObj.transform.Find("ResourcePanel/GoldText").GetComponent<TMP_Text>();
+            commandPlayer.gearText = canvasObj.transform.Find("ResourcePanel/GearText").GetComponent<TMP_Text>();
+            commandPlayer.playerInputHandler = canvasObj.GetComponent<PlayerInputHandler>();
+        }
 
         AssignTeam();
     }
@@ -139,10 +151,6 @@ public class KMS_TestNetwork : MonoBehaviourPunCallbacks
         //팀에 따라 스폰 위치 결정
         Vector3 spawnPos = testTeam == TestTeamSetting.Red ? redSpawnPoint.position : blueSpawnPoint.position;
         Quaternion spawnRot = testTeam == TestTeamSetting.Red ? redSpawnPoint.rotation : blueSpawnPoint.rotation;
-
-        // 생성
-        PhotonNetwork.Instantiate("Sample", spawnPos, spawnRot);
-        Debug.Log($"JHT_TestNetwork : 플레이어 {PhotonNetwork.NickName} 팀 : {testTeam}, 위치 : {spawnPos}");
 
     }
 }

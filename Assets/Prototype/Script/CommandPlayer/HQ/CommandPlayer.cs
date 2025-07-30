@@ -18,6 +18,7 @@ public class CommandPlayer : MonoBehaviour
     {
         goldText = GameObject.Find("GoldText").GetComponent<TMP_Text>();
         gearText = GameObject.Find("GearText").GetComponent<TMP_Text>();
+        playerInputHandler = GameObject.Find("Canvas").GetComponent<PlayerInputHandler>();
     }
 
     void Update()
