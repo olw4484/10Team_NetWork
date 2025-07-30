@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class InventoryView : JHT_BaseUI
+public class InventoryView : YSJ_HUDBaseUI
 {
     [Header("½½·Ô ÇÁ¸®ÆÕ ¹× ½½·Ô ºÎ¸ð")]
     [SerializeField] private SHI_InventorySlot slotPrefab;

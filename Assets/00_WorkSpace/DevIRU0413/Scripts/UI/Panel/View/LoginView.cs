@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoginView : JHT_BaseUI, ILoginView
+public class LoginView : YSJ_HUDBaseUI, ILoginView
 {
     private enum LoginUI
     {
@@ -30,8 +30,6 @@ public class LoginView : JHT_BaseUI, ILoginView
 
     public void Init(LoginPresenter presenter)
     {
-        InitBaseUI(YSJ_UITypes.HUD);
-
         _binder = new YSJ_UIBinder<LoginUI>(this);
 
         _presenter = presenter;

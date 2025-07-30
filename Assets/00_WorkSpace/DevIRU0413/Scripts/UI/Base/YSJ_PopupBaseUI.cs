@@ -11,6 +11,7 @@ public class YSJ_PopupBaseUI : JHT_BaseUI
 
     private GameObject _background;
 
+    public override YSJ_UIType UIType => YSJ_UIType.Popup;
     public int PopupIndex { get; private set; } = -1;
 
     #endregion

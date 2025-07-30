@@ -25,7 +25,7 @@ namespace Runtime.UI
             }
 
             // 캔버스 매니저 또는 UIManager에서 부모 가져오기
-            var popupCanvas = YSJ_UIManager.Instance?.GetCanvas(YSJ_UITypes.Popup);
+            var popupCanvas = YSJ_UIManager.Instance?.GetCanvas(YSJ_UIType.Popup);
             if (popupCanvas == null)
             {
                 Debug.LogError("[PopupOpener] PopupRoot가 UIManager에 설정되어 있지 않습니다.");

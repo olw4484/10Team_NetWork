@@ -5,7 +5,7 @@ using UnityEngine;
 public class YSJ_UISpawnFactory
 {
     // spawn for prefab
-    public static GameObject SpawnUI(GameObject prefab, YSJ_UITypes layer, int extraOrder = 0)
+    public static GameObject SpawnUI(GameObject prefab, YSJ_UIType layer, int extraOrder = 0)
     {
         Canvas parentCanvas = YSJ_UIManager.Instance.GetCanvas(layer);
         if (parentCanvas == null)
@@ -17,12 +17,11 @@ public class YSJ_UISpawnFactory
         GameObject uiObject = GameObject.Instantiate(prefab);
         JHT_BaseUI uiComp = uiObject.GetOrAddComponent<JHT_BaseUI>();
 
-        uiComp.InitBaseUI(layer);
         return uiObject;
     }
 
     // spawn for resource
-    public static GameObject SpawnUI(string resourcePath, YSJ_UITypes layer, int extraOrder = 0)
+    public static GameObject SpawnUI(string resourcePath, YSJ_UIType layer, int extraOrder = 0)
     {
         GameObject prefab = Resources.Load<GameObject>(resourcePath);
         if (prefab == null)
@@ -43,7 +42,7 @@ public class YSJ_UISpawnFactory
             return null;
         }
 
-        var popup = SpawnUI(popupPrefab, YSJ_UITypes.Popup);
+        var popup = SpawnUI(popupPrefab, YSJ_UIType.Popup);
 
         // RectTransform 위치 초기화 (풀스크린 중앙)
         var rect = popup.GetComponent<RectTransform>();

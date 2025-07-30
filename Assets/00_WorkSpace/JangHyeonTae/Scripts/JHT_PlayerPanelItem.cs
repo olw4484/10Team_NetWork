@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class JHT_PlayerPanelItem : JHT_BaseUI
+public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
 {
     private TextMeshProUGUI playerNameText => GetUI<TextMeshProUGUI>("PlayerNameText");
     private Image hostImage => GetUI<Image>("HostImage");
