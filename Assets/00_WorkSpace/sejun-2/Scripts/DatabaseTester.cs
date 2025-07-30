@@ -30,26 +30,21 @@ public class DatabaseTester : MonoBehaviour
         GetUserinfo(); // Firebase에서 사용자 정보를 가져오는 함수를 호출합니다.
 
         testButton.onClick.AddListener(SetJsonData);
-        upButton.onClick.AddListener(LevelUp);
-        downButton.onClick.AddListener(LevelDown);
     }
 
     private void OnEnable() // Firebase 인증 상태가 변경될 때마다 호출되는 이벤트를 구독합니다.
     {
         FirebaseUser user = FirebaseManager.Auth.CurrentUser;   // 현재 로그인된 Firebase 사용자를 가져옵니다.
         DatabaseReference root = FirebaseManager.Database.RootReference;    // Firebase 데이터베이스의 루트 참조를 가져옵니다.
-        userlevel = root.Child("UserData").Child(user.UserId).Child("level"); // 현재 사용자의 레벨 정보를 가져와 userlevel 변수에 할당합니다.
-        gameCount = root.Child("UserData").Child(user.UserId).Child("gameCount");
+        gameCount = root.Child("UserData").Child(user.UserId).Child("gameCount");   // 게임 횟수 정보를 가져와 gameCount 변수에 할당합니다.
         winsCount = root.Child("UserData").Child(user.UserId).Child("winsCount");
 
-        userlevel.ValueChanged += userLevel_ValueChanged; // 데이터베이스의 값이 변경될 때마다 호출되는 이벤트를 구독합니다.
         gameCount.ValueChanged += gameCount_ValueChanged; // 게임 횟수 데이터베이스의 값이 변경될 때마다 호출되는 이벤트를 구독합니다.
         winsCount.ValueChanged += winsCount_ValueChanged; // 승리 횟수 데이터베이스의 값이 변경될 때마다 호출되는 이벤트를 구독합니다.
     }
 
     private void OnDisable() // Firebase 인증 상태가 변경될 때마다 호출되는 이벤트를 구독 해제합니다.
     {
-        userlevel.ValueChanged -= userLevel_ValueChanged; // 데이터베이스의 값이 변경될 때마다 호출되는 이벤트를 구독 해제합니다.
         gameCount.ValueChanged -= gameCount_ValueChanged; // 게임 횟수 데이터베이스의 값이 변경될 때마다 호출되는 이벤트를 구독 해제합니다.
         winsCount.ValueChanged -= winsCount_ValueChanged; // 승리 횟수 데이터베이스의 값이 변경될 때마다 호출되는 이벤트를 구독 해제합니다.
     }
@@ -198,15 +193,15 @@ public class DatabaseTester : MonoBehaviour
             PlayerData playerData = JsonUtility.FromJson<PlayerData>(json); // JSON 문자열을 PlayerData 객체로 변환합니다.
             data = playerData; // 가져온 데이터를 data 변수에 저장합니다.
 
-            Debug.Log($"name: {playerData.name}");
-            Debug.Log($"level: {playerData.level}");
-            if (playerData.skill != null)
-            {
-                for (int i = 0; i < playerData.skill.Count; i++)
-                {
-                    Debug.Log($"Skill[{i}]: {playerData.skill[i]}");
-                }
-            }
+            //Debug.Log($"name: {playerData.name}");
+            //Debug.Log($"level: {playerData.level}");
+            //if (playerData.skill != null)
+            //{
+            //    for (int i = 0; i < playerData.skill.Count; i++)
+            //    {
+            //        Debug.Log($"Skill[{i}]: {playerData.skill[i]}");
+            //    }
+            //}
         });
     }
 

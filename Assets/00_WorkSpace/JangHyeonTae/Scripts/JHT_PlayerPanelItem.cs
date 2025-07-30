@@ -21,7 +21,7 @@ public class JHT_PlayerPanelItem : JHT_BaseUI
     private bool isReady;
     public void Init(Player player)
     {
-        PhotonNetwork.LocalPlayer.NickName = PhotonNetwork.LocalPlayer.ActorNumber.ToString(); //FirebaseManager.Auth.CurrentUser.DisplayName;
+        PhotonNetwork.LocalPlayer.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
         player.NickName = PhotonNetwork.LocalPlayer.NickName;
         playerNameText.text = player.NickName;
         hostImage.enabled = player.IsMasterClient;
