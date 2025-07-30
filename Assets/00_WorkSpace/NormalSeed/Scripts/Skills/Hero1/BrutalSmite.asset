@@ -15,9 +15,9 @@ MonoBehaviour:
   skillName: BrutalSmite
   skillLevel: 1
   isPassive: 0
-  damage: 0
-  skillRange: 0
+  damage: 50
+  skillRange: 2.5
   buffAmount: []
   mana: 0
-  cooldown: 0
+  cooldown: 3
   icon: {fileID: 0}

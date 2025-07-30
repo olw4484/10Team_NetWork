@@ -15,6 +15,8 @@ public class Hero1SkillSet : SkillSet
     // protected Camera mainCam;
     //protected HeroController hero;
 
+    private WaitForSeconds distCheck = new WaitForSeconds(0.1f);
+
     #region UseQ
     public override void UseQ()
     {
@@ -183,47 +185,87 @@ public class Hero1SkillSet : SkillSet
 
     private IEnumerator BrutalSmiteRoutine()
     {
-        RaycastHit hit;
-        if (Physics.Raycast(mainCam.ScreenPointToRay(Input.mousePosition), out hit))
+        if (!TryGetValidTarget(out Transform target, out LGH_IDamagable damagable, out HeroController targetHero))
+            yield break;
+
+        while (true)
         {
-            LGH_IDamagable damagable = hit.collider.GetComponent<LGH_IDamagable>();
-            PhotonView view = hit.collider.GetComponent<PhotonView>();
-
-            if (damagable == null || view == null || view.IsMine) yield break;
-
-            object targetTeam, myTeam;
-            if (view.Owner.CustomProperties.TryGetValue("Team", out targetTeam) &&
-                PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam))
+            if (IsInSkillRange(target.position))
             {
-                if (targetTeam == myTeam) yield break;
-
-                // 스킬 사정거리 안에 있다면 스킬 실행, 사정거리 밖에 있다면 사정 거리 안에 들어올 때까지 추적
-                while (true)
-                {
-                    if (Vector3.Distance(hit.collider.transform.position, transform.position) <= skill_R.skillRange)
-                    {
-                        hero.mov.ExecuteAttack(hit.collider.transform, damagable, skill_R.damage);
-
-                        // 이동속도 감소 적용
-                        HeroController targetHero = hit.collider.GetComponent<HeroController>();
-                        if (targetHero != null)
-                        {
-                            float originalSpeed = targetHero.model.MoveSpd;
-                            targetHero.model.MoveSpd *= 0.5f;
-                            yield return new WaitForSeconds(1f);
-                            targetHero.model.MoveSpd = originalSpeed;
-                        }
-                        break;
-                    }
-                    else
-                    {
-                        hero.agent.isStopped = false;
-                        hero.mov.SetDestination(hit.collider.transform.position, hero.model.MoveSpd);
-                    }
-                    yield return new WaitForSeconds(0.1f);
-                }
+                ExecuteSkill(target, damagable, targetHero);
+                break;
             }
+            else
+            {
+                FollowTarget(target.position);
+            }
+
+            yield return distCheck;
         }
     }
 
+    private bool TryGetValidTarget(out Transform target, out LGH_IDamagable damagable, out HeroController targetHero)
+    {
+        target = null;
+        damagable = null;
+        targetHero = null;
+
+        if (!Physics.Raycast(mainCam.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
+            return false;
+
+        damagable = hit.collider.GetComponent<LGH_IDamagable>();
+        PhotonView view = hit.collider.GetComponent<PhotonView>();
+        targetHero = hit.collider.GetComponent<HeroController>();
+
+        if (damagable == null || view == null || view.IsMine)
+            return false;
+
+        if (view.Owner.CustomProperties.TryGetValue("Team", out object targetTeam) &&
+            PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out object myTeam) &&
+            targetTeam.Equals(myTeam))
+            return false;
+
+        target = hit.collider.transform;
+        return true;
+    }
+
+    private bool IsInSkillRange(Vector3 targetPosition)
+    {
+        return Vector3.Distance(targetPosition, transform.position) <= skill_R.skillRange;
+    }
+
+    private void ExecuteSkill(Transform target, LGH_IDamagable damagable, HeroController targetHero)
+    {
+        hero.mov.ExecuteAttack(target, damagable, skill_R.damage);
+
+        if (targetHero != null)
+        {
+            StartCoroutine(ApplyMovementSlow(targetHero));
+        }
+    }
+
+    private IEnumerator ApplyMovementSlow(HeroController targetHero)
+    {
+        float originalSpeed = targetHero.model.MoveSpd;
+        targetHero.model.MoveSpd *= 0.5f;
+        yield return new WaitForSeconds(1f);
+        targetHero.model.MoveSpd = originalSpeed;
+    }
+
+    private void FollowTarget(Vector3 destination)
+    {
+        float stopDistance = 0.5f;
+        float distanceToTarget = Vector3.Distance(hero.transform.position, destination);
+
+        if (distanceToTarget > stopDistance)
+        {
+            hero.agent.isStopped = false;
+            hero.mov.SetDestination(destination, hero.model.MoveSpd);
+        }
+        else
+        {
+            hero.agent.isStopped = true;
+            agent.ResetPath();
+        }   
+    }
 }
