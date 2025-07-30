@@ -80,6 +80,10 @@ public class JHT_RoomManager : MonoBehaviour
                 Debug.Log($"플레이어 {player.NickName}에 대한 정보 없음");
             }
         }
+
+
+        Debug.Log($"RedCount : {PhotonNetwork.CurrentRoom.CustomProperties["RedCount"].ToString()}");
+        Debug.Log($"BlueCount : {PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"].ToString()}");
     }
     #endregion
 
@@ -159,6 +163,8 @@ public class JHT_RoomManager : MonoBehaviour
         JHT_PlayerPanelItem newPanel = obj.GetComponent<JHT_PlayerPanelItem>();
         newPanel.Init(player);
         playerPanelDic.Add(player.ActorNumber, newPanel);
+
+
     }
     #endregion
 
@@ -261,9 +267,8 @@ public class JHT_RoomManager : MonoBehaviour
         {
             if ((TeamSetting)value == TeamSetting.Blue || (TeamSetting)value == TeamSetting.Red)
             {
-                TeamSetting setting = (TeamSetting)value;
                 ExitGames.Client.Photon.Hashtable props = new();
-                props["Team"] = setting;
+                props["Team"] = null;
                 PhotonNetwork.LocalPlayer.SetCustomProperties(props);
             }
         }
