@@ -14,4 +14,5 @@ public class WaypointGroup : MonoBehaviour
     }
 
     public int GetWaypointCount() => waypoints.Length;
+
 }
