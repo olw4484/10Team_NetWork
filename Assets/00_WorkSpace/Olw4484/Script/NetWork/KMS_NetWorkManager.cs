@@ -23,7 +23,6 @@ public class KMS_NetWorkManager : MonoBehaviourPunCallbacks
     public Transform cmdBlueSpawnPoint;
 
     public GameObject canvasPrefab;
-
     private void Start()
     {
         string randomName = $"Tester{UnityEngine.Random.Range(1000, 9999)}";
