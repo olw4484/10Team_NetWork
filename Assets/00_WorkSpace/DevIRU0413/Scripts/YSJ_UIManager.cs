@@ -9,11 +9,12 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
     #region Fields
 
     private readonly Dictionary<YSJ_UITypes, Canvas> _canvasMap = new();
+    private Dictionary<Canvas, List<JHT_BaseUI>> _uiMap = new();
     private YSJ_PopupController _popupController = new();
 
     #endregion
 
-    #region Init
+    #region Init Methods
 
     protected override void Init()
     {
@@ -79,10 +80,10 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
         if (layer == YSJ_UITypes.Popup)
         {
             var count = _popupController.GetPopupCount();
+            _popupController.CloseAll();
 #if UNITY_EDITOR
             Debug.Log($"[UIManager] {layer} 레이어의 {count}개 UI 오브젝트가 제거되었습니다.");
 #endif
-            _popupController.CloseAll();
             return;
         }
 
@@ -116,6 +117,20 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
 #if UNITY_EDITOR
         Debug.Log("[UIManager] 모든 Canvas 레이어의 UI 오브젝트를 정리했습니다.");
 #endif
+    }
+
+    #endregion
+
+    #region Register / UnRegister
+
+    public void RegisterUI(JHT_BaseUI baseUI)
+    {
+
+    }
+
+    public void UnRegisterUI(JHT_BaseUI baseUI)
+    {
+
     }
 
     #endregion

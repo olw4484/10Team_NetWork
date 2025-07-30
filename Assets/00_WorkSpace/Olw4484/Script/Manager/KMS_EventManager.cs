@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EventManager : MonoBehaviour
+public class KMS_EventManager : MonoBehaviour
 {
-    public static EventManager Instance { get; private set; }
+    public static KMS_EventManager Instance { get; private set; }
 
     // 싱글턴 초기화
 
@@ -23,16 +23,16 @@ public class EventManager : MonoBehaviour
 
     // Minion을 잡았을 때
 
-    public event Action<GameObject, MinionController> OnMinionKillConfirmed;
-    public void MinionKillConfirmed(GameObject killer, MinionController victim)
+    public event Action<GameObject, KMS_MinionController> OnMinionKillConfirmed;
+    public void MinionKillConfirmed(GameObject killer, KMS_MinionController victim)
     {
         OnMinionKillConfirmed?.Invoke(killer, victim);
     }
 
     // Minion이 죽었을 때
 
-    public event Action<MinionController, GameObject> OnMinionDead;
-    public void MinionDead(MinionController victim, GameObject killer)
+    public event Action<KMS_MinionController, GameObject> OnMinionDead;
+    public void MinionDead(KMS_MinionController victim, GameObject killer)
     {
         OnMinionDead?.Invoke(victim, killer);
     }
