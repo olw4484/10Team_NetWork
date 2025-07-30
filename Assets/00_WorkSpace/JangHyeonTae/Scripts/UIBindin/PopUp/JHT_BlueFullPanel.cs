@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class JHT_BlueFullPanel : YSJ_PopupBaseUI
 {
-    protected override void Start()
+    public override void Open()
     {
-        base.Start();
+        base.Open();
         // 커스텀 초기화
         GetEvent("BlueBackButton").Click += data =>
         {
-            YSJ_UIManager.Instance.UnregisterPopup(gameObject);
+            Close();
         };
     }
 

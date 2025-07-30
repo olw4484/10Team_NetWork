@@ -31,7 +31,8 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        currentRoomDic = new();
+        currentRoomDic = new(); 
+        PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
         PhotonNetwork.ConnectUsingSettings();
     }
 
@@ -92,7 +93,12 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
         roomManager.PlayerPanelSpawn();
         StateCustomProperty(CurrentState.InRoom);
     }
-    
+
+    public override void OnLeftRoom()
+    {
+        
+    }
+
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         if (newPlayer != PhotonNetwork.LocalPlayer)
@@ -190,14 +196,22 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
             Debug.Log($"{targetPlayer.ActorNumber}에 해당하는 플레이어 {targetPlayer.CustomProperties["Team"].ToString()}으로 팀이동");
             roomManager.OtherPlayerChangeTeam(targetPlayer);
         }
-
-        StartCoroutine(WaitForAddDic(targetPlayer, changedProps));
+        else if(changedProps.ContainsKey("IsReady"))
+        {
+            StartCoroutine(WaitForAddDic(targetPlayer, changedProps));
+        }
+        else if(changedProps.ContainsKey("Character"))
+        {
+            StartCoroutine(WaitForLoadCharacter(targetPlayer, changedProps));
+        }
+          
     }
 
     IEnumerator WaitForAddDic(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
     {
         while (!roomManager.playerPanelDic.ContainsKey(targetPlayer.ActorNumber))
             yield return null;
+
 
         if (changedProps.ContainsKey("IsReady"))
         {
@@ -208,6 +222,26 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
             else
             {
                 Debug.LogWarning($"[IsReady] 패널 없음: {targetPlayer.ActorNumber}");
+            }
+        }
+    }
+
+    IEnumerator WaitForLoadCharacter(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    {
+        while (!roomManager.playerPanelDic.ContainsKey(targetPlayer.ActorNumber))
+            yield return null;
+
+        Debug.Log($"WaitForLoadCharacter : {targetPlayer.ActorNumber}");
+
+        if (changedProps.ContainsKey("Character"))
+        {
+            if (roomManager.playerPanelDic.TryGetValue(targetPlayer.ActorNumber, out var panel))
+            {
+                panel.SetChangeCharacter(targetPlayer);
+            }
+            else
+            {
+                Debug.LogWarning($"[Character] 패널 없음: {targetPlayer.ActorNumber}");
             }
         }
     }

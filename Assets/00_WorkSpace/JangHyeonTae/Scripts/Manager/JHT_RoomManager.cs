@@ -251,7 +251,8 @@ public class JHT_RoomManager : MonoBehaviour
     {
         foreach (Player player in PhotonNetwork.PlayerList)
         {
-            Destroy(playerPanelDic[player.ActorNumber].gameObject);
+            if (playerPanelDic.ContainsKey(player.ActorNumber))
+                Destroy(playerPanelDic[player.ActorNumber].gameObject);
         }
         playerPanelDic.Clear();
 
@@ -259,7 +260,10 @@ public class JHT_RoomManager : MonoBehaviour
         {
             if ((TeamSetting)value == TeamSetting.Blue || (TeamSetting)value == TeamSetting.Red)
             {
-                PhotonNetwork.LocalPlayer.CustomProperties["Team"] = TeamSetting.None;
+                TeamSetting setting = (TeamSetting)value;
+                ExitGames.Client.Photon.Hashtable props = new();
+                props["Team"] = setting;
+                PhotonNetwork.LocalPlayer.SetCustomProperties(props);
             }
         }
 

@@ -4,11 +4,22 @@ using UnityEngine;
 
 public abstract class JHT_BaseUI : MonoBehaviour
 {
+    public abstract YSJ_UIType UIType { get; }
+
     private Dictionary<string, GameObject> uiObjectDic;
     private Dictionary<string, Component> componentDic;
 
     private void Awake() => InitBaseUI();
-    protected void InitBaseUI()
+    private void OnDestroy() => YSJ_UIManager.Instance.UnRegisterUI(this);
+
+    public void InitBaseUI()
+    {
+        InitRectObject();
+        InitObjectCmp();
+
+        YSJ_UIManager.Instance.RegisterUI(this);
+    }
+    private void InitRectObject()
     {
         RectTransform[] recTrans = GetComponentsInChildren<RectTransform>(true);
         uiObjectDic = new Dictionary<string, GameObject>(recTrans.Length * 4);
@@ -17,7 +28,9 @@ public abstract class JHT_BaseUI : MonoBehaviour
         {
             uiObjectDic.TryAdd(child.gameObject.name, child.gameObject);
         }
-
+    }
+    private void InitObjectCmp()
+    {
         Component[] components = GetComponentsInChildren<Component>(true);
         componentDic = new Dictionary<string, Component>(components.Length * 4);
 
@@ -60,4 +73,7 @@ public abstract class JHT_BaseUI : MonoBehaviour
         JHT_PointerHandler obj = GetUI(objName).GetOrAddComponent<JHT_PointerHandler>();
         return obj;
     }
+
+    public virtual void Open() { }
+    public virtual void Close() { }
 }

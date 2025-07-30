@@ -7,22 +7,16 @@ public class JHT_DescPopUp : YSJ_PopupBaseUI
 {
     private TextMeshProUGUI descText => GetUI<TextMeshProUGUI>("DescText");
 
-    protected override void Start()
+    public override void Open()
     {
-        base.Start();
+        base.Open();
         // 커스텀 초기화
         
     }
 
-    public void Init(string desc,Vector2 vectorSet)
+    public void Init(string desc)
     {
-        descText.text = desc; 
-        RectTransform rectTransform = GetComponent<RectTransform>();
-
-        if (rectTransform != null)
-        {
-            rectTransform.position = vectorSet;
-        }
+        descText.text = desc;
     }
 
     public override void Close()

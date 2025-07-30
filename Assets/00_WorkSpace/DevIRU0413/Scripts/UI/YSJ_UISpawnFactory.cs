@@ -1,9 +1,11 @@
 using Runtime.UI;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class YSJ_UISpawnFactory
 {
-    public static GameObject SpawnUI(GameObject prefab, YSJ_UITypes layer, int extraOrder = 0)
+    // spawn for prefab
+    public static GameObject SpawnUI(GameObject prefab, YSJ_UIType layer, int extraOrder = 0)
     {
         Canvas parentCanvas = YSJ_UIManager.Instance.GetCanvas(layer);
         if (parentCanvas == null)
@@ -12,22 +14,14 @@ public class YSJ_UISpawnFactory
             return null;
         }
 
-        GameObject ui = GameObject.Instantiate(prefab, parentCanvas.transform);
+        GameObject uiObject = GameObject.Instantiate(prefab);
+        JHT_BaseUI uiComp = uiObject.GetOrAddComponent<JHT_BaseUI>();
 
-        // 선택적으로 sorting order 세팅
-        Canvas overrideCanvas = ui.GetComponent<Canvas>();
-        int sortingOrder = (int)layer + extraOrder;
-        if (overrideCanvas != null)
-        {
-            overrideCanvas.overrideSorting = true;
-            overrideCanvas.sortingOrder = sortingOrder;
-        }
-
-        ui.transform.SetAsLastSibling();
-        return ui;
+        return uiObject;
     }
 
-    public static GameObject SpawnUI(string resourcePath, YSJ_UITypes layer, int extraOrder = 0)
+    // spawn for resource
+    public static GameObject SpawnUI(string resourcePath, YSJ_UIType layer, int extraOrder = 0)
     {
         GameObject prefab = Resources.Load<GameObject>(resourcePath);
         if (prefab == null)
@@ -39,7 +33,8 @@ public class YSJ_UISpawnFactory
         return SpawnUI(prefab, layer, extraOrder);
     }
 
-    public static GameObject ShowPopup(GameObject popupPrefab)
+    // spawn for prefab
+    public static GameObject SpawnPopup(GameObject popupPrefab)
     {
         if (popupPrefab == null)
         {
@@ -47,7 +42,7 @@ public class YSJ_UISpawnFactory
             return null;
         }
 
-        var popup = SpawnUI(popupPrefab, YSJ_UITypes.Popup);
+        var popup = SpawnUI(popupPrefab, YSJ_UIType.Popup);
 
         // RectTransform 위치 초기화 (풀스크린 중앙)
         var rect = popup.GetComponent<RectTransform>();
@@ -60,5 +55,12 @@ public class YSJ_UISpawnFactory
         }
 
         return popup;
+    }
+
+    // spawn for resource
+    public static GameObject SpawnPopup(string resourcePath)
+    {
+        GameObject prefab = Resources.Load<GameObject>(resourcePath);
+        return SpawnPopup(prefab);
     }
 }

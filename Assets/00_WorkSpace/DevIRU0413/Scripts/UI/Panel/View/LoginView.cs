@@ -1,10 +1,11 @@
+using Runtime.UI;
 using System.Collections.Generic;
 using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoginView : JHT_BaseUI, ILoginView
+public class LoginView : YSJ_HUDBaseUI, ILoginView
 {
     private enum LoginUI
     {
@@ -23,17 +24,15 @@ public class LoginView : JHT_BaseUI, ILoginView
     [SerializeField] private LobbyPanel lobbyPanel;
     [SerializeField] private SignUpPanel signUpPanel;
 
+    private YSJ_UIBinder<LoginUI> _binder;
 
     private LoginPresenter _presenter;
-    private UIBinder<LoginUI> _binder;
-
 
     public void Init(LoginPresenter presenter)
     {
-        InitBaseUI();
+        _binder = new YSJ_UIBinder<LoginUI>(this);
 
         _presenter = presenter;
-        _binder = new UIBinder<LoginUI>(this);
 
         _binder.Get<Button>(LoginUI.LoginButton).onClick.AddListener(presenter.OnClickLogin);
         _binder.Get<Button>(LoginUI.SignUpButton).onClick.AddListener(presenter.OnClickSignUp);

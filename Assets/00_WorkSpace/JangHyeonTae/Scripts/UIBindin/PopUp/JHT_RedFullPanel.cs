@@ -6,13 +6,13 @@ using UnityEngine.UI;
 
 public class JHT_RedFullPanel : YSJ_PopupBaseUI
 {
-    protected override void Start()
+    public override void Open()
     {
-        base.Start();
+        base.Open();
         // 커스텀 초기화
         GetEvent("RedBackButton").Click += data =>
         {
-            YSJ_UIManager.Instance.UnregisterPopup(gameObject);
+            Close();
         };
     }
 
@@ -21,6 +21,4 @@ public class JHT_RedFullPanel : YSJ_PopupBaseUI
         base.Close();
         // 닫기 후 로직
     }
-
-
 }
