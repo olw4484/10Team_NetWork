@@ -29,7 +29,7 @@ public class DatabaseTester : MonoBehaviour
     {
         GetUserinfo(); // Firebase에서 사용자 정보를 가져오는 함수를 호출합니다.
 
-        testButton.onClick.AddListener(SetJsonData);
+        testButton.onClick.AddListener(CheckLeaderBoard);
     }
 
     private void OnEnable() // Firebase 인증 상태가 변경될 때마다 호출되는 이벤트를 구독합니다.
