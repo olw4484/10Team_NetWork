@@ -29,7 +29,7 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        // 테스트용 플레이어 활성화 키를 ESC로 설정
+        // 테스트용 : 플레이어 활성화 키를 ESC로 설정
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             foreach(GameObject player in playerList) 
