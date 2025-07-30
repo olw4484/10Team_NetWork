@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using static SHI_ItemBase;
 
@@ -29,6 +28,7 @@ public class SHI_ItemManager : MonoBehaviour
     private HashSet<ItemName> activeBuffs = new HashSet<ItemName>();
 
     public Events.VoidEvent refrash = new Events.VoidEvent();
+    public HeroModel stat;
     private void Awake()
     {
         //if (instance == null)
@@ -39,7 +39,7 @@ public class SHI_ItemManager : MonoBehaviour
         //{
         //    Destroy(gameObject);
         //}
-        
+
     }
     private void Update()
     {
@@ -47,14 +47,15 @@ public class SHI_ItemManager : MonoBehaviour
     }
     public bool UseItem(SHI_ItemBase item)
     {
+        if (stat.CurHP.Value <= 0)
+        {
+            Debug.Log("플레이어가 죽어있습니다. 아이템을 사용할 수 없습니다.");
+            return false; // 플레이어가 죽어있을 경우 아이템 사용 불가
+        }
 
         if (item.type <= 0) // 소비 아이템
         {
-            // if (현재체력 <= 0) // 플레이어의 hp가 0일때는 사용불가 혹은 플레이어 다이드 불값 받아옴
-            // {
-            //     Debug.Log("플레이어의 HP가 0이므로 아이템을 사용할 수 없습니다.");
-            //     return;
-            //}
+
             Debug.Log("들어왔나?");
             HpUp(item.Healhp); // 플레이어의 HP 회복
             MpUp(item.Healmp); // 플레이어의 MP 회복
@@ -68,7 +69,7 @@ public class SHI_ItemManager : MonoBehaviour
             {
                 Debug.Log("이미 적용 중인 버프입니다.");
                 return false; // 이미 적용 중인 버프 아이템일 경우, 다시 적용하지 않음
-                
+
             }
 
             if (item.lifeSteal > 0 || item.allup > 1 || item.minionHitup > 1)
@@ -83,12 +84,14 @@ public class SHI_ItemManager : MonoBehaviour
         else if (item.type == 1) // 장비 아이템
         {
             Equip(item); // 플레이어의 스탯을 아이템의 스탯으로 증가
+
             refrash.Invoke(); //유니티이벤트
             return true;
         }
         else if (item.type == 2)  // 장착된 아이템
         {
             UnEquip(item); // 플레이어의 스탯을 아이템의 스탯으로 감소
+
             refrash.Invoke(); //유니티이벤트
             return true;
         }
@@ -98,10 +101,12 @@ public class SHI_ItemManager : MonoBehaviour
             return false; // 알 수 없는 아이템 타입일 경우, 실패 처리
         }
 
+
+
     }
     void HpUp(float hp)
     {
-        //플레이어 현재hp += item.Healhp; // 플레이어의 HP 회복
+        stat.CurHP.Value = Mathf.Min(stat.CurHP.Value + (int)hp, (int)SHI_ResultValue.instance.Hp); // 플레이어의 HP 회복
         //if(플레이어 최대HP < 플레이어 현재hp)
         {
             //플레이어 현재hp = 플레이어 최대HP; // 플레이어의 HP가 최대치를 넘지 않도록 조정
@@ -110,6 +115,7 @@ public class SHI_ItemManager : MonoBehaviour
     }
     void MpUp(float mp)
     {
+        stat.CurMP.Value = Mathf.Min(stat.CurMP.Value + (int)mp, stat.MaxMP); // 플레이어의 MP 회복
         //플레이어 현재mp += item.Healmp; // 플레이어의 MP 회복
         //if(플레이어 최대MP < 플레이어 현재mp)
         {
@@ -117,7 +123,7 @@ public class SHI_ItemManager : MonoBehaviour
         }
     }
     void ExpUp(float exp)
-    {
+    {//아직 경험치로직 없음.
         //플레이어 현재exp += item.GainExp; // 플레이어의 경험치 증가
         // exp는 level up 함수에서 관리 함으로 추가만.
     }
@@ -126,7 +132,7 @@ public class SHI_ItemManager : MonoBehaviour
         activeBuffs.Add(item.itemNameEnum);
         //현재 플레이어의 atk
         TlifeSteal += item.lifeSteal; // 생명력 흡수 증가
-        TminionHitup2 += item.minionHitup2 ; // 미니언 공격력 증가
+        TminionHitup2 += item.minionHitup2; // 미니언 공격력 증가
         TnexusHitUp *= item.nexusHitUp; // 넥서스 공격력 증가
         Tallup *= item.allup; // 전체 스탯 증가
         refrash.Invoke(); //유니티이벤트
@@ -166,15 +172,15 @@ public class SHI_ItemManager : MonoBehaviour
     }
     IEnumerator BuffDuration(SHI_ItemBase item)
     {
-        
+
         yield return new WaitForSeconds(item.Duration); // 버프 지속 시간 동안 대기
 
-        switch(item.itemNameEnum)
+        switch (item.itemNameEnum)
         {
             case ItemName.BuffLifeSteal:
                 TlifeSteal -= item.lifeSteal; // 생명력 흡수 감소
                 break;
-            
+
             case ItemName.BuffSlayer:
                 TminionHitup2 -= item.minionHitup2; // 미니언 공격력 감소2
                 TnexusHitUp /= item.nexusHitUp; // 넥서스 공격력 감소
@@ -183,7 +189,7 @@ public class SHI_ItemManager : MonoBehaviour
                 Tallup /= item.allup; // 전체 스탯 감소
                 break;
         }
-        
+
         RemoveBuff(item.itemNameEnum);
         refrash.Invoke(); //유니티이벤트
     }
