@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c14a3c5179b217419c072926ddff47c, type: 3}
   m_Name: 2
   m_EditorClassIdentifier: 
-  name: bbbbb
-  icon: {fileID: 21300000, guid: f00feafcf0675cd47a48f83ae42b06d4, type: 3}
-  desc: Magic
+  <name>k__BackingField: bbb
+  <icon>k__BackingField: {fileID: 21300000, guid: bd293dc32f4aaf94e8274f2fac2cdf89, type: 3}
+  <desc>k__BackingField: bbb
