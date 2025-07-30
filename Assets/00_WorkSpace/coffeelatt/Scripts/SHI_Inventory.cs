@@ -12,10 +12,10 @@ public class SHI_Inventory : MonoBehaviour
     public Events.VoidEvent itemremove = new Events.VoidEvent();
     private void Awake()
     {
-        if (instance == null)
-            instance = this;    
-        else
-            Destroy(gameObject);
+        //if (instance == null)
+        //    instance = this;    
+        //else
+        //    Destroy(gameObject);
     }
 
     public bool AddItem(SHI_ItemBase newItem)
