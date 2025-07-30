@@ -31,7 +31,8 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        currentRoomDic = new();
+        currentRoomDic = new(); 
+        PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
         PhotonNetwork.ConnectUsingSettings();
     }
 
@@ -92,7 +93,12 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
         roomManager.PlayerPanelSpawn();
         StateCustomProperty(CurrentState.InRoom);
     }
-    
+
+    public override void OnLeftRoom()
+    {
+        
+    }
+
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         if (newPlayer != PhotonNetwork.LocalPlayer)

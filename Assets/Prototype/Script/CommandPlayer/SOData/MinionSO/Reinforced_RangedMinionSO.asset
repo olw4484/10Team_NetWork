@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6864bc45ee52e724da4248ca6bfd4b66, type: 3}
+  m_Script: {fileID: 11500000, guid: 35d65b0d60f1a3a4a9ed36814226fb0d, type: 3}
   m_Name: Reinforced_RangedMinionSO
   m_EditorClassIdentifier: 
-  minionType: 1
+  minionType: 4
   maxHP: 160
   attackPower: 18
   moveSpeed: 3
@@ -22,4 +22,3 @@ MonoBehaviour:
   gearReward: 0
   expReward: 15
   detectRange: 5
-  prefab: {fileID: 6848852395963227363, guid: 36f56811c0ab59f44b9558d261201ce8, type: 3}
