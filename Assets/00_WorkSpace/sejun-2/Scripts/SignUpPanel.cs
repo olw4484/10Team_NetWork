@@ -1,5 +1,6 @@
 using Firebase.Auth;
 using Firebase.Extensions;
+using Firebase.Database;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -19,6 +20,9 @@ public class SignUpPanel : MonoBehaviour
     [SerializeField] Button signUpButton;
     [SerializeField] Button cancelButton;
     [SerializeField] Button IDCheckButton;
+
+    // Firebase에서는 딕셔너리 지원.
+    [SerializeField] Dictionary<string, object> dictionary = new Dictionary<string, object>();
 
     private void Awake()
     {
@@ -77,6 +81,9 @@ public class SignUpPanel : MonoBehaviour
                     return;
                 }
                 Debug.Log("이메일 가입 성공!");
+
+                SetData(); // Firebase에 사용자 데이터 저장
+
                 loginPanel.SetActive(true);
                 gameObject.SetActive(false);
             });
@@ -131,9 +138,7 @@ public class SignUpPanel : MonoBehaviour
                 gameObject.SetActive(false);
                 return;
             }
-
         });
-
     }
 
     private void Cancel()
@@ -142,7 +147,20 @@ public class SignUpPanel : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    
+    private void SetData() // dictionary 사용하여 Firebase에 데이터를 저장하는 함수
+    {
+        // Firebase 데이터베이스의 루트 참조를 가져옵니다.
+        FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser;
+        // Firebase 데이터베이스의 루트 참조를 가져옵니다.
+        DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference;
+        DatabaseReference userInfo = root.Child("UserData").Child(user.UserId);
+        // 딕셔너리에 데이터를 추가합니다.
+        dictionary["name"] = nicknameInput.text;
+        dictionary["level"] = 1;
+        dictionary["gameCount"] = 0;
+        dictionary["winsCount"] = 0;
+        userInfo.SetValueAsync(dictionary);// Firebase 데이터베이스에 text 변수를 저장합니다.
+    }
 
 
 }

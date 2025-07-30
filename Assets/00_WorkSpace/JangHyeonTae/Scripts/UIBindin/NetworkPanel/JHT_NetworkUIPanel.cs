@@ -51,6 +51,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
     GameObject tool2 => GetUI("DescPopUp2");
     GameObject tool3 => GetUI("DescPopUp3");
 
+    GameObject characterParent => GetUI("CharacterParent");
     #endregion
 
     private bool isSecret;
@@ -97,7 +98,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
             createRoomButton.interactable = true;
             leaveLobbyButton.interactable = true;
             lobbyPanel.SetActive(false);
-
+            characterParent.SetActive(true);
         };
 
         GetEvent("BackButton").Click += data =>
@@ -115,6 +116,9 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         {
             roomPanel.SetActive(false);
             lobbyPanel.SetActive(true);
+
+            if (characterParent.activeSelf)
+                characterParent.SetActive(false);
 
         };
         #endregion

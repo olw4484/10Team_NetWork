@@ -30,15 +30,15 @@ public class SHI_ResultValue : MonoBehaviour
     // Start is called before the first frame update
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-            //DontDestroyOnLoad(gameObject); // 씬 전환 시에도 유지
-        }
-        else
-        {
-            Destroy(gameObject); // 이미 인스턴스가 존재하면 중복 생성 방지
-        }
+        //if (instance == null)
+        //{
+        //    instance = this;
+        //    //DontDestroyOnLoad(gameObject); // 씬 전환 시에도 유지
+        //}
+        //else
+        //{
+        //    Destroy(gameObject); // 이미 인스턴스가 존재하면 중복 생성 방지
+        //}
     }
     void Start()
     {
