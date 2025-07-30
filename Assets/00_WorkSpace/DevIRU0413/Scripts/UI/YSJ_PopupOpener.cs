@@ -33,7 +33,7 @@ namespace Runtime.UI
 
             }
 
-            var popup = YSJ_UISpawnFactory.ShowPopup(popupPrefab);
+            var popup = YSJ_UISpawnFactory.SpawnPopup(popupPrefab);
         }
     }
 }

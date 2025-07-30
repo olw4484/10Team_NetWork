@@ -26,7 +26,7 @@ public class JHT_TeamManager : MonoBehaviour
     public Action<Player> OnBlueSelect;
     public event Action OnCantChangeRed;
     public event Action OnCantChangeBlue;
-    public Action<Player,int,int> OnChangeTeam;
+    public Action<Player, int, int> OnChangeTeam;
 
     private CurrentState curState;
 
@@ -71,7 +71,7 @@ public class JHT_TeamManager : MonoBehaviour
                 if ((TeamSetting)player.CustomProperties["Team"] == TeamSetting.Blue)
                     return;
 
-                OnChangeTeam?.Invoke(player,-1,1);
+                OnChangeTeam?.Invoke(player, -1, 1);
             }
             else
             {
@@ -111,7 +111,7 @@ public class JHT_TeamManager : MonoBehaviour
                 if ((TeamSetting)player.CustomProperties["Team"] == TeamSetting.Red)
                     return;
 
-                OnChangeTeam?.Invoke(player,1,-1);
+                OnChangeTeam?.Invoke(player, 1, -1);
             }
             else
             {
@@ -160,7 +160,7 @@ public class JHT_TeamManager : MonoBehaviour
     #endregion
 
     #region 플레이어 팀 선택시 팀 변경
-    public void SetChangePlayerTeam(Player player,int redSelect, int blueSelect)
+    public void SetChangePlayerTeam(Player player, int redSelect, int blueSelect)
     {
         TeamSetting setting;
 
@@ -176,7 +176,7 @@ public class JHT_TeamManager : MonoBehaviour
         }
         else
         {
-            setting = TeamSetting.Blue; 
+            setting = TeamSetting.Blue;
         }
 
         ExitGames.Client.Photon.Hashtable count = new();
@@ -207,12 +207,12 @@ public class JHT_TeamManager : MonoBehaviour
     #region PopUp
     public void CantRedChange()
     {
-        YSJ_UISpawnFactory.ShowPopup(redFullPopup);
+        YSJ_UISpawnFactory.SpawnPopup(redFullPopup);
     }
 
     public void CantBlueChange()
     {
-        YSJ_UISpawnFactory.ShowPopup(blueFullPopup);
+        YSJ_UISpawnFactory.SpawnPopup(blueFullPopup);
     }
     #endregion
 }
