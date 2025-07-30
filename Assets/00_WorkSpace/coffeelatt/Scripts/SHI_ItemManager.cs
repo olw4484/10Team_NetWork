@@ -29,6 +29,7 @@ public class SHI_ItemManager : MonoBehaviour
 
     public Events.VoidEvent refrash = new Events.VoidEvent();
     public HeroModel stat;
+    public SHI_ResultValue resultValue; // 스탯을 가져오기 위한 참조 변수
     private void Awake()
     {
         //if (instance == null)
@@ -40,6 +41,10 @@ public class SHI_ItemManager : MonoBehaviour
         //    Destroy(gameObject);
         //}
 
+    }
+    private void Start()
+    {
+        resultValue = GameObject.Find("Result").GetComponent<SHI_ResultValue>();
     }
     private void Update()
     {
@@ -106,7 +111,7 @@ public class SHI_ItemManager : MonoBehaviour
     }
     void HpUp(float hp)
     {
-        stat.CurHP.Value = Mathf.Min(stat.CurHP.Value + (int)hp, (int)SHI_ResultValue.instance.Hp); // 플레이어의 HP 회복
+        stat.CurHP.Value = Mathf.Min(stat.CurHP.Value + (int)hp, (int)resultValue.Hp); // 플레이어의 HP 회복
         //if(플레이어 최대HP < 플레이어 현재hp)
         {
             //플레이어 현재hp = 플레이어 최대HP; // 플레이어의 HP가 최대치를 넘지 않도록 조정
@@ -115,7 +120,7 @@ public class SHI_ItemManager : MonoBehaviour
     }
     void MpUp(float mp)
     {
-        stat.CurMP.Value = Mathf.Min(stat.CurMP.Value + (int)mp, stat.MaxMP); // 플레이어의 MP 회복
+        stat.CurMP.Value = Mathf.Min(stat.CurMP.Value + (int)mp, (int)resultValue.Mp); // 플레이어의 MP 회복
         //플레이어 현재mp += item.Healmp; // 플레이어의 MP 회복
         //if(플레이어 최대MP < 플레이어 현재mp)
         {

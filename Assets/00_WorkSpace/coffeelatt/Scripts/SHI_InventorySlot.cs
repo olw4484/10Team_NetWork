@@ -10,12 +10,14 @@ public class SHI_InventorySlot : MonoBehaviour
     [Header("정상착용Debug")]
     [SerializeField] private SHI_ItemBase currentItem;
     private SHI_ItemManager inventoryManager;
+    public SHI_Inventory inventory; // 인벤토리 참조
 
 
-    
+
     private void Start()
     {
         inventoryManager = GameObject.Find("itemmanager").GetComponent<SHI_ItemManager>();
+        inventory = GameObject.Find("inventory").GetComponent<SHI_Inventory>();
         useButton.onClick.AddListener(OnUseButtonClicked);
         currentItem = GetComponent<SHI_ItemBase>();
         useButton.interactable = inventoryManager.stat.CurHP.Value > 0;
@@ -54,7 +56,7 @@ public class SHI_InventorySlot : MonoBehaviour
 
             if (success)
             {
-                SHI_Inventory.instance.RemoveItem(currentItem);
+                inventory.RemoveItem(currentItem);
                 if (currentItem.type <= 0)
                     ClearSlot();
             }
