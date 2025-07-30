@@ -46,6 +46,14 @@ MonoBehaviour:
   - RpcAddExp
   - RpcAddResource
   - RpcHQDestroyed
+  - GetHeal
+  - RPC_Die
+  - RPC_TakeDamage
+  - RPC_TryAttack
+  - RPC_SetDestination
+  - RPC_StartBash
+  - RPC_StopAndFace
+  - TakeDamage
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Character", menuName = "Character/SelectCharacter")]
 public class JHT_Character : ScriptableObject
 {
-    public string name;
-    public Sprite icon;
-    public string desc;
+    [field : SerializeField] public string name {private set; get;}
+    [field : SerializeField] public Sprite icon {private set; get;}
+    [field : SerializeField] public string desc {private set; get;}
 }

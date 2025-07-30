@@ -8,7 +8,7 @@ using UnityEngine.AI;
 using static KMS_ISelectable;
 using static KMS_ResourceSystem;
 
-public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
+public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
 {
     [Header("Settings")]
     public float moveSpeed;
@@ -20,8 +20,8 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     private float attackMoveStopDistance = 0.1f;
     public int teamId;
 
-    public MinionView view;
-    public MinionDataSO data;
+    public KMS_MinionView view;
+    public KMS_MinionDataSO data;
     public LayerMask enemyLayerMask;
     private int currentHP;
     private Transform target;
@@ -48,7 +48,7 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     {
         agent = GetComponent<NavMeshAgent>();
         photonView = GetComponent<PhotonView>();
-        view = GetComponentInChildren<MinionView>();
+        view = GetComponentInChildren<KMS_MinionView>();
     }
 
 
@@ -134,7 +134,7 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         }
     }
 
-    public void Initialize(MinionDataSO data, Transform target, KMS_WaypointGroup waypointGroup = null, int teamId = 0)
+    public void Initialize(KMS_MinionDataSO data, Transform target, KMS_WaypointGroup waypointGroup = null, int teamId = 0)
     {
         this.data = data;
         this.moveSpeed = data.moveSpeed;
@@ -184,7 +184,7 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
 
         foreach (var col in colliders)
         {
-            var minion = col.GetComponent<MinionController>();
+            var minion = col.GetComponent<KMS_MinionController>();
             if (minion != null && minion.teamId == this.teamId)
                 continue; // 아군이면 패스
 
@@ -235,13 +235,14 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     // 공격 시도
     private void TryAttack()
     {
-        if (attackTimer >= attackCooldown)
+        if (!photonView.IsMine && !PhotonNetwork.IsMasterClient)
+            return; // 권한 없는 클라 무시
+
+        if (attackTimer >= attackCooldown && target != null)
         {
             attackTimer = 0f;
-            view?.PlayMinionAttackAnimation();
-            // 데미지 처리
-            var damageable = target?.GetComponent<IDamageable>();
-            damageable?.TakeDamage(attackPower, gameObject);
+            int targetViewID = target.GetComponent<PhotonView>().ViewID;
+            photonView.RPC("RPC_TryAttack", RpcTarget.All, targetViewID);
         }
     }
 
@@ -276,10 +277,10 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
 
         view?.PlayMinionDeathAnimation();
 
-        if (EventManager.Instance != null)
+        if (KMS_EventManager.Instance != null)
         {
-            EventManager.Instance.MinionDead(this, killer);
-            EventManager.Instance.MinionKillConfirmed(killer, this);
+            KMS_EventManager.Instance.MinionDead(this, killer);
+            KMS_EventManager.Instance.MinionKillConfirmed(killer, this);
         }
 
         // 삭제 시 동기화
@@ -310,7 +311,7 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         view?.SetHighlight(false);
     }
 
-    public SelectableType GetSelectableType() => SelectableType.Minion;
+    public KMS_SelectableType GetSelectableType() => KMS_SelectableType.Minion;
     #endregion
     #region RPC_Minion
     [PunRPC]
@@ -325,6 +326,36 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         var targetObj = PhotonView.Find(targetViewID);
         if (targetObj != null)
             SetTarget(targetObj.transform);
+    }
+    #endregion
+    #region RPC_Attack
+    [PunRPC]
+    void RPC_TryAttack(int targetViewID)
+    {
+        view?.PlayMinionAttackAnimation();
+        var targetPV = PhotonView.Find(targetViewID);
+        if (targetPV != null)
+            targetPV.RPC("RPC_TakeDamage", RpcTarget.All, attackPower, photonView.ViewID);
+    }
+    [PunRPC]
+    void RPC_TakeDamage(int damage, int attackerViewID)
+    {
+        if (isDead) return;
+        currentHP -= damage;
+        if (currentHP <= 0)
+            photonView.RPC("RPC_Die", RpcTarget.All, attackerViewID);
+    }
+    [PunRPC]
+    void RPC_Die(int attackerViewID)
+    {
+        if (isDead) return;
+        isDead = true;
+        // 사망 연출, 보상, 삭제 등
+        // ...
+        if (PhotonNetwork.InRoom)
+            PhotonNetwork.Destroy(gameObject);
+        else
+            Destroy(gameObject, 1f);
     }
     #endregion
 }
