@@ -1,9 +1,20 @@
+using Photon.Pun;
+using Photon.Realtime;
+using TMPro;
 using UnityEngine;
 
 public class KMS_CommandPlayer : MonoBehaviour
 {
     public int teamId;
-    public int gold = 100;
+    public int gold = 150;
+    public int gear = 50;
+    public TMP_Text goldText, gearText;
+    public PhotonView photonView;
+    void Update()
+    {
+        goldText.text = $"Gold: {gold}";
+        gearText.text = $"Gear: {gear}";
+    }
 
     public void AddGold(int amount)
     {
@@ -27,4 +38,21 @@ public class KMS_CommandPlayer : MonoBehaviour
     }
 
     public int GetGold() => gold;
+    public int GetGar() => gear;
+    
+    [PunRPC]
+    public void RpcAddGold(int amount)
+    {
+        gold += amount;
+        Debug.Log($"[CommendPlayer] °ñµå +{amount} ¡æ ÇöÀç: {gold}");
+        EventManager.Instance.ResourceChanged(teamId, gold);
+    }
+
+    [PunRPC]
+    public void RpcTrySpendGold(int amount)
+    {
+        gold -= amount;
+        Debug.Log($"[CommendPlayer] °ñµå -{amount} ¡æ ÇöÀç: {gold}");
+        EventManager.Instance.ResourceChanged(teamId, gold);
+    }
 }

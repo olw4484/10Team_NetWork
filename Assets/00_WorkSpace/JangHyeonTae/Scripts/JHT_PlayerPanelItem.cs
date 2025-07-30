@@ -10,28 +10,111 @@ public class JHT_PlayerPanelItem : JHT_BaseUI
 {
     private TextMeshProUGUI playerNameText => GetUI<TextMeshProUGUI>("PlayerNameText");
     private Image hostImage => GetUI<Image>("HostImage");
+    private Image playerCharacterImage => GetUI<Image>("PlayerCharacterImage");
+    private Image readyButtonImage => GetUI<Image>("PlayerReadyButton");
+
+    private TextMeshProUGUI readyText => GetUI<TextMeshProUGUI>("PlayerReadyText");
     private Button readyButton => GetUI<Button>("PlayerReadyButton");
 
-    bool isRed;
+
+    TeamSetting team;
+    private bool isReady;
+    private int curCharacterIndex;
+
+    public JHT_NetworkUIPanel networkUICanvas;
+    private string curMyCharacter;
     public void Init(Player player)
     {
-        player.NickName = PhotonNetwork.LocalPlayer.ActorNumber.ToString(); //FirebaseManager.Auth.CurrentUser.DisplayName;
-        Debug.Log($"{player.NickName}");
+        PhotonNetwork.LocalPlayer.NickName = PhotonNetwork.LocalPlayer.ActorNumber.ToString(); //FirebaseManager.Auth.CurrentUser.DisplayName;
+        player.NickName = PhotonNetwork.LocalPlayer.NickName;
         playerNameText.text = player.NickName;
         hostImage.enabled = player.IsMasterClient;
         readyButton.interactable = player.IsLocal;
 
+
         if (!player.IsLocal)
             return;
 
-        //TeamPropertyUpdate();
+        networkUICanvas = FindObjectOfType<JHT_NetworkUIPanel>();
+        isReady = false;
+        SetReadyProperty();
+        networkUICanvas.OnChangedClick += SetCharacter;
+
+        readyButton.onClick.RemoveListener(ReadyButtonClick);
+        readyButton.onClick.AddListener(ReadyButtonClick);
     }
 
-    //public void TeamPropertyUpdate()
-    //{
-    //    ExitGames.Client.Photon.Hashtable playerTeamProperty = new();
-    //    playerTeamProperty["IsRed"] = isRed;
-    //    PhotonNetwork.LocalPlayer.SetCustomProperties(playerTeamProperty);
-    //}
+    private void OnDestroy()
+    {
+        if (networkUICanvas != null)
+            networkUICanvas.OnChangedClick -= SetCharacter;
+    }
 
+    #region Character select
+
+    public void SetCharacter()
+    {
+        if (networkUICanvas.curIndex < 0)
+            return;
+
+        curCharacterIndex = networkUICanvas.curIndex;
+        SetCharacterProperty();
+    }
+
+    public void SetCharacterProperty()
+    {
+        ExitGames.Client.Photon.Hashtable characterChanged = new();
+        characterChanged["Character"] = curCharacterIndex;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(characterChanged);
+    }
+
+    public void SetChangeCharacter(Player player)
+    {
+        if (networkUICanvas == null)
+        {
+            Debug.LogWarning("networkUICanvas Findobject로 못찾음");
+            networkUICanvas = FindObjectOfType<JHT_NetworkUIPanel>();
+            if (networkUICanvas == null)
+            {
+                Debug.LogError("networkUICanvas Findobject로 다시 찾아도 못찾음");
+                return;
+            }
+        }
+
+        if (player.CustomProperties.TryGetValue("Character", out object value))
+        {
+            playerCharacterImage.sprite = networkUICanvas.character[(int)value].icon;
+        }
+    }
+    #endregion
+
+
+    #region readyButton
+    public void ReadyButtonClick()
+    {
+        isReady = !isReady;
+
+        readyText.text = isReady ? "Ready" : "Waiting";
+        readyButtonImage.color = isReady ? Color.yellow : Color.gray;
+        SetReadyProperty();
+    }
+
+    public void SetReadyProperty()
+    {
+        ExitGames.Client.Photon.Hashtable readyCustom = new();
+        readyCustom["IsReady"] = isReady;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(readyCustom);
+    }
+    public void CheckReady(Player player)
+    {
+        if (player.CustomProperties.TryGetValue("IsReady", out object value))
+        {
+            readyText.text = (bool)value ? "Ready" : "Waiting";
+            readyButtonImage.color = (bool)value ? Color.yellow : Color.gray;
+        }
+    }
+
+    #endregion
+
+    
 }

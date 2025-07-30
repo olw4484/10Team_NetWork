@@ -19,7 +19,7 @@ MonoBehaviour:
     AppIdVoice: 
     AppVersion: 
     UseNameServer: 1
-    FixedRegion: 
+    FixedRegion: kr
     Server: 
     Port: 0
     ProxyServer: 
@@ -28,7 +28,7 @@ MonoBehaviour:
     AuthMode: 0
     EnableLobbyStatistics: 0
     NetworkLogging: 1
-  DevRegion: 
+  DevRegion: kr
   PunLogging: 0
   EnableSupportLogger: 0
   RunInBackground: 1
@@ -39,6 +39,21 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+  - RpcAddGold
+  - RpcTrySpendGold
+  - RpcMoveToPosition
+  - RpcSetTarget
+  - RpcAddExp
+  - RpcAddResource
+  - RpcHQDestroyed
+  - GetHeal
+  - RPC_Die
+  - RPC_TakeDamage
+  - RPC_TryAttack
+  - RPC_SetDestination
+  - RPC_StartBash
+  - RPC_StopAndFace
+  - TakeDamage
   DisableAutoOpenWizard: 1
   ShowSettings: 1
-  DevRegionSetOnce: 0
+  DevRegionSetOnce: 1

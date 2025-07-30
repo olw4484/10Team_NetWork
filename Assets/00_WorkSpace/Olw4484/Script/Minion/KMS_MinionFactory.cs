@@ -2,19 +2,27 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// 미니언 스폰 함수 (오프라인/네트워크 모두 사용)
+/// - 오프라인: Instantiate()
+/// - 네트워크: PhotonNetwork.Instantiate()
+///     ※ 주의: PhotonNetwork.Instantiate()는 프리팹이 반드시 Resources 폴더 하위에 있어야 하며,
+///     프리팹 이름이 Resources 폴더 경로와 일치해야 함 (예: "Minion_Melee").
+/// </summary>
+
 public class KMS_MinionFactory : MonoBehaviour
 {
     public static KMS_MinionFactory Instance { get; private set; }
 
-    private Dictionary<MinionType, MinionDataSO> minionDataDict = new();
-    [SerializeField] private MinionDataSO[] minionDataList;
+    private Dictionary<KMS_MinionType, KMS_MinionDataSO> minionDataDict = new();
+    [SerializeField] private KMS_MinionDataSO[] minionDataList;
     public KMS_HQDataSO hqData;
 
     [Header("Minion Prefabs")]
     public GameObject meleeMinionPrefab;
     public GameObject rangedMinionPrefab;
     public GameObject eliteMinionPrefab;
-    private Dictionary<MinionType, GameObject> prefabDict;
+    private Dictionary<KMS_MinionType, GameObject> prefabDict;
 
     private void Awake()
     {
@@ -36,50 +44,43 @@ public class KMS_MinionFactory : MonoBehaviour
                 Debug.LogWarning($"Duplicate MinionType: {data.minionType}");
             }
         }
-        prefabDict = new Dictionary<MinionType, GameObject>
+        prefabDict = new Dictionary<KMS_MinionType, GameObject>
         {
-            { MinionType.Melee, meleeMinionPrefab },
-            { MinionType.Ranged, rangedMinionPrefab },
-            { MinionType.Elite, eliteMinionPrefab }
+            { KMS_MinionType.Melee, meleeMinionPrefab },
+            { KMS_MinionType.Ranged, rangedMinionPrefab },
+            { KMS_MinionType.Elite, eliteMinionPrefab }
         };
 
     }
 
-    public MinionController SpawnFreeMinion(MinionType type, Vector3 pos, Transform target, KMS_WaypointGroup waypointGroup = null)
+    public KMS_MinionController SpawnFreeMinion(KMS_MinionType type, Vector3 pos, Transform target, KMS_WaypointGroup waypointGroup = null)
     {
-        if (!KMS_MinionFactory.Instance.minionDataDict.TryGetValue(type, out var data))
+        if (!minionDataDict.TryGetValue(type, out var data) || data == null)
         {
-            Debug.LogError($"[Spawner] 해당 MinionType({type})에 대한 데이터가 없습니다.");
+            Debug.LogError($"[Spawner] MinionType({type}) 데이터 오류");
             return null;
         }
 
-        if (data == null)
+        GameObject minion;
+        if (Photon.Pun.PhotonNetwork.InRoom)
         {
-            Debug.LogError($"[Spawner] 데이터는 있지만 null입니다. Type: {type}");
-            return null;
+            minion = Photon.Pun.PhotonNetwork.Instantiate(prefabDict[type].name, pos, Quaternion.identity);
+        }
+        else
+        {
+            minion = Instantiate(prefabDict[type], pos, Quaternion.identity);
         }
 
-        GameObject minion = Instantiate(prefabDict[type], pos, Quaternion.identity);
-        var controller = minion.GetComponent<MinionController>();
+        var controller = minion.GetComponent<KMS_MinionController>();
         controller?.Initialize(data, target, waypointGroup);
         return controller;
     }
 
 
-    public bool TrySpawnMinion(MinionType type, Vector3 position, Transform target, KMS_CommandPlayer player)
+    public bool TrySpawnMinion(KMS_MinionType type, Vector3 position, Transform target, KMS_CommandPlayer player, int teamId)
     {
-        if (player == null)
-        {
-            Debug.LogError("[Factory] Player is null!");
-            return false;
-        }
 
         var minionInfo = hqData.manualSpawnList.FirstOrDefault(x => x.type == type);
-        if (minionInfo == null)
-        {
-            Debug.LogError($"[Factory] MinionInfo for type {type} is null!");
-            return false;
-        }
 
         if (target == null)
         {
@@ -89,7 +90,18 @@ public class KMS_MinionFactory : MonoBehaviour
         if (!player.TrySpendGold(minionInfo.cost))
             return false;
 
-        var go = Instantiate(minionInfo.prefab, position, Quaternion.identity);
+        GameObject go;
+
+        if (Photon.Pun.PhotonNetwork.InRoom)
+        {
+            var prefabName = minionInfo.prefab.name;
+            go = Photon.Pun.PhotonNetwork.Instantiate(prefabName, position, Quaternion.identity);
+        }
+        else
+        {
+            go = Instantiate(minionInfo.prefab, position, Quaternion.identity);
+        }
+
         if (go == null)
         {
             Debug.LogError("[Factory] Instantiate 결과가 null입니다.");
@@ -102,29 +114,29 @@ public class KMS_MinionFactory : MonoBehaviour
             return false;
         }
 
-        var controller = go.GetComponent<MinionController>();
+        var controller = go.GetComponent<KMS_MinionController>();
         if (controller == null)
         {
             Debug.LogError("[Factory] MinionController가 프리팹에 존재하지 않습니다.");
             return false;
         }
 
-        controller.Initialize(data, target, null);
+        controller.Initialize(data, target, null, teamId);
 
         return true;
     }
 
-    public GameObject GetMinionPrefab(MinionType type)
+    public GameObject GetMinionPrefab(KMS_MinionType type)
     {
         return type switch
         {
-            MinionType.Melee => meleeMinionPrefab,
-            MinionType.Ranged => rangedMinionPrefab,
-            MinionType.Elite => eliteMinionPrefab,
+            KMS_MinionType.Melee => meleeMinionPrefab,
+            KMS_MinionType.Ranged => rangedMinionPrefab,
+            KMS_MinionType.Elite => eliteMinionPrefab,
             _ => null
         };
     }
 }
-public enum MinionType { Melee, Ranged, Elite }
+public enum KMS_MinionType { Melee = 0, Ranged = 1, Elite =2 }
 
 

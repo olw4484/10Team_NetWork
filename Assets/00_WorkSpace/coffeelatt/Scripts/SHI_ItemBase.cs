@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SHI_ItemBase : MonoBehaviour
 {
-
+    public Sprite _Image;
     public enum ItemName
     {
        HealHp,
@@ -22,7 +22,7 @@ public class SHI_ItemBase : MonoBehaviour
     [Header("지속시간 , 0은 무제한")]
     public float Duration; // 아이템 지속 시간
     [Header("0: 소비 아이템,버프 아이템 1: 장비 아이템")]
-    public int type; // 아이템 타입 (0: 소비 아이템,버프 아이템 1: 장비 아이템)
+    public int type; // 아이템 타입 (0: 소비 아이템,버프 아이템 1: 장비 아이템) 장착된 아이템 2
     [Header("소비아이템 효과")]
     public float Healhp; // 아이템이 회복하는 HP 양
     public float Healmp; // 아이템이 회복하는 MP 양
@@ -44,11 +44,11 @@ public class SHI_ItemBase : MonoBehaviour
     [Header("특수 효과")]
     [Range(0,1)]
     public float lifeSteal; // 아이템이 증가시키는 생명력 흡수 양
-    [Header("장비로인한 증가량MinionSlayer")]
+    [Header("장비로 인한 증가량MinionSlayer")]
     [Range(0, 1)]
     public float minionHitup; // 아이템이 증가시키는 미니언 공격력 양
     [Header("버프로 인한 증가량BuffSlayer")]
-    [Range(1,3)]
+    [Range(0,2)]
     public float minionHitup2; // 아이템이 증가시키는 미니언 공격력 양2 (추가 변수로 사용 가능)
     [Range(1, 2)]
     public float nexusHitUp; // 아이템이 증가시키는 넥서스 공격력 양
@@ -59,4 +59,8 @@ public class SHI_ItemBase : MonoBehaviour
     [Range(1, 5)]
     public float minionAttackRegeneration; // 아이템이 증가시키는 미니언 공격시 재생 속도 증가
 
+    private void Awake()
+    {
+        gameObject.GetComponent<SpriteRenderer>().sprite = _Image;
+    }
 }

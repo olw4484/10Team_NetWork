@@ -1,17 +1,14 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 
 public abstract class JHT_BaseUI : MonoBehaviour
 {
     private Dictionary<string, GameObject> uiObjectDic;
     private Dictionary<string, Component> componentDic;
 
-    private void Awake()
+    private void Awake() => InitBaseUI();
+    protected void InitBaseUI()
     {
         RectTransform[] recTrans = GetComponentsInChildren<RectTransform>(true);
         uiObjectDic = new Dictionary<string, GameObject>(recTrans.Length * 4);
@@ -22,8 +19,8 @@ public abstract class JHT_BaseUI : MonoBehaviour
         }
 
         Component[] components = GetComponentsInChildren<Component>(true);
-        componentDic = new Dictionary<string,Component>(components.Length * 4);
-    
+        componentDic = new Dictionary<string, Component>(components.Length * 4);
+
         foreach (Component com in components)
         {
             componentDic.TryAdd($"{com.gameObject}_{com.GetType().Name}", com);
@@ -40,7 +37,7 @@ public abstract class JHT_BaseUI : MonoBehaviour
     {
         componentDic.TryGetValue($"{objName}_{typeof(T).Name}", out Component com);
 
-        if (com != null) 
+        if (com != null)
             return com as T;
 
         GameObject obj = GetUI(objName);

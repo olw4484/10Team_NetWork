@@ -40,25 +40,6 @@ public class EditPanel : MonoBehaviour
         userIdText.text = user.UserId;
     }
 
-    private void Confirm()
-    {
-        FirebaseUser user = FirebaseManager.Auth.CurrentUser;
-        user.UpdateEmailAsync(emailText.text)
-            .ContinueWithOnMainThread(task =>
-            {
-                if (task.IsCanceled)
-                {
-                    Debug.LogError("이메일 변경 취소");
-                    return;
-                }
-                if (task.IsFaulted)
-                {
-                    Debug.LogError($"이메일 변경 실패. 이유 : {task.Exception}");
-                    return;
-                }
-                Debug.Log("이메일 변경 성공");
-            });
-    }
 
     private void ChangeNickname()
     {
