@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "MinionData", menuName = "Minion/MinionData")]
+[CreateAssetMenu(fileName = "MinionData", menuName = "Minion/PT_MinionData")]
 public class MinionDataSO : ScriptableObject
 {
     public MinionType minionType;

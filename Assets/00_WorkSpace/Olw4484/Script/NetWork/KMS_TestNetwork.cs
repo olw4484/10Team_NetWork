@@ -68,8 +68,10 @@ public class KMS_TestNetwork : MonoBehaviourPunCallbacks
 
     private IEnumerator WaitForRoomPropertiesAndJoin()
     {
+        AssignTeam();
+
         // 방 프로퍼티가 설정될 때까지 대기
-        while (!PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("RedCount"))
+        while (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Team"))
             yield return null;
 
         int myTeamId = (int)PhotonNetwork.LocalPlayer.CustomProperties["Team"];
@@ -111,8 +113,6 @@ public class KMS_TestNetwork : MonoBehaviourPunCallbacks
             commandPlayer.gearText = canvasObj.transform.Find("ResourcePanel/GearText").GetComponent<TMP_Text>();
             commandPlayer.playerInputHandler = canvasObj.GetComponent<PlayerInputHandler>();
         }
-
-        AssignTeam();
     }
 
     private void AssignTeam()
@@ -146,7 +146,7 @@ public class KMS_TestNetwork : MonoBehaviourPunCallbacks
         // 방에 반영
         ExitGames.Client.Photon.Hashtable roomProps = new();
         roomProps[countKey] = testTeam == TestTeamSetting.Red ? redCount : blueCount;
-        PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);   
 
         //팀에 따라 스폰 위치 결정
         Vector3 spawnPos = testTeam == TestTeamSetting.Red ? redSpawnPoint.position : blueSpawnPoint.position;

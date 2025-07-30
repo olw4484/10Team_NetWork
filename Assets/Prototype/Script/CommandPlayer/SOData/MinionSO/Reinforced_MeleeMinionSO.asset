@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6864bc45ee52e724da4248ca6bfd4b66, type: 3}
+  m_Script: {fileID: 11500000, guid: 35d65b0d60f1a3a4a9ed36814226fb0d, type: 3}
   m_Name: Reinforced_MeleeMinionSO
   m_EditorClassIdentifier: 
   minionType: 0
@@ -21,4 +21,4 @@ MonoBehaviour:
   goldReward: 8
   gearReward: 0
   expReward: 15
-  prefab: {fileID: 0}
+  detectRange: 5
