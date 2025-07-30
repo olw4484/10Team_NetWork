@@ -198,9 +198,7 @@ public class DatabaseTester : MonoBehaviour
             PlayerData playerData = JsonUtility.FromJson<PlayerData>(json); // JSON 문자열을 PlayerData 객체로 변환합니다.
             data = playerData; // 가져온 데이터를 data 변수에 저장합니다.
 
-            Debug.Log($"Clear: {playerData.clear}");
             Debug.Log($"name: {playerData.name}");
-            Debug.Log($"speed: {playerData.speed}");
             Debug.Log($"level: {playerData.level}");
             if (playerData.skill != null)
             {
@@ -277,10 +275,8 @@ public class PlayerData
 {
     public string name;
     public int level;
-    public int speed;
     public int gameCount;
     public int winsCount;
-    public bool clear;
     public List<string> skill;
 }
 
