@@ -25,8 +25,6 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
     private string curMyCharacter;
     public void Init(Player player)
     {
-        PhotonNetwork.LocalPlayer.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
-        player.NickName = PhotonNetwork.LocalPlayer.NickName;
         playerNameText.text = player.NickName;
         hostImage.enabled = player.IsMasterClient;
         readyButton.interactable = player.IsLocal;
