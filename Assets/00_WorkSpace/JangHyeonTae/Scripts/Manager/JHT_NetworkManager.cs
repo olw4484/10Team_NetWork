@@ -48,6 +48,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnDisconnected(DisconnectCause cause)
     {
+        StateCustomProperty(CurrentState.NotConnect);
         PhotonNetwork.ConnectUsingSettings();
     }
 
@@ -82,6 +83,8 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
             yield return null;
         }
 
+        yield return new WaitForSeconds(0.1f);
+
         if (PhotonNetwork.IsMasterClient)
             teamManager.SetPlayerTeam(PhotonNetwork.LocalPlayer);
 
@@ -96,7 +99,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
-        
+        StateCustomProperty(CurrentState.Lobby);
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -193,7 +196,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
     {
         if (changedProps.ContainsKey("Team"))
         {
-            Debug.Log($"{targetPlayer.ActorNumber}에 해당하는 플레이어 {targetPlayer.CustomProperties["Team"].ToString()}으로 팀이동");
             roomManager.OtherPlayerChangeTeam(targetPlayer);
         }
         else if(changedProps.ContainsKey("IsReady"))
