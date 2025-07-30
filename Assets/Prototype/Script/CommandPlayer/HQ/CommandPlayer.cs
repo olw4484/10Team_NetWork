@@ -9,11 +9,21 @@ public class CommandPlayer : MonoBehaviour
     public int gold = 150;
     public int gear = 50;
     public TMP_Text goldText, gearText;
+
+    public PlayerInputHandler playerInputHandler;
+
     public PhotonView photonView;
+
+    void Awake()
+    {
+    }
+
     void Update()
     {
-        goldText.text = $"Gold: {gold}";
-        gearText.text = $"Gear: {gear}";
+        if (goldText != null)
+            goldText.text = $"Gold: {gold}";
+        if (gearText != null)
+            gearText.text = $"Gear: {gear}";
     }
 
     public void AddGold(int amount)

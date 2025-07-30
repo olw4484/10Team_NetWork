@@ -53,7 +53,7 @@ public class MinionFactory : MonoBehaviour
 
     }
 
-    public MinionController SpawnFreeMinion(MinionType type, Vector3 pos, Transform target, WaypointGroup waypointGroup = null)
+    public MinionController SpawnFreeMinion(MinionType type, Vector3 pos, Transform target, WaypointGroup waypointGroup = null, int teamId = 0)
     {
         if (!minionDataDict.TryGetValue(type, out var data) || data == null)
         {
@@ -72,7 +72,7 @@ public class MinionFactory : MonoBehaviour
         }
 
         var controller = minion.GetComponent<MinionController>();
-        controller?.Initialize(data, target, waypointGroup);
+        controller?.Initialize(data, target, waypointGroup, teamId);
         return controller;
     }
 
@@ -137,6 +137,6 @@ public class MinionFactory : MonoBehaviour
         };
     }
 }
-public enum MinionType { Melee = 0, Ranged = 1, Elite =2 }
+public enum MinionType { Melee = 0, Ranged = 1, Elite =2 , Reinforced_Melee = 3, Reinforced_Ranged = 4 }
 
 
