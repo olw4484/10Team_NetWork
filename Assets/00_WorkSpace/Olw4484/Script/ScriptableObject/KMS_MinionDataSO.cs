@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "MinionData", menuName = "Minion/MinionData")]
-public class MinionDataSO : ScriptableObject
+public class KMS_MinionDataSO : ScriptableObject
 {
-    public MinionType minionType;
+    public KMS_MinionType minionType;
 
     [Header("Stats")]
     public int maxHP;

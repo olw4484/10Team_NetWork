@@ -22,7 +22,7 @@ public class SHI_ResultValue : MonoBehaviour
     public float DefByMinion; // 미니언 공격력 감소
     public float MinionAttackRegeneration; // 미니언 공격시 재생 속도 증가
     public float AtkRange; // 공격 사거리
-
+    public float Def; // 방어력 (추가 필요시)
 
     bool isconnect = false;
 
@@ -64,12 +64,13 @@ public class SHI_ResultValue : MonoBehaviour
         MoveSpeed = (stat.MoveSpd + addstat.TmoveSpeed);// 이동 속도 증가
         CritChance = (/*stat.CritChance*/ +addstat.TcritChance); // 공격 로직 에 조건 함수가 붙음 0~1사이값을 랜덤으로 부여
         //크리티컬 확률이 필요함. 하지만 기본 크리티컬을 없게 만든다면 이또한 그대로 작동함.
-                                                                 // 랜덤수가 크리티컬 찬스보다 낮을때 크리티컬이 발동
-                                                                 // 크리티컬데미지는 기본 2배로고정 크리티컬 찬스를 먼저계산후 해당되지 않을때 일반공격력으로 계산됨.
-        //********스킬데이터 미연결중*********
-        //ApDamage = (skillSO.damage *addstat.TskillPower); // 스킬 공격력 증가
-        //스킬 공격력 데이터 계산방식이 안정해 졌음으로 임시임.
-        //SkillTimeDown = (skillSO.cooldown *addstat.TcoolDown);//약간 애매..?
+        Def =(stat.Def *addstat.Tallup); // 방어력 증가 (추가 필요시)
+                                        // 랜덤수가 크리티컬 찬스보다 낮을때 크리티컬이 발동
+                                        // 크리티컬데미지는 기본 2배로고정 크리티컬 찬스를 먼저계산후 해당되지 않을때 일반공격력으로 계산됨.
+                                        //********스킬데이터 미연결중*********
+                                        //ApDamage = (skillSO.damage *addstat.TskillPower); // 스킬 공격력 증가
+                                        //스킬 공격력 데이터 계산방식이 안정해 졌음으로 임시임.
+                                        //SkillTimeDown = (skillSO.cooldown *addstat.TcoolDown);//약간 애매..?
         LifeSteal = (/*stat.LifeSteal*/ +addstat.TlifeSteal); //공격할때 흡혈하는 함수로직 추가 만들기
         //기본 흡혈량을 줘도 됨. 밸붕금지 기초엔 없다가 렙업했을때 줘도되고 스탤치 없어도 작동함.
                                                               //공격력* 이 값이 곱해짐. 의 값은 현재체력이며 현재체력은 maxhp를 넘을수 없다 계산.

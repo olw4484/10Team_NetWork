@@ -8,9 +8,9 @@ using System;
 /// 게임의 경과 시간과 페이즈에 따른 이벤트를 관리하는 TimeManager 싱글턴 클래스.
 /// 8분, 15분에 이벤트를 발생시키며, 하드코딩된 타이밍을 기준으로 작동.
 /// </summary>
-public class TimeManager : MonoBehaviour
+public class KMS_TimeManager : MonoBehaviour
 {
-    public static TimeManager Instance { get; private set; }
+    public static KMS_TimeManager Instance { get; private set; }
 
     public float ElapsedTime { get; private set; }
 
