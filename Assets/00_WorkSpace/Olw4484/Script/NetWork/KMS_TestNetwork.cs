@@ -16,8 +16,8 @@ using UnityEngine;
 public class KMS_TestNetwork : MonoBehaviourPunCallbacks
 {
 
-    public Transform redSpawnPoint;
-    public Transform blueSpawnPoint;
+    public Transform heroRedSpawnPoint;
+    public Transform heroBlueSpawnPoint;
 
     public Transform hqRedSpawnPoint;
     public Transform hqBlueSpawnPoint;
@@ -70,14 +70,14 @@ public class KMS_TestNetwork : MonoBehaviourPunCallbacks
     {
         AssignTeam();
 
-        // 방 프로퍼티가 설정될 때까지 대기
         while (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Team"))
             yield return null;
 
         int myTeamId = (int)PhotonNetwork.LocalPlayer.CustomProperties["Team"];
 
-        Vector3 hqSpawnPos, cmdSpawnPos;
-        Quaternion hqSpawnRot, cmdSpawnRot;
+        // HQ/CommandPlayer 기존처럼 생성
+        Vector3 hqSpawnPos, cmdSpawnPos, heroSpawnPos;
+        Quaternion hqSpawnRot, cmdSpawnRot, heroSpawnRot;
 
         if (myTeamId == 0) // Red
         {
@@ -85,6 +85,8 @@ public class KMS_TestNetwork : MonoBehaviourPunCallbacks
             hqSpawnRot = hqRedSpawnPoint.rotation;
             cmdSpawnPos = cmdRedSpawnPoint.position;
             cmdSpawnRot = cmdRedSpawnPoint.rotation;
+            heroSpawnPos = heroRedSpawnPoint.position;
+            heroSpawnRot = heroRedSpawnPoint.rotation;
         }
         else // Blue
         {
@@ -92,8 +94,11 @@ public class KMS_TestNetwork : MonoBehaviourPunCallbacks
             hqSpawnRot = hqBlueSpawnPoint.rotation;
             cmdSpawnPos = cmdBlueSpawnPoint.position;
             cmdSpawnRot = cmdBlueSpawnPoint.rotation;
+            heroSpawnPos = heroBlueSpawnPoint.position;
+            heroSpawnRot = heroBlueSpawnPoint.rotation;
         }
 
+        // 기존 HQ, CommandPlayer 생성
         var hqObj = PhotonNetwork.Instantiate("HQ", hqSpawnPos, hqSpawnRot);
         hqObj.GetComponent<HQ>().teamId = myTeamId;
 
@@ -104,8 +109,11 @@ public class KMS_TestNetwork : MonoBehaviourPunCallbacks
         if (commander != null)
             commander.player = cmdObj.GetComponent<CommandPlayer>();
 
-        var commandPlayer = cmdObj.GetComponent<CommandPlayer>();
+        // Hero 생성 (여기만 추가)
+        var heroObj = PhotonNetwork.Instantiate("Hero1", heroSpawnPos, heroSpawnRot);
 
+        // 내 플레이어만 Canvas 생성
+        var commandPlayer = cmdObj.GetComponent<CommandPlayer>();
         if (commandPlayer.photonView.IsMine)
         {
             var canvasObj = Instantiate(canvasPrefab);
@@ -149,8 +157,8 @@ public class KMS_TestNetwork : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);   
 
         //팀에 따라 스폰 위치 결정
-        Vector3 spawnPos = testTeam == TestTeamSetting.Red ? redSpawnPoint.position : blueSpawnPoint.position;
-        Quaternion spawnRot = testTeam == TestTeamSetting.Red ? redSpawnPoint.rotation : blueSpawnPoint.rotation;
+        Vector3 spawnPos = testTeam == TestTeamSetting.Red ? heroRedSpawnPoint.position : heroBlueSpawnPoint.position;
+        Quaternion spawnRot = testTeam == TestTeamSetting.Red ? heroRedSpawnPoint.rotation : heroBlueSpawnPoint.rotation;
 
     }
 }
