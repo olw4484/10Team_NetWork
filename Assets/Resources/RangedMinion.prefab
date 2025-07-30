@@ -40,10 +40,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6179474243884444698}
-  - component: {fileID: 1682613736681378335}
-  - component: {fileID: 5597219691720914509}
   - component: {fileID: 6439292312105349331}
   - component: {fileID: 6642140865036446660}
+  - component: {fileID: -3489184937429794270}
+  - component: {fileID: 1410897956709632735}
   m_Layer: 22
   m_Name: RangedMinion
   m_TagString: Player
@@ -68,51 +68,6 @@ Transform:
   - {fileID: 8613733044725965479}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1682613736681378335
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7540996777296793832}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fda25719286a43e469a15e6738cf7cab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 0
-  attackRange: 0
-  attackCooldown: 0
-  attackPower: 0
-  maxHP: 0
-  teamId: 0
-  view: {fileID: 5597219691720914509}
-  data: {fileID: 11400000, guid: 8a8aef992bc781f41b5e8bac5126d853, type: 2}
-  enemyLayerMask:
-    serializedVersion: 2
-    m_Bits: 0
-  waypointGroup: {fileID: 0}
-  photonView: {fileID: 0}
---- !u!114 &5597219691720914509
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7540996777296793832}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93eb6ab4b0126a246956301c982f791f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  avatar: {fileID: 8613733044725965479}
-  animator: {fileID: 0}
-  hitEffect: {fileID: 0}
-  audioSource: {fileID: 0}
-  highlightEffect: {fileID: 0}
-  attackSound: {fileID: 0}
-  hitSound: {fileID: 0}
-  deathSound: {fileID: 0}
 --- !u!114 &6439292312105349331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,6 +112,51 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &-3489184937429794270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7540996777296793832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9657bc4dc780a13499161c237521571e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 0
+  attackRange: 0
+  attackCooldown: 0
+  attackPower: 0
+  maxHP: 0
+  teamId: 0
+  view: {fileID: 1410897956709632735}
+  data: {fileID: 11400000, guid: 4e22bca9680632b45b1d1738de75cd75, type: 2}
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 6291457
+  waypointGroup: {fileID: 0}
+  photonView: {fileID: 6439292312105349331}
+--- !u!114 &1410897956709632735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7540996777296793832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a34a37760220884fb0a1ed347337340, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  avatar: {fileID: 8955544604789622641}
+  animator: {fileID: 0}
+  hitEffect: {fileID: 0}
+  audioSource: {fileID: 0}
+  highlightEffect: {fileID: 0}
+  attackSound: {fileID: 0}
+  hitSound: {fileID: 0}
+  deathSound: {fileID: 0}
 --- !u!1 &8438395235778416345
 GameObject:
   m_ObjectHideFlags: 0
