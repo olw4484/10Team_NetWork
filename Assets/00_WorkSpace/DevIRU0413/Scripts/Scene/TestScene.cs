@@ -18,6 +18,7 @@ namespace Scripts.Scene
         protected override void InitManagers()
         {
             // 필요한 매니저 초기화 (예: UIManager 등)
+            Debug.Log(YSJ_SystemManager.Instance.ToString());
             Debug.Log(FirebaseManager.Instance.ToString());
         }
 
