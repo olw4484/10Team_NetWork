@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Pun.Demo.PunBasics;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine;
@@ -14,8 +15,12 @@ public class CommandPlayer : MonoBehaviour
 
     public PhotonView photonView;
 
-    void Awake()
+    private void Start()
     {
+        if (photonView.IsMine)
+        {
+            //GameManager.Instance.RegisterPlayer(this);
+        }
     }
 
     void Update()

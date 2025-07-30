@@ -60,7 +60,21 @@ public class KMS_NetWorkManager : MonoBehaviourPunCallbacks
     {
         if (isCommandDebugMode)
         {
-            PhotonNetwork.Instantiate("HQ", cmdRedSpawnPoint.position, cmdRedSpawnPoint.rotation);
+            var hqObj = PhotonNetwork.Instantiate("HQ", cmdRedSpawnPoint.position, cmdRedSpawnPoint.rotation);
+            var cmdObj = PhotonNetwork.Instantiate("CommandPlayer", cmdRedSpawnPoint.position, cmdRedSpawnPoint.rotation);
+
+            var commandPlayer = cmdObj.GetComponent<CommandPlayer>();
+            var hq = hqObj.GetComponent<HQCommander>();
+            hq.player = commandPlayer;
+
+            // Canvas 연결
+            if (commandPlayer.photonView.IsMine)
+            {
+                var canvasObj = Instantiate(canvasPrefab);
+                commandPlayer.goldText = canvasObj.transform.Find("ResourcePanel/GoldText").GetComponent<TMP_Text>();
+                commandPlayer.gearText = canvasObj.transform.Find("ResourcePanel/GearText").GetComponent<TMP_Text>();
+                commandPlayer.playerInputHandler = canvasObj.GetComponent<PlayerInputHandler>();
+            }
         }
         if (isHeroDebugMode)
         {
@@ -122,56 +136,27 @@ public class KMS_NetWorkManager : MonoBehaviourPunCallbacks
         }
         else if (myRole == "Command")
         {
-            // 1. HQ 먼저 생성 (내가 그 팀의 Command라면)
+            // 1. HQ 먼저 생성
             Vector3 hqPos = (myTeamId == 0) ? hqRedSpawnPoint.position : hqBlueSpawnPoint.position;
             Quaternion hqRot = (myTeamId == 0) ? hqRedSpawnPoint.rotation : hqBlueSpawnPoint.rotation;
-            PhotonNetwork.Instantiate("HQ", hqPos, hqRot);
+            var hqObj = PhotonNetwork.Instantiate("HQ", hqPos, hqRot);
 
             // 2. CommandPlayer 생성 및 Canvas 연결
             Vector3 pos = (myTeamId == 0) ? cmdRedSpawnPoint.position : cmdBlueSpawnPoint.position;
             Quaternion rot = (myTeamId == 0) ? cmdRedSpawnPoint.rotation : cmdBlueSpawnPoint.rotation;
             var cmdObj = PhotonNetwork.Instantiate("CommandPlayer", pos, rot);
 
-            if (cmdObj.GetComponent<PhotonView>().IsMine)
+            var commandPlayer = cmdObj.GetComponent<CommandPlayer>();
+            var hq = hqObj.GetComponent<HQCommander>();
+            hq.player = commandPlayer;
+
+            if (commandPlayer.photonView.IsMine)
             {
                 var canvasObj = Instantiate(canvasPrefab);
-                var commandPlayer = cmdObj.GetComponent<CommandPlayer>();
                 commandPlayer.goldText = canvasObj.transform.Find("ResourcePanel/GoldText").GetComponent<TMP_Text>();
                 commandPlayer.gearText = canvasObj.transform.Find("ResourcePanel/GearText").GetComponent<TMP_Text>();
                 commandPlayer.playerInputHandler = canvasObj.GetComponent<PlayerInputHandler>();
             }
         }
     }
-    #region DebugMode
-    private void DebugHeroSpawn()
-    {
-        Vector3 pos = heroRedSpawnPoint.position;
-        Quaternion rot = heroRedSpawnPoint.rotation;
-
-        Instantiate(Resources.Load<GameObject>("Hero1"), pos, rot);
-    }
-
-    private void DebugHQspwn()
-    {
-        // HQ를 네트워크로 생성
-        Vector3 hqPos = hqRedSpawnPoint.position;
-        Quaternion hqRot = hqRedSpawnPoint.rotation;
-        PhotonNetwork.Instantiate("HQ", hqPos, hqRot);
-
-        // CommandPlayer도 네트워크로 생성
-        Vector3 pos = cmdRedSpawnPoint.position;
-        Quaternion rot = cmdRedSpawnPoint.rotation;
-        var go = PhotonNetwork.Instantiate("CommandPlayer", pos, rot);
-
-        // Canvas 세팅 (내꺼만)
-        if (go.GetComponent<PhotonView>().IsMine)
-        {
-            var commandPlayer = go.GetComponent<CommandPlayer>();
-            var canvasObj = Instantiate(canvasPrefab);
-            commandPlayer.goldText = canvasObj.transform.Find("ResourcePanel/GoldText").GetComponent<TMP_Text>();
-            commandPlayer.gearText = canvasObj.transform.Find("ResourcePanel/GearText").GetComponent<TMP_Text>();
-            commandPlayer.playerInputHandler = canvasObj.GetComponent<PlayerInputHandler>();
-        }
-    }
-    #endregion
 }
