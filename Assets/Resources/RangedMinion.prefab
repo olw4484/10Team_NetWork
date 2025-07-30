@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 6642140865036446660}
   m_Layer: 22
   m_Name: RangedMinion
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -85,6 +85,7 @@ MonoBehaviour:
   attackCooldown: 0
   attackPower: 0
   maxHP: 0
+  teamId: 0
   view: {fileID: 5597219691720914509}
   data: {fileID: 11400000, guid: 8a8aef992bc781f41b5e8bac5126d853, type: 2}
   enemyLayerMask:

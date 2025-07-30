@@ -174,7 +174,7 @@ GameObject:
   - component: {fileID: 4903870106326775379}
   m_Layer: 22
   m_Name: EliteMinion
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -213,6 +213,7 @@ MonoBehaviour:
   attackCooldown: 0
   attackPower: 0
   maxHP: 0
+  teamId: 0
   view: {fileID: 5388056467681079592}
   data: {fileID: 11400000, guid: ccd3e42ef521ec344b7fb23651e89f8a, type: 2}
   enemyLayerMask:

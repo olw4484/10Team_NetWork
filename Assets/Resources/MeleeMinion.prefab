@@ -151,7 +151,7 @@ GameObject:
   - component: {fileID: 5434556195519555941}
   m_Layer: 22
   m_Name: MeleeMinion
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -190,6 +190,7 @@ MonoBehaviour:
   attackCooldown: 0
   attackPower: 0
   maxHP: 0
+  teamId: 0
   view: {fileID: 6767216568130689818}
   data: {fileID: 11400000, guid: 6c555d74ddf68bf499adc65edb0708a5, type: 2}
   enemyLayerMask:
