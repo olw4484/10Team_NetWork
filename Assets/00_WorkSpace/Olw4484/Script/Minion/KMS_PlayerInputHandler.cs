@@ -18,7 +18,7 @@ public class KMS_PlayerInputHandler : MonoBehaviour
     private float dragThreshold = 10f;
 
     private KMS_ISelectable currentSelected;
-    private List<MinionController> selectedMinions = new();
+    private List<KMS_MinionController> selectedMinions = new();
  
 
     void Update()
@@ -134,7 +134,7 @@ public class KMS_PlayerInputHandler : MonoBehaviour
 
         selectedMinions.Clear();
 
-        foreach (var minion in FindObjectsOfType<MinionController>())
+        foreach (var minion in FindObjectsOfType<KMS_MinionController>())
         {
             Vector3 screenPos = Camera.main.WorldToScreenPoint(minion.transform.position);
             if (KMS_SelectionUtility.IsInSelectionBox(start, end, screenPos))
@@ -174,10 +174,10 @@ public class KMS_PlayerInputHandler : MonoBehaviour
 
                 switch (selectable.GetSelectableType())
                 {
-                    case SelectableType.Minion:
+                    case KMS_SelectableType.Minion:
                         Debug.Log("¿Ø¥÷ º±≈√µ ");
                         break;
-                    case SelectableType.Building:
+                    case KMS_SelectableType.Building:
                         Debug.Log("∞«π∞ º±≈√µ ");
                         break;
                 }

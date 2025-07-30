@@ -47,6 +47,12 @@ MonoBehaviour:
   - RpcAddResource
   - RpcHQDestroyed
   - GetHeal
+  - RPC_Die
+  - RPC_SetDestination
+  - RPC_StartBash
+  - RPC_StopAndFace
+  - RPC_TakeDamage
+  - RPC_TryAttack
   - RPC_SetDestination
   - RPC_StartBash
   - RPC_StopAndFace

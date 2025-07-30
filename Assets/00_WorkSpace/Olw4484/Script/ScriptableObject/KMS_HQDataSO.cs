@@ -5,9 +5,9 @@ using UnityEngine;
 public class KMS_HQDataSO : ScriptableObject
 {
     [System.Serializable]
-    public class SpawnableMinionInfo
+    public class KMS_SpawnableMinionInfo
     {
-        public MinionType type;
+        public KMS_MinionType type;
         public GameObject prefab;
         public int cost;
     }
@@ -19,5 +19,5 @@ public class KMS_HQDataSO : ScriptableObject
     public int maxHP = 1000;
 
     [Header("수동 생성 가능한 미니언 목록")]
-    public List<SpawnableMinionInfo> manualSpawnList;
+    public List<KMS_SpawnableMinionInfo> manualSpawnList;
 }
