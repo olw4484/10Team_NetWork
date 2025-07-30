@@ -14,15 +14,15 @@ public class KMS_MinionFactory : MonoBehaviour
 {
     public static KMS_MinionFactory Instance { get; private set; }
 
-    private Dictionary<MinionType, MinionDataSO> minionDataDict = new();
-    [SerializeField] private MinionDataSO[] minionDataList;
+    private Dictionary<KMS_MinionType, KMS_MinionDataSO> minionDataDict = new();
+    [SerializeField] private KMS_MinionDataSO[] minionDataList;
     public KMS_HQDataSO hqData;
 
     [Header("Minion Prefabs")]
     public GameObject meleeMinionPrefab;
     public GameObject rangedMinionPrefab;
     public GameObject eliteMinionPrefab;
-    private Dictionary<MinionType, GameObject> prefabDict;
+    private Dictionary<KMS_MinionType, GameObject> prefabDict;
 
     private void Awake()
     {
@@ -44,16 +44,16 @@ public class KMS_MinionFactory : MonoBehaviour
                 Debug.LogWarning($"Duplicate MinionType: {data.minionType}");
             }
         }
-        prefabDict = new Dictionary<MinionType, GameObject>
+        prefabDict = new Dictionary<KMS_MinionType, GameObject>
         {
-            { MinionType.Melee, meleeMinionPrefab },
-            { MinionType.Ranged, rangedMinionPrefab },
-            { MinionType.Elite, eliteMinionPrefab }
+            { KMS_MinionType.Melee, meleeMinionPrefab },
+            { KMS_MinionType.Ranged, rangedMinionPrefab },
+            { KMS_MinionType.Elite, eliteMinionPrefab }
         };
 
     }
 
-    public MinionController SpawnFreeMinion(MinionType type, Vector3 pos, Transform target, KMS_WaypointGroup waypointGroup = null)
+    public KMS_MinionController SpawnFreeMinion(KMS_MinionType type, Vector3 pos, Transform target, KMS_WaypointGroup waypointGroup = null)
     {
         if (!minionDataDict.TryGetValue(type, out var data) || data == null)
         {
@@ -71,13 +71,13 @@ public class KMS_MinionFactory : MonoBehaviour
             minion = Instantiate(prefabDict[type], pos, Quaternion.identity);
         }
 
-        var controller = minion.GetComponent<MinionController>();
+        var controller = minion.GetComponent<KMS_MinionController>();
         controller?.Initialize(data, target, waypointGroup);
         return controller;
     }
 
 
-    public bool TrySpawnMinion(MinionType type, Vector3 position, Transform target, KMS_CommandPlayer player, int teamId)
+    public bool TrySpawnMinion(KMS_MinionType type, Vector3 position, Transform target, KMS_CommandPlayer player, int teamId)
     {
 
         var minionInfo = hqData.manualSpawnList.FirstOrDefault(x => x.type == type);
@@ -114,7 +114,7 @@ public class KMS_MinionFactory : MonoBehaviour
             return false;
         }
 
-        var controller = go.GetComponent<MinionController>();
+        var controller = go.GetComponent<KMS_MinionController>();
         if (controller == null)
         {
             Debug.LogError("[Factory] MinionController가 프리팹에 존재하지 않습니다.");
@@ -126,17 +126,17 @@ public class KMS_MinionFactory : MonoBehaviour
         return true;
     }
 
-    public GameObject GetMinionPrefab(MinionType type)
+    public GameObject GetMinionPrefab(KMS_MinionType type)
     {
         return type switch
         {
-            MinionType.Melee => meleeMinionPrefab,
-            MinionType.Ranged => rangedMinionPrefab,
-            MinionType.Elite => eliteMinionPrefab,
+            KMS_MinionType.Melee => meleeMinionPrefab,
+            KMS_MinionType.Ranged => rangedMinionPrefab,
+            KMS_MinionType.Elite => eliteMinionPrefab,
             _ => null
         };
     }
 }
-public enum MinionType { Melee = 0, Ranged = 1, Elite =2 }
+public enum KMS_MinionType { Melee = 0, Ranged = 1, Elite =2 }
 
 

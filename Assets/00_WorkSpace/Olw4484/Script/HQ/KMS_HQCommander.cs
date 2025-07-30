@@ -20,20 +20,20 @@ public class KMS_HQCommander : MonoBehaviour, KMS_ISelectable
         if (!IsSelected) return;
 
         if (Input.GetKeyDown(KeyCode.Q))
-            OnSpawnMinionButton((int)MinionType.Melee);
+            OnSpawnMinionButton((int)KMS_MinionType.Melee);
 
         if (Input.GetKeyDown(KeyCode.W))
-            OnSpawnMinionButton((int)MinionType.Ranged);
+            OnSpawnMinionButton((int)KMS_MinionType.Ranged);
 
         if (Input.GetKeyDown(KeyCode.E))
-            OnSpawnMinionButton((int)MinionType.Elite);
+            OnSpawnMinionButton((int)KMS_MinionType.Elite);
 
         // 특수 스킬 확장 가능성 ) HQSkil 2~3개
     }
 
     public void OnSpawnMinionButton(int type)
     {
-        var minionType = (MinionType)type;
+        var minionType = (KMS_MinionType)type;
         var spawnPos = defaultSpawnPoint.position;
 
 
@@ -80,5 +80,5 @@ public class KMS_HQCommander : MonoBehaviour, KMS_ISelectable
         // UI 표시 기능 해제
     }
 
-    public SelectableType GetSelectableType() => SelectableType.Building;
+    public KMS_SelectableType GetSelectableType() => KMS_SelectableType.Building;
 }

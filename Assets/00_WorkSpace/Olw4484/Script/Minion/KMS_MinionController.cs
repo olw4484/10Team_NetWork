@@ -8,7 +8,7 @@ using UnityEngine.AI;
 using static KMS_ISelectable;
 using static KMS_ResourceSystem;
 
-public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
+public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
 {
     [Header("Settings")]
     public float moveSpeed;
@@ -20,8 +20,8 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     private float attackMoveStopDistance = 0.1f;
     public int teamId;
 
-    public MinionView view;
-    public MinionDataSO data;
+    public KMS_MinionView view;
+    public KMS_MinionDataSO data;
     public LayerMask enemyLayerMask;
     private int currentHP;
     private Transform target;
@@ -48,7 +48,7 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     {
         agent = GetComponent<NavMeshAgent>();
         photonView = GetComponent<PhotonView>();
-        view = GetComponentInChildren<MinionView>();
+        view = GetComponentInChildren<KMS_MinionView>();
     }
 
 
@@ -134,7 +134,7 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         }
     }
 
-    public void Initialize(MinionDataSO data, Transform target, KMS_WaypointGroup waypointGroup = null, int teamId = 0)
+    public void Initialize(KMS_MinionDataSO data, Transform target, KMS_WaypointGroup waypointGroup = null, int teamId = 0)
     {
         this.data = data;
         this.moveSpeed = data.moveSpeed;
@@ -184,7 +184,7 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
 
         foreach (var col in colliders)
         {
-            var minion = col.GetComponent<MinionController>();
+            var minion = col.GetComponent<KMS_MinionController>();
             if (minion != null && minion.teamId == this.teamId)
                 continue; // 아군이면 패스
 
@@ -277,10 +277,10 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
 
         view?.PlayMinionDeathAnimation();
 
-        if (EventManager.Instance != null)
+        if (KMS_EventManager.Instance != null)
         {
-            EventManager.Instance.MinionDead(this, killer);
-            EventManager.Instance.MinionKillConfirmed(killer, this);
+            KMS_EventManager.Instance.MinionDead(this, killer);
+            KMS_EventManager.Instance.MinionKillConfirmed(killer, this);
         }
 
         // 삭제 시 동기화
@@ -311,7 +311,7 @@ public class MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         view?.SetHighlight(false);
     }
 
-    public SelectableType GetSelectableType() => SelectableType.Minion;
+    public KMS_SelectableType GetSelectableType() => KMS_SelectableType.Minion;
     #endregion
     #region RPC_Minion
     [PunRPC]
