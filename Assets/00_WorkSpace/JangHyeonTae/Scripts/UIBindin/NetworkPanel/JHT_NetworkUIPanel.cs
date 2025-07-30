@@ -1,9 +1,12 @@
+using JetBrains.Annotations;
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
 public class JHT_NetworkUIPanel : JHT_BaseUI
@@ -31,6 +34,24 @@ public class JHT_NetworkUIPanel : JHT_BaseUI
 
     #endregion
 
+    #region Character Select
+
+    [SerializeField] private GameObject descPopUp;
+    public JHT_Character[] character;
+
+    Color normalColor = Color.white;
+
+    public Action OnChangedClick;
+    public int curIndex = -1;
+    #endregion
+
+    #region ÅøÆÁ
+
+    GameObject tool1 => GetUI("DescPopUp1");
+    GameObject tool2 => GetUI("DescPopUp2");
+    GameObject tool3 => GetUI("DescPopUp3");
+
+    #endregion
 
     private bool isSecret;
 
@@ -38,6 +59,7 @@ public class JHT_NetworkUIPanel : JHT_BaseUI
     [SerializeField] private JHT_TeamManager teamManager;
     private void Start()
     {
+        #region ·ë ¹öÆ° ÀÌº¥Æ®
         GetEvent("CreateLobbyButton").Click += data =>
         {
             createRoomPanel.SetActive(true);
@@ -95,8 +117,10 @@ public class JHT_NetworkUIPanel : JHT_BaseUI
             lobbyPanel.SetActive(true);
 
         };
+        #endregion
 
 
+        #region ÆÀ µé¾î°¡°í ³ª°¡±â
         Color redBasicColor = redTeamPanel.color;
         Color blueBasicColor = blueTeamPanel.color;
 
@@ -118,6 +142,80 @@ public class JHT_NetworkUIPanel : JHT_BaseUI
             teamManager.OnBlueSelect?.Invoke(PhotonNetwork.LocalPlayer);
 
         };
+        #endregion
+        
+
+        #region Character select
+        for (int i = 0; i < character.Length; i++)
+        {
+            ChangeClick();
+            GetUI<Image>($"CharacterPanel{i + 1}").sprite = character[i].icon;
+        }
+
+        GetEvent("CharacterPanel1").Click += data =>
+        {
+            ChangeClick();
+            GetUI<Image>("CharacterPanel1").color = Color.yellow;
+            curIndex = 0;
+            OnChangedClick?.Invoke();
+            //YSJ_GameManager.Instance.playerName = character[0].name;
+        };
+        GetEvent("CharacterPanel2").Click += data =>
+        {
+            ChangeClick();
+            GetUI<Image>("CharacterPanel2").color = Color.yellow;
+            curIndex = 1;
+            OnChangedClick?.Invoke();
+        };
+        GetEvent("CharacterPanel3").Click += data =>
+        {
+            ChangeClick();
+            GetUI<Image>("CharacterPanel3").color = Color.yellow;
+            curIndex = 2;
+            OnChangedClick?.Invoke();
+        };
+        #endregion
+
+
+        #region ToolTip for Character
+        for (int i = 0; i < character.Length; i++)
+        {
+            GetUI($"DescPopUp{i + 1}").SetActive(false);
+        }
+
+        GetEvent("CharacterPanel1").Enter += data =>
+        {
+            GetUI($"DescPopUp1").SetActive(true);
+            GetUI<JHT_DescPopUp>("DescPopUp1").Init(character[0].desc);
+        };
+
+        GetEvent("CharacterPanel1").Exit += data =>
+        {
+            GetUI($"DescPopUp1").SetActive(false);
+        };
+
+        GetEvent("CharacterPanel2").Enter += data =>
+        {
+            GetUI($"DescPopUp2").SetActive(true);
+            GetUI<JHT_DescPopUp>("DescPopUp2").Init(character[1].desc);
+        };
+
+        GetEvent("CharacterPanel2").Exit += data =>
+        {
+            GetUI($"DescPopUp2").SetActive(false);
+        };
+
+        GetEvent("CharacterPanel3").Enter += data =>
+        {
+            GetUI($"DescPopUp3").SetActive(true);
+            GetUI<JHT_DescPopUp>("DescPopUp3").Init(character[2].desc);
+        };
+
+        GetEvent("CharacterPanel3").Exit += data =>
+        {
+            GetUI($"DescPopUp3").SetActive(false);
+        };
+        #endregion
     }
 
 
@@ -128,4 +226,11 @@ public class JHT_NetworkUIPanel : JHT_BaseUI
         secretImage.color = isSecret ? Color.red : Color.green;
     }
 
+    private void ChangeClick()
+    {
+        for (int i = 0; i < character.Length; i++)
+        {
+            GetUI<Image>($"CharacterPanel{i + 1}").color = normalColor;
+        }
+    }
 }
