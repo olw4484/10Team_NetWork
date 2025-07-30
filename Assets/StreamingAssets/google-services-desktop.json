@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "1088430148228",
+    "firebase_url": "https://team-network-208c0-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "team-network-208c0",
     "storage_bucket": "team-network-208c0.firebasestorage.app"
   },
@@ -14,7 +15,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "1088430148228-nim1gi5nmfh8ullaau1n4a48godspvd4.apps.googleusercontent.com",
+          "client_id": "1088430148228-8gb2r306d4803cuppqhv4e3498j59f0t.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

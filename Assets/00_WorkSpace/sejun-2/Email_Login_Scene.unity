@@ -15098,7 +15098,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1928343120
 Transform:
   m_ObjectHideFlags: 0
@@ -15129,6 +15129,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52b3e56ab780ca948b431c7a0fc4e332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  testButton: {fileID: 943763208}
+  upButton: {fileID: 753301653}
+  downButton: {fileID: 125986142}
+  data:
+    name: 
+    level: 0
+    speed: 0
+    gameCount: 0
+    winsCount: 0
+    clear: 0
+    skill: []
 --- !u!1 &1930438826
 GameObject:
   m_ObjectHideFlags: 0
