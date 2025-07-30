@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35d65b0d60f1a3a4a9ed36814226fb0d, type: 3}
   m_Name: Reinforced_MeleeMinionSO
   m_EditorClassIdentifier: 
-  minionType: 0
+  minionType: 3
   maxHP: 200
   attackPower: 25
   moveSpeed: 3

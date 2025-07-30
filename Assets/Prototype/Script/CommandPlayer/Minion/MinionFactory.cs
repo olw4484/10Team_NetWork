@@ -137,6 +137,6 @@ public class MinionFactory : MonoBehaviour
         };
     }
 }
-public enum MinionType { Melee = 0, Ranged = 1, Elite =2 }
+public enum MinionType { Melee = 0, Ranged = 1, Elite =2 , Reinforced_Melee = 3, Reinforced_Ranged = 4 }
 
 

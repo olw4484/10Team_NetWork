@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35d65b0d60f1a3a4a9ed36814226fb0d, type: 3}
   m_Name: Reinforced_RangedMinionSO
   m_EditorClassIdentifier: 
-  minionType: 1
+  minionType: 4
   maxHP: 160
   attackPower: 18
   moveSpeed: 3
