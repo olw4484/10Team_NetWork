@@ -145,10 +145,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 885939603536191272}
-  - component: {fileID: 695254961395116840}
-  - component: {fileID: 6767216568130689818}
   - component: {fileID: -1934948245341657593}
   - component: {fileID: 5434556195519555941}
+  - component: {fileID: -1563593456224076839}
+  - component: {fileID: -4718769153812556021}
   m_Layer: 22
   m_Name: MeleeMinion
   m_TagString: Player
@@ -173,51 +173,6 @@ Transform:
   - {fileID: 5159497771211471584}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &695254961395116840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6848852395963227363}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fda25719286a43e469a15e6738cf7cab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 0
-  attackRange: 0
-  attackCooldown: 0
-  attackPower: 0
-  maxHP: 0
-  teamId: 0
-  view: {fileID: 6767216568130689818}
-  data: {fileID: 11400000, guid: 6c555d74ddf68bf499adc65edb0708a5, type: 2}
-  enemyLayerMask:
-    serializedVersion: 2
-    m_Bits: 0
-  waypointGroup: {fileID: 0}
-  photonView: {fileID: 0}
---- !u!114 &6767216568130689818
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6848852395963227363}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93eb6ab4b0126a246956301c982f791f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  avatar: {fileID: 5159497771211471584}
-  animator: {fileID: 0}
-  hitEffect: {fileID: 0}
-  audioSource: {fileID: 0}
-  highlightEffect: {fileID: 0}
-  attackSound: {fileID: 0}
-  hitSound: {fileID: 0}
-  deathSound: {fileID: 0}
 --- !u!114 &-1934948245341657593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,3 +217,48 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &-1563593456224076839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6848852395963227363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9657bc4dc780a13499161c237521571e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 0
+  attackRange: 0
+  attackCooldown: 0
+  attackPower: 0
+  maxHP: 0
+  teamId: 0
+  view: {fileID: -4718769153812556021}
+  data: {fileID: 11400000, guid: 717a7aabd646f254d9c6b6d83176784c, type: 2}
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 6291457
+  waypointGroup: {fileID: 0}
+  photonView: {fileID: -1934948245341657593}
+--- !u!114 &-4718769153812556021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6848852395963227363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a34a37760220884fb0a1ed347337340, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  avatar: {fileID: 2996565178532297442}
+  animator: {fileID: 0}
+  hitEffect: {fileID: 0}
+  audioSource: {fileID: 0}
+  highlightEffect: {fileID: 0}
+  attackSound: {fileID: 0}
+  hitSound: {fileID: 0}
+  deathSound: {fileID: 0}
