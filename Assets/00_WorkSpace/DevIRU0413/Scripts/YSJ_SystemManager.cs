@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// 나중에 자리 옮길 수 있으면 옮길 예정
 public enum SystemStateType
 {
     Init,
@@ -24,43 +23,19 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>
     #endregion
 
     #region SimpleSingleton Override Method
-
     protected override void Init()
     {
         base.Init();
-
         ChangeState(SystemStateType.Init);
-        EventManager.Instance.OnHQDestroyed += HandleHQDestroyed;
     }
 
     protected override void Destroy()
     {
         base.Destroy();
-        if (EventManager.Instance != null)
-            EventManager.Instance.OnHQDestroyed -= HandleHQDestroyed;
     }
 
     #endregion
 
-    #region Unity Method
-
-    private void Update()
-    {
-        if (_states != null)
-            _states[CurrentState]?.Tick();
-    }
-
-    #endregion
-
-    #region Handle
-    // Handle
-    private void HandleHQDestroyed(int teamId)
-    {
-        BroadcastGameOver(teamId);
-    }
-    #endregion
-
-    // State
     public void ChangeState(in SystemStateType newStateType)
     {
         if (CurrentState == newStateType) return;
@@ -68,12 +43,6 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>
         CurrentState = newStateType;
         Debug.Log($"Game State Changed: {CurrentState}");
     }
-    private void BroadcastGameOver(int losingTeamId)
-    {
-        ChangeState(SystemStateType.Quit);
-        Debug.Log($"Game Over! 팀 {losingTeamId} 패배");
-    }
-
 
     #region 씬 로딩
     // 씬 매니저 이전 예상
