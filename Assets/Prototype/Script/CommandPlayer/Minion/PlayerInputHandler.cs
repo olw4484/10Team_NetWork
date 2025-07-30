@@ -201,7 +201,7 @@ public class PlayerInputHandler : MonoBehaviour
                     {
                         minion.photonView.RPC("RpcMoveToPosition", RpcTarget.All, hit.point);
                     }
-                    else
+                    else // 타겟 (적이 될 수 있음)
                     {
                         PhotonView targetView = hit.transform.GetComponent<PhotonView>();
                         if (targetView != null)

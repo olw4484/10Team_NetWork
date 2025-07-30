@@ -1,10 +1,8 @@
 using Photon.Pun;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using static ISelectable;
-using static ResourceSystem;
 
 public class MinionController : MonoBehaviour, IDamageable, ISelectable
 {
@@ -36,7 +34,7 @@ public class MinionController : MonoBehaviour, IDamageable, ISelectable
     private bool isMovingToPosition = false;
     public bool IsManual { get; private set; } = false;
     private bool waitingForNextWaypoint = false;
-    private bool isFollowingWaypoint = false; 
+    private bool isFollowingWaypoint = false;
 
     public PhotonView photonView;
     private NavMeshAgent agent;
@@ -67,74 +65,77 @@ public class MinionController : MonoBehaviour, IDamageable, ISelectable
     {
         if (isDead) return;
 
-        // 미니언 이동 방향 갱신
-        if (agent.velocity.sqrMagnitude > 0.01f)
-            transform.forward = agent.velocity.normalized;
-
-        // --- 웨이포인트 재합류/최초 시작 ---
-        if (!isFollowingWaypoint && waypointGroup != null && waypointGroup.GetWaypointCount() > 0)
+        if (photonView.IsMine)
         {
-            ResumeWaypointMove();
-        }
 
-        // --- 웨이포인트 도착 판정 및 이동 ---
-        if (isFollowingWaypoint && waypointGroup != null && currentWaypointIndex >= 0
-             && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance && !waitingForNextWaypoint)
-        {
-            StartCoroutine(WaitAndMoveToNextWaypoint());
-        }
+            // 미니언 이동 방향 갱신
+            if (agent.velocity.sqrMagnitude > 0.01f)
+                transform.forward = agent.velocity.normalized;
 
-
-        // --- 공격이동 ---
-        if (isAttackMove)
-        {
-            var enemy = FindClosestEnemyInRange();
-            if (enemy != null)
+            // --- 웨이포인트 재합류/최초 시작 ---
+            if (!isFollowingWaypoint && waypointGroup != null && waypointGroup.GetWaypointCount() > 0)
             {
-                target = enemy.transform;
-                isAttackMove = false;
+                ResumeWaypointMove();
             }
-            else
-            {
-                // 목적지까지 이동
-                if (agent.destination != attackMoveTarget)
-                    agent.SetDestination(attackMoveTarget);
 
-                if (!agent.pathPending && agent.remainingDistance < attackMoveStopDistance)
+            // --- 웨이포인트 도착 판정 및 이동 ---
+            if (isFollowingWaypoint && waypointGroup != null && currentWaypointIndex >= 0
+                 && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance && !waitingForNextWaypoint)
+            {
+                StartCoroutine(WaitAndMoveToNextWaypoint());
+            }
+
+
+            // --- 공격이동 ---
+            if (isAttackMove)
+            {
+                var enemy = FindClosestEnemyInRange();
+                if (enemy != null)
                 {
+                    target = enemy.transform;
                     isAttackMove = false;
-                    agent.isStopped = true;
                 }
-            }
-            return;
-        }
+                else
+                {
+                    // 목적지까지 이동
+                    if (agent.destination != attackMoveTarget)
+                        agent.SetDestination(attackMoveTarget);
 
-        // --- 타겟 공격 ---
-        if (target != null)
-        {
-            float distance = Vector3.Distance(transform.position, target.position);
-            if (distance > attackRange)
-            {
-                if (agent.destination != target.position)
-                    agent.SetDestination(target.position);
+                    if (!agent.pathPending && agent.remainingDistance < attackMoveStopDistance)
+                    {
+                        isAttackMove = false;
+                        agent.isStopped = true;
+                    }
+                }
+                return;
             }
-            else
+
+            // --- 타겟 공격 ---
+            if (target != null)
             {
-                agent.isStopped = true;
-                TryAttack();
-            }
-            // 웨이포인트 중단
-            isFollowingWaypoint = false;
-        }
-        else
-        {
-            // 타겟이 완전히 사라졌고, 수동/공격이동도 아니면 라인 복귀
-            if (!isAttackMove && !isMovingToPosition && !waitingForNextWaypoint)
-            {
+                float distance = Vector3.Distance(transform.position, target.position);
+                if (distance > attackRange)
+                {
+                    if (agent.destination != target.position)
+                        agent.SetDestination(target.position);
+                }
+                else
+                {
+                    agent.isStopped = true;
+                    TryAttack();
+                }
+                // 웨이포인트 중단
                 isFollowingWaypoint = false;
             }
+            else
+            {
+                // 타겟이 완전히 사라졌고, 수동/공격이동도 아니면 라인 복귀
+                if (!isAttackMove && !isMovingToPosition && !waitingForNextWaypoint)
+                {
+                    isFollowingWaypoint = false;
+                }
+            }
         }
-
         attackTimer += Time.deltaTime;
     }
 
@@ -251,8 +252,8 @@ public class MinionController : MonoBehaviour, IDamageable, ISelectable
         isMovingToPosition = true;
         isFollowingWaypoint = false; // 수동 이동 명령 시 라인 이탈
         targetPosition = position;
-        agent.isStopped = false;
-        agent.SetDestination(position);
+        //agent.isStopped = false;
+        //agent.SetDestination(position);
     }
 
     public void SetAttackMoveTarget(Vector3 point)
@@ -282,7 +283,7 @@ public class MinionController : MonoBehaviour, IDamageable, ISelectable
     // --- 공격/데미지 처리 --- 
     private void TryAttack()
     {
-        if (!photonView.IsMine && !PhotonNetwork.IsMasterClient)
+        if (!photonView.IsMine)
             return;
         if (attackTimer >= attackCooldown && target != null)
         {
@@ -337,13 +338,43 @@ public class MinionController : MonoBehaviour, IDamageable, ISelectable
 
     #region RPC_Minion
     [PunRPC]
-    public void RpcMoveToPosition(Vector3 position) => MoveToPosition(position);
+    public void RpcMoveToPosition(Vector3 position)
+    {
+        if (photonView.IsMine) 
+        {
+            MoveToPosition(position); 
+            agent.isStopped = false;
+            agent.SetDestination(position);
+        }
+    }
     [PunRPC]
     public void RpcSetTarget(int targetViewID)
     {
+        if (!photonView.IsMine) return;
+
         var targetObj = PhotonView.Find(targetViewID);
         if (targetObj != null)
-            SetTarget(targetObj.transform);
+        {
+            target = targetObj.transform;
+            agent.isStopped = false;
+            agent.SetDestination(target.position);
+        }
+        else
+        {
+            target = null;
+            // 필요시 ResumeWaypointMove();
+        }
+        isMovingToPosition = false;
+        isAttackMove = false;
+        isFollowingWaypoint = false;
+    }
+    [PunRPC]
+    public void RpcSetAttackMoveTarget(Vector3 point)
+    {
+        if (photonView.IsMine) 
+        {
+            SetAttackMoveTarget(point); 
+        }
     }
     #endregion
 
@@ -369,6 +400,17 @@ public class MinionController : MonoBehaviour, IDamageable, ISelectable
     {
         if (isDead) return;
         isDead = true;
+        view?.PlayMinionDeathAnimation(); // 애니메이션은 모든 클라이언트에서 실행
+
+        // 중요: 마스터 클라이언트만 게임 상태 관련 이벤트를 발생시키고 동기화
+        if (PhotonNetwork.IsMasterClient && EventManager.Instance != null)
+        {
+            var killerPV = PhotonView.Find(attackerViewID);
+            GameObject killerObject = (killerPV != null) ? killerPV.gameObject : null;
+            EventManager.Instance.MinionDead(this, killerObject);
+            EventManager.Instance.MinionKillConfirmed(killerObject, this);
+        }
+
         if (PhotonNetwork.InRoom)
             PhotonNetwork.Destroy(gameObject);
         else
@@ -389,6 +431,6 @@ public class MinionController : MonoBehaviour, IDamageable, ISelectable
         this.teamId = teamId;
         this.waypointGroup = waypointGroup;
         this.currentWaypointIndex = 0;
-        this.isFollowingWaypoint = false; 
+        this.isFollowingWaypoint = false;
     }
 }
