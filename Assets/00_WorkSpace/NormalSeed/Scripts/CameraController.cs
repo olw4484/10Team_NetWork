@@ -46,6 +46,8 @@ public class CameraController : MonoBehaviour
         zoomSpd = 10f;
         camFov = GetComponent<Camera>().fieldOfView;
 
+        transform.rotation = Quaternion.Euler(70f, -45f, 0);
+
         SetCameraOnPlayer();  // 첫 위치 설정
     }
 
