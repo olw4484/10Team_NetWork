@@ -1,10 +1,7 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-
-
 
 public class LGH_TestGameManager : MonoBehaviourPunCallbacks
 {
@@ -24,7 +21,7 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        // ÀÌ¹Ì ÀÎ½ºÅÏ½º°¡ Á¸ÀçÇÏ¸é Áßº¹ Á¦°Å
+        // ì´ë¯¸ ì¸ìŠ¤í„´ìŠ¤ê°€ ì¡´ì¬í•˜ë©´ ì¤‘ë³µ ì œê±°
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -34,14 +31,14 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks
         Instance = this;
     }
 
-    // ½ÃÀÛÇÒ ¶§ ·Îµù ÆĞ³ÎÀ» ºÒ·¯¿À°í ¸ğµç Á¶ÀÛ ºñÈ°¼ºÈ­, playerListÀÇ Å©±â°¡ 4°¡ µÇ¸é(Âü¿©ÇÏ°í ÀÖ´Â ÇÃ·¹ÀÌ¾î ¼ö¿Í µ¿ÀÏÇØ Áö¸é) ·Îµù ÆĞ³ÎÀ» ²ô°í Á¶ÀÛ È°¼ºÈ­
+    // ì‹œì‘í•  ë•Œ ë¡œë”© íŒ¨ë„ì„ ë¶ˆëŸ¬ì˜¤ê³  ëª¨ë“  ì¡°ì‘ ë¹„í™œì„±í™”, playerListì˜ í¬ê¸°ê°€ 4ê°€ ë˜ë©´(ì°¸ì—¬í•˜ê³  ìˆëŠ” í”Œë ˆì´ì–´ ìˆ˜ì™€ ë™ì¼í•´ ì§€ë©´) ë¡œë”© íŒ¨ë„ì„ ë„ê³  ì¡°ì‘ í™œì„±í™”
 
     private void Update()
     {
-        // Å×½ºÆ®¿ë : ÇÃ·¹ÀÌ¾î È°¼ºÈ­ Å°¸¦ ESC·Î ¼³Á¤
+        // í…ŒìŠ¤íŠ¸ìš© : í”Œë ˆì´ì–´ í™œì„±í™” í‚¤ë¥¼ ESCë¡œ ì„¤ì •
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            foreach(GameObject player in playerList) 
+            foreach (GameObject player in playerList)
             {
                 player.gameObject.SetActive(true);
             }
@@ -53,15 +50,15 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks
         PhotonView pv = player.GetComponent<PhotonView>();
         if (pv != null && player.CompareTag("Player"))
         {
-            // ¿©±â¼­ SetActive(false)·Î °É¾î¼­ ¸®½ºÆ®¿¡´Â ³ÖÁö¸¸ Á¶ÀÛÀº ºÒ°¡´ÉÇÏ°Ô ¸¸µé¾î ÁÜ
+            // ì—¬ê¸°ì„œ SetActive(false)ë¡œ ê±¸ì–´ì„œ ë¦¬ìŠ¤íŠ¸ì—ëŠ” ë„£ì§€ë§Œ ì¡°ì‘ì€ ë¶ˆê°€ëŠ¥í•˜ê²Œ ë§Œë“¤ì–´ ì¤Œ
             player.SetActive(false);
             playerList.Add(player);
-            Debug.Log(playerList.Count + "¸í ·Îµù ¿Ï·á");
+            Debug.Log(playerList.Count + "ëª… ë¡œë”© ì™„ë£Œ");
         }
 
-        // InitLocalPlayer(player); // ÇÃ·¹ÀÌ¾î ÇÑ
+        // InitLocalPlayer(player); // í”Œë ˆì´ì–´ í•œ
     }
-    // ·ÎµùÀÌ ¿Ï·áµÇ¸é SetActive(false)¸¦ ÇØ³ù´ø ÇÃ·¹ÀÌ¾îµéÀ» ¸ğµÎ SetActive(true)·Î
+    // ë¡œë”©ì´ ì™„ë£Œë˜ë©´ SetActive(false)ë¥¼ í•´ë†¨ë˜ í”Œë ˆì´ì–´ë“¤ì„ ëª¨ë‘ SetActive(true)ë¡œ
 
     public override void OnJoinedRoom()
     {
@@ -95,7 +92,7 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks
 
         if (localPlayer == null) return;
 
-        camController.InitCamera(localPlayer);  // ÇÃ·¹ÀÌ¾î Àü´Ş
+        camController.InitCamera(localPlayer);  // í”Œë ˆì´ì–´ ì „ë‹¬
         skillManager.InitSkillManager(localPlayer);
 
         if (inventoryView != null)
