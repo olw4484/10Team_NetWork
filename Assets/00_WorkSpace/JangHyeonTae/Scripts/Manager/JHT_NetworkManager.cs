@@ -81,7 +81,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.ConnectUsingSettings();
         currentRoomDic = new();
-        //PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
+        PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
         if(canvasPanel == null)
             canvasPanel = FindObjectOfType<JHT_NetworkUIPanel>();
 
