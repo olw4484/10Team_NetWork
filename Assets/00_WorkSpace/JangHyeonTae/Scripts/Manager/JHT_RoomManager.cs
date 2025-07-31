@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class JHT_RoomManager : MonoBehaviour
+public class JHT_RoomManager : MonoBehaviourPun
 {
     [SerializeField] private GameObject playerPanelPrefab;
     [SerializeField] private Transform playerRedPanelParent;
@@ -14,23 +14,21 @@ public class JHT_RoomManager : MonoBehaviour
     public Button startButton;
     [SerializeField] private Button leaveRoomButton;
 
-    //보류
-    [SerializeField] private Button redButton;
-    [SerializeField] private Button blueButton;
-
     public Dictionary<int, JHT_PlayerPanelItem> playerPanelDic = new();
     [SerializeField] private JHT_TeamManager teamManager;
 
+
+    public GameObject canvasPanel;
     private void Start()
     {
-        startButton.onClick.AddListener(JHT_NetworkManager.NetworkInstance.GameStart);
+        startButton.onClick.AddListener(GameStart);
         leaveRoomButton.onClick.AddListener(LeaveRoom);
         teamManager.OnChangeTeam += ChangeTeam;
     }
 
     private void OnDestroy()
     {
-        startButton.onClick.RemoveListener(JHT_NetworkManager.NetworkInstance.GameStart);
+        startButton.onClick.RemoveListener(GameStart);
         leaveRoomButton.onClick.RemoveListener(LeaveRoom);
         teamManager.OnChangeTeam -= ChangeTeam;
     }
@@ -222,7 +220,49 @@ public class JHT_RoomManager : MonoBehaviour
     }
     #endregion
 
-    
+    #region 게임시작
+    public void GameStart()
+    {
+        if (PhotonNetwork.IsMasterClient && AllPlayerReadyCheck()
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] >= 1
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] >= 1)
+        {
+            JHT_NetworkManager.NetworkInstance.StateCustomProperty(CurrentState.InGame);
+            JHT_NetworkManager.NetworkInstance.SetGameCustomProperty(true);
+
+            //해당 게임씬 넣기
+            StartCoroutine(WaitForLoad(PhotonNetwork.LocalPlayer));
+
+        }
+    }
+
+    IEnumerator WaitForLoad(Player player)
+    {
+        while (!player.CustomProperties.ContainsKey("Team") || !player.CustomProperties.ContainsKey("Character"))
+            yield return null;
+
+        int playerIndex = (int)player.CustomProperties["Character"];
+        Vector3 spawnPos = (TeamSetting)player.CustomProperties["Team"] == TeamSetting.Red ? new Vector3(35, 0, 0) : new Vector3(-35, 0, 0);
+        Quaternion rot = (TeamSetting)player.CustomProperties["Team"] == TeamSetting.Red ? Quaternion.Euler(0, 270, 0) : Quaternion.Euler(0, 90, 0);
+
+        GameObject obj = PhotonNetwork.Instantiate(JHT_NetworkManager.NetworkInstance.characters[playerIndex].name, spawnPos, rot);
+    }
+
+
+    public bool AllPlayerReadyCheck()
+    {
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (!player.CustomProperties.TryGetValue("IsReady", out object value) || !(bool)value)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    #endregion
 
     #region 내가 방을 나갔을경우
     public void LeaveRoom()
