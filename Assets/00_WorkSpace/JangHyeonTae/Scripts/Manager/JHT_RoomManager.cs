@@ -3,6 +3,7 @@ using Photon.Realtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +12,7 @@ public class JHT_RoomManager : MonoBehaviour
     [SerializeField] private GameObject playerPanelPrefab;
     [SerializeField] private Transform playerRedPanelParent;
     [SerializeField] private Transform playerBluePanelParent;
-    [SerializeField] private Button startButton;
+    public Button startButton;
     [SerializeField] private Button leaveRoomButton;
 
     //보류
@@ -23,14 +24,14 @@ public class JHT_RoomManager : MonoBehaviour
 
     private void Start()
     {
-        startButton.onClick.AddListener(GameStart);
+        startButton.onClick.AddListener(JHT_NetworkManager.NetworkInstance.GameStart);
         leaveRoomButton.onClick.AddListener(LeaveRoom);
         teamManager.OnChangeTeam += ChangeTeam;
     }
 
     private void OnDestroy()
     {
-        startButton.onClick.RemoveListener(GameStart);
+        startButton.onClick.RemoveListener(JHT_NetworkManager.NetworkInstance.GameStart);
         leaveRoomButton.onClick.RemoveListener(LeaveRoom);
         teamManager.OnChangeTeam -= ChangeTeam;
     }
@@ -80,9 +81,6 @@ public class JHT_RoomManager : MonoBehaviour
             }
         }
 
-
-        Debug.Log($"RedCount : {PhotonNetwork.CurrentRoom.CustomProperties["RedCount"].ToString()}");
-        Debug.Log($"BlueCount : {PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"].ToString()}");
     }
     #endregion
 
@@ -136,6 +134,8 @@ public class JHT_RoomManager : MonoBehaviour
     {
         if (player == PhotonNetwork.LocalPlayer)
             return;
+
+        PhotonNetwork.AutomaticallySyncScene = true;
 
         if (playerPanelDic.TryGetValue(player.ActorNumber, out var panel))
         {
@@ -220,37 +220,10 @@ public class JHT_RoomManager : MonoBehaviour
                 Debug.Log("Leave redteam");
             }
         }
-
-
-        Debug.Log($"RedCount : {PhotonNetwork.CurrentRoom.CustomProperties["RedCount"].ToString()}");
-        Debug.Log($"BlueCount : {PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"].ToString()}");
     }
     #endregion
 
-    #region 게임시작
-    public void GameStart()
-    {
-        if (PhotonNetwork.IsMasterClient && AdllPlayerReadyCheck()
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] == 2
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] == 2)
-        {
-            PhotonNetwork.LoadLevel("GameScene"); //해당 게임씬 넣기 
-        }
-    }
-
-    public bool AdllPlayerReadyCheck()
-    {
-        foreach (Player player in PhotonNetwork.PlayerList)
-        {
-            if (!player.CustomProperties.TryGetValue("IsReady", out object value)||(bool)value)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-    #endregion
+    
 
     #region 내가 방을 나갔을경우
     public void LeaveRoom()
