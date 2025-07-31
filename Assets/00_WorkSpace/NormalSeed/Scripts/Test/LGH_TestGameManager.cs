@@ -1,18 +1,27 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
 
 public class LGH_TestGameManager : MonoBehaviourPunCallbacks
 {
+    private const int GAME_START_PLAYER_COUNT = 4;
+
     public static LGH_TestGameManager Instance { get; private set; }
 
     public CameraController camController;
     public TestSkillManager skillManager;
 
     public List<GameObject> playerList = new List<GameObject>();
+
+    public GameObject localPlayer;
+
+    [SerializeField] private InventoryHUDView inventoryView;
+    InventoryHUDPresenter inventoryHUDPresenter;
+
     private void Awake()
     {
         // 이미 인스턴스가 존재하면 중복 제거
@@ -49,6 +58,8 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks
             playerList.Add(player);
             Debug.Log(playerList.Count + "명 로딩 완료");
         }
+
+        // InitLocalPlayer(player); // 플레이어 한
     }
     // 로딩이 완료되면 SetActive(false)를 해놨던 플레이어들을 모두 SetActive(true)로
 
@@ -75,7 +86,23 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks
             yield return null;
         }
 
+        InitLocalPlayer(localPlayer);
+    }
+
+    private void InitLocalPlayer(GameObject gameObject)
+    {
+        localPlayer = gameObject;
+
+        if (localPlayer == null) return;
+
         camController.InitCamera(localPlayer);  // 플레이어 전달
         skillManager.InitSkillManager(localPlayer);
+
+        if (inventoryView != null)
+        {
+            InventoryHUDModel model = new(localPlayer);
+            inventoryHUDPresenter = new(inventoryView, model);
+            inventoryView.Open();
+        }
     }
 }

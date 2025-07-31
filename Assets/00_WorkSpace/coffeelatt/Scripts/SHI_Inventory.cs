@@ -4,20 +4,11 @@ using static SHI_ItemBase;
 
 public class SHI_Inventory : MonoBehaviour
 {
-    public static SHI_Inventory instance; //오류때문에 잠시 생성함.
     public List<SHI_ItemBase> items = new List<SHI_ItemBase>(); // 소지 아이템 리스트
     public int maxSlots = 6; // 인벤토리 최대 슬롯 수
 
     public Events.VoidEvent itemadd =new Events.VoidEvent();
     public Events.VoidEvent itemremove = new Events.VoidEvent();
-    private void Awake()
-    {
-      
-        //if (instance == null)
-        //    instance = this;    
-        //else
-        //    Destroy(gameObject);
-    }
 
     public bool AddItem(SHI_ItemBase newItem)
     {
@@ -42,8 +33,6 @@ public class SHI_Inventory : MonoBehaviour
             Debug.Log($"{item.itemNameEnum} 인벤토리에서 제거됨.");
         }
     }
-    
-
 
     public void UseItemFromInventory(SHI_ItemBase item)
     {

@@ -50,10 +50,9 @@ public class SHI_ResultValue : MonoBehaviour
     }
     void Start()
     {
-        //stat = GetComponent<HeroModel>();
+        // stat = GetComponent<HeroModel>();
         //addstat = GetComponent<SHI_ItemManager>();
         //skillSO = GetComponent<SkillSO>();
-        
     }
     private void Init()
     {
