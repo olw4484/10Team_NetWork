@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 578341042315635582}
   - component: {fileID: 4961351569366457045}
   - component: {fileID: 8368008837879135506}
-  m_Layer: 5
+  m_Layer: 22
   m_Name: MeleeButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 8380799399167672662}
   - component: {fileID: 1554852245605626696}
   - component: {fileID: 2405476886424204784}
-  m_Layer: 5
+  m_Layer: 22
   m_Name: EliteButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -278,7 +278,7 @@ GameObject:
   - component: {fileID: 5316805308412267132}
   - component: {fileID: 9005917324897061667}
   - component: {fileID: 8249741329761279198}
-  m_Layer: 5
+  m_Layer: 22
   m_Name: UI_DragBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -355,9 +355,9 @@ GameObject:
   - component: {fileID: 7338211098224221213}
   - component: {fileID: 3874402034557779470}
   - component: {fileID: 5236781192556589585}
-  m_Layer: 5
+  m_Layer: 22
   m_Name: Canvas
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -477,7 +477,7 @@ GameObject:
   - component: {fileID: 1728752672363294952}
   - component: {fileID: 7415901075612510854}
   - component: {fileID: 5498105295800104755}
-  m_Layer: 5
+  m_Layer: 22
   m_Name: RangedButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -611,7 +611,7 @@ GameObject:
   - component: {fileID: 4609809205652772475}
   - component: {fileID: 8524047154474747317}
   - component: {fileID: 8503343552831131869}
-  m_Layer: 5
+  m_Layer: 22
   m_Name: GoldText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -745,7 +745,7 @@ GameObject:
   - component: {fileID: 7372547986872394810}
   - component: {fileID: 1417491737825327685}
   - component: {fileID: 6050923722784907360}
-  m_Layer: 5
+  m_Layer: 22
   m_Name: GearText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -879,7 +879,7 @@ GameObject:
   - component: {fileID: 2387569945164596972}
   - component: {fileID: 7952706156349728171}
   - component: {fileID: 2272543163483835596}
-  m_Layer: 5
+  m_Layer: 22
   m_Name: MeleeButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1014,7 +1014,7 @@ GameObject:
   - component: {fileID: 922507138552324939}
   - component: {fileID: 494587148523154340}
   - component: {fileID: 4981666250165811931}
-  m_Layer: 5
+  m_Layer: 22
   m_Name: EliteButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1123,9 +1123,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2638628943763181257}
         m_TargetAssemblyTypeName: KMS_HQCommander, Assembly-CSharp
-        m_MethodName: OnSpawnMinionButton
+        m_MethodName: 
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1147,7 +1147,7 @@ GameObject:
   - component: {fileID: 4743186892530780378}
   - component: {fileID: 386972068214415226}
   - component: {fileID: 8041818398919901896}
-  m_Layer: 5
+  m_Layer: 22
   m_Name: UnitButtonPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1252,7 +1252,7 @@ GameObject:
   - component: {fileID: 9111795730535455425}
   - component: {fileID: 2327156035412484112}
   - component: {fileID: 8787743933635650017}
-  m_Layer: 5
+  m_Layer: 22
   m_Name: ResourcePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1356,7 +1356,7 @@ GameObject:
   - component: {fileID: 4306104257598869677}
   - component: {fileID: 5261735648703200460}
   - component: {fileID: 8882769449145837373}
-  m_Layer: 5
+  m_Layer: 22
   m_Name: RangedButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}

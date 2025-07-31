@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &102167234006281405
+--- !u!1 &476591363673325679
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,8 +8,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3280530034823651278}
-  - component: {fileID: 6796469348619334318}
+  - component: {fileID: 5504442800934838194}
+  - component: {fileID: 2546214805056832290}
   m_Layer: 0
   m_Name: itemmanager
   m_TagString: Untagged
@@ -17,28 +17,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3280530034823651278
+--- !u!4 &5504442800934838194
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 102167234006281405}
+  m_GameObject: {fileID: 476591363673325679}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 318.02713, y: 270.46817, z: -400.94418}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3368572659853343335}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6796469348619334318
+--- !u!114 &2546214805056832290
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 102167234006281405}
+  m_GameObject: {fileID: 476591363673325679}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6751e803ce5d40640b8fc8d0874bb7b3, type: 3}
@@ -76,6 +76,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   stat: {fileID: 5044435142328856903}
+  resultValue: {fileID: 8604599422569831470}
 --- !u!1 &496646275905470270
 GameObject:
   m_ObjectHideFlags: 0
@@ -96,6 +97,7 @@ GameObject:
   - component: {fileID: 4832620176509876772}
   - component: {fileID: 5490075279412252488}
   - component: {fileID: 5116782079230895214}
+  - component: {fileID: 8316246981922170259}
   m_Layer: 0
   m_Name: Hero1
   m_TagString: Player
@@ -116,8 +118,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3280530034823651278}
   - {fileID: 2282302481566010509}
+  - {fileID: 5504442800934838194}
   - {fileID: 4989719155346936063}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -342,9 +344,29 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents: []
-  sceneViewId: 0
+  sceneViewId: 1
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &8316246981922170259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496646275905470270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a41148665112f343a940f5e0a337605, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items: []
+  maxSlots: 6
+  itemadd:
+    m_PersistentCalls:
+      m_Calls: []
+  itemremove:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2117854826369685385
 GameObject:
   m_ObjectHideFlags: 0
@@ -390,7 +412,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stat: {fileID: 5044435142328856903}
-  addstat: {fileID: 6796469348619334318}
+  addstat: {fileID: 2546214805056832290}
   skillSO: {fileID: 0}
   Damage: 0
   Hp: 0

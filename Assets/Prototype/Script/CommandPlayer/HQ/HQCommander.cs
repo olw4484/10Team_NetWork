@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.AI;
-using static KMS_ISelectable;
+using static ISelectable;
 using static UnityEngine.GraphicsBuffer;
 
-public class HQCommander : MonoBehaviour, KMS_ISelectable 
+public class HQCommander : MonoBehaviour, ISelectable
 {
     [Header("연동 대상")]
     public CommandPlayer player;
@@ -80,5 +80,5 @@ public class HQCommander : MonoBehaviour, KMS_ISelectable
         // UI 표시 기능 해제
     }
 
-    public KMS_SelectableType GetSelectableType() => KMS_SelectableType.Building;
+    public SelectableType GetSelectableType() => SelectableType.Building;
 }

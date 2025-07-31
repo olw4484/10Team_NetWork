@@ -1,4 +1,3 @@
-using Scripts.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,6 +18,7 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>
     #region Field
     public ILoadingUI LoadingUI;
 
+    public SceneID CurrentSceneID { get; private set; }
     public SystemStateType CurrentState { get; private set; }
     #endregion
 
@@ -26,6 +26,13 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>
     protected override void Init()
     {
         base.Init();
+
+        GameObject sceneBaseGO = GameObject.FindGameObjectWithTag("SceneBase");
+        SceneBase sceneBaseCmp = sceneBaseGO.GetComponent<SceneBase>();
+
+        if (sceneBaseCmp != null)
+            CurrentSceneID = sceneBaseCmp.SceneID;
+
         ChangeState(SystemStateType.Init);
     }
 

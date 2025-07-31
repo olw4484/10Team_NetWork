@@ -1,5 +1,3 @@
-using Runtime.UI;
-using Scripts.Util;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -127,7 +125,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
     public void RegisterUI(JHT_BaseUI baseUI)
     {
         if (baseUI == null) return;
-        if(baseUI.UIType == YSJ_UIType.Popup)
+        if (baseUI.UIType == YSJ_UIType.Popup)
             _popupController.Register(baseUI.gameObject);
 
         Canvas typeCanvas = GetCanvas(baseUI.UIType);

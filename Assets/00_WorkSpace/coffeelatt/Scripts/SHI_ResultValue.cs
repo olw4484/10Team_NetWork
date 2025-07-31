@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SHI_ResultValue : MonoBehaviour
 {
-    public static SHI_ResultValue instance; //  다양하게 여러가지 에서 땡겨쓰기에 스태틱사용.
+    /*public static SHI_ResultValue instance;*/ //  다양하게 여러가지 에서 땡겨쓰기에 스태틱사용.
     public HeroModel stat;
     public SHI_ItemManager addstat;
     public SkillSO skillSO; // 스킬 데이터 참조
@@ -30,6 +30,14 @@ public class SHI_ResultValue : MonoBehaviour
     // Start is called before the first frame update
     private void Awake()
     {
+        Init();
+        if (!isconnect)
+        {
+            addstat.refrash.AddListener(Init);
+            //stat.refrash.AddListener(Init);
+            //skillSO.refrash.AddListener(Init);
+            isconnect = true;
+        }
         //if (instance == null)
         //{
         //    instance = this;
@@ -42,17 +50,9 @@ public class SHI_ResultValue : MonoBehaviour
     }
     void Start()
     {
-        //stat = GetComponent<HeroModel>();
+        // stat = GetComponent<HeroModel>();
         //addstat = GetComponent<SHI_ItemManager>();
         //skillSO = GetComponent<SkillSO>();
-        Init();
-        if(!isconnect)
-        {
-            addstat.refrash.AddListener(Init);
-            //stat.refrash.AddListener(Init);
-            //skillSO.refrash.AddListener(Init);
-            isconnect = true;
-        }
     }
     private void Init()
     {

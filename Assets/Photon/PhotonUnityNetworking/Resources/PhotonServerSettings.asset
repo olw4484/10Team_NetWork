@@ -54,6 +54,7 @@ MonoBehaviour:
   - RPC_StartBash
   - RPC_StopAndFace
   - TakeDamage
+  - RpcSetAttackMoveTarget
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

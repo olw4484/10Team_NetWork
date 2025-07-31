@@ -41,7 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7837379001562322779}
   m_Layer: 0
-  m_Name: UpWayPoint1
+  m_Name: UpWayPoint0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -56,7 +56,7 @@ Transform:
   m_GameObject: {fileID: 1044643791966708508}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15, y: 0, z: 20}
+  m_LocalPosition: {x: 1.5, y: 0, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -486,6 +486,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7837379001562322779}
+  - {fileID: 2703658834311990248}
   - {fileID: 8130357433437045964}
   - {fileID: 8856707716889787787}
   - {fileID: 5824029292578415932}
@@ -506,7 +507,6 @@ MonoBehaviour:
   waypoints:
   - {fileID: 7837379001562322779}
   - {fileID: 8130357433437045964}
-  - {fileID: 8856707716889787787}
   - {fileID: 5824029292578415932}
 --- !u!1 &2742705199265195750
 GameObject:
@@ -570,6 +570,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7366023784338476201}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3679289716837603769
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2703658834311990248}
+  m_Layer: 0
+  m_Name: UpWayPoint1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2703658834311990248
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3679289716837603769}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 15, y: 0, z: 20}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7366023784338476201}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4343885701718880373
 GameObject:
   m_ObjectHideFlags: 0
@@ -618,7 +649,7 @@ MonoBehaviour:
   minionSequence: 00000000000000000100000001000000
   spawnPoint: {fileID: 2597035859003247320}
   target: {fileID: 0}
-  spawnDelay: 0.5
+  spawnDelay: 0.8
   spawnInterval: 50
   waypointGroup: {fileID: 4290996495337158195}
 --- !u!1 &5376720092301103552
@@ -651,6 +682,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1999488398166684432}
   - {fileID: 2315587192348070289}
   - {fileID: 1727158093995677461}
   - {fileID: 3618504277151551003}
@@ -670,9 +702,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waypoints:
-  - {fileID: 2315587192348070289}
+  - {fileID: 1999488398166684432}
   - {fileID: 1727158093995677461}
-  - {fileID: 3618504277151551003}
   - {fileID: 2996429903292370784}
 --- !u!1 &5742395410979192757
 GameObject:
@@ -735,6 +766,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7366023784338476201}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6181541989835434210
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1999488398166684432}
+  m_Layer: 0
+  m_Name: DownWayPoint0
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1999488398166684432
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6181541989835434210}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.5, y: 0, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2167741710021900706}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6399487474105978745
 GameObject:
@@ -972,7 +1034,7 @@ MonoBehaviour:
   minionSequence: 00000000000000000100000001000000
   spawnPoint: {fileID: 4758797512183435480}
   target: {fileID: 0}
-  spawnDelay: 0.5
+  spawnDelay: 0.8
   spawnInterval: 50
   waypointGroup: {fileID: 2915970657816027065}
 --- !u!1 &7722951474725474331
