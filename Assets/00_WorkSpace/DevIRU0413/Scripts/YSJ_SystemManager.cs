@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,20 +13,21 @@ public enum SystemStateType
     Quit,
 }
 
-public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>
+public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManager
 {
     #region Field
     public ILoadingUI LoadingUI;
 
     public SceneID CurrentSceneID { get; private set; }
     public SystemStateType CurrentState { get; private set; }
+
+    public int Priority => (int)ManagerPriority.SystemManager;
+    public bool IsDontDestroy => isDontDestroyOnLoad;
     #endregion
 
-    #region SimpleSingleton Override Method
-    protected override void Init()
+    #region IManager
+    public void Initialize()
     {
-        base.Init();
-
         GameObject sceneBaseGO = GameObject.FindGameObjectWithTag("SceneBase");
         SceneBase sceneBaseCmp = sceneBaseGO.GetComponent<SceneBase>();
 
@@ -35,11 +36,8 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>
 
         ChangeState(SystemStateType.Init);
     }
-
-    protected override void Destroy()
-    {
-        base.Destroy();
-    }
+    public void Cleanup() { }
+    public GameObject GetGameObject() => this.gameObject;
 
     #endregion
 
@@ -51,20 +49,20 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>
         Debug.Log($"Game State Changed: {CurrentState}");
     }
 
-    #region ¾À ·Îµù
-    // ¾À ¸Å´ÏÀú ÀÌÀü ¿¹»ó
+    #region ì”¬ ë¡œë”©
+    // ì”¬ ë§¤ë‹ˆì € ì´ì „ ì˜ˆìƒ
 
-    public void LoadSceneWithPreActions(string sceneName, List<(string message, Func<IEnumerator> action)> preActions = null, string finalMessage = "¾À ·Îµù Áß...")
+    public void LoadSceneWithPreActions(string sceneName, List<(string message, Func<IEnumerator> action)> preActions = null, string finalMessage = "ì”¬ ë¡œë”© ì¤‘...")
     {
         StartCoroutine(TransitionScene(sceneName, preActions, finalMessage));
     }
 
-    private IEnumerator TransitionScene(string sceneName, List<(string message, Func<IEnumerator> action)> preActions = null, string finalMessage = "¾À ·Îµù Áß...")
+    private IEnumerator TransitionScene(string sceneName, List<(string message, Func<IEnumerator> action)> preActions = null, string finalMessage = "ì”¬ ë¡œë”© ì¤‘...")
     {
         ChangeState(SystemStateType.SceneChange);
-        LoadingUI?.Show("ÃÊ±âÈ­ Áß..."); // ³ªÁß¿¡ µû·Î »©µµ µÊ
+        LoadingUI?.Show("ì´ˆê¸°í™” ì¤‘..."); // ë‚˜ì¤‘ì— ë”°ë¡œ ë¹¼ë„ ë¨
 
-        // ÀüÃ³¸® ¾×¼Ç ½ÇÇà
+        // ì „ì²˜ë¦¬ ì•¡ì…˜ ì‹¤í–‰
         if (preActions != null)
         {
             foreach (var (message, action) in preActions)
@@ -79,20 +77,20 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>
 
         LoadingUI?.UpdateMessage(finalMessage);
 
-        // ¾À ·Îµù
+        // ì”¬ ë¡œë”©
         AsyncOperation async = SceneManager.LoadSceneAsync(sceneName);
         while (!async.isDone)
         {
             yield return null;
         }
 
-        LoadingUI?.Hide(); // ³ªÁß¿¡ µû·Î »©µµ µÊ
+        LoadingUI?.Hide(); // ë‚˜ì¤‘ì— ë”°ë¡œ ë¹¼ë„ ë¨
         ChangeState(SystemStateType.Playing);
     }
 
     #endregion
 
-    #region °ÔÀÓ Á¦¾î
+    #region ê²Œì„ ì œì–´
 
     public void PauseGame()
     {
@@ -111,9 +109,9 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>
 
     #endregion
 
-    #region ¼³Á¤ ÀúÀå/ºÒ·¯¿À±â
+    #region ì„¤ì • ì €ì¥/ë¶ˆëŸ¬ì˜¤ê¸°
 
-    // »ç¿îµå(°³ÀÎ ¼³Á¤)
+    // ì‚¬ìš´ë“œ(ê°œì¸ ì„¤ì •)
     public void SetVolume(float volume)
     {
         PlayerPrefs.SetFloat("Volume", volume);
@@ -122,6 +120,8 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>
     {
         return PlayerPrefs.GetFloat("Volume", 0.5f);
     }
+
+    
 
     #endregion
 }

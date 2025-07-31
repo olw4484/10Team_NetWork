@@ -2,18 +2,23 @@
 {
     None,                   // Error
 
-    GameManager,
+    SystemManager,          // Need
 
     ResourceManager,        // Default Manager
     SceneManagerEx,
     AudioManager,
     UIManager,
+    PoolManager,
 
-    PlayerDataManager,      // Data Manager 
-    ItemDataBase,
+    FirebaseManager,        // Network
+    NetworkManager,
+
+    TeamManager,
+    RoomManager,
+
+    GameManager,            // Extra Manager
+    SkillManager,
+    EventManager,
     ItemManager,
-    NPCAffinityModel,
-    DialogueManager,
-    StageManager,
-    MonsterSpawnController,
+    ResourceSystem,
 }
