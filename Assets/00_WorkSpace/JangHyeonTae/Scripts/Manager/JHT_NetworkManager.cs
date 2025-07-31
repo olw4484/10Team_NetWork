@@ -6,6 +6,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public enum CurrentState
 {
@@ -17,23 +18,79 @@ public enum CurrentState
 
 public class JHT_NetworkManager : MonoBehaviourPunCallbacks
 {
+
+    #region singleton
+    private static JHT_NetworkManager networkInstance;
+    public static JHT_NetworkManager NetworkInstance
+    {
+        get
+        {
+            if (networkInstance == null)
+            {
+                var obj = FindObjectOfType<JHT_NetworkManager>();
+                if (obj != null)
+                {
+                    networkInstance = obj;
+                }
+                else
+                {
+                    var newObj = new GameObject().AddComponent<JHT_NetworkManager>();
+                    networkInstance = newObj;
+                }
+            }
+            return networkInstance;
+        }
+    }
+
+    private void Awake()
+    {
+        var objs = FindObjectsOfType<JHT_NetworkManager>();
+        if (objs.Length != 1)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(gameObject);
+    }
+    #endregion
+
+    [Header("로비")]
     [SerializeField] private GameObject loadingPanel;
     [SerializeField] private GameObject lobbyPanel;
+
+    [Header("룸")]
     [SerializeField] private GameObject roomPanel;
     [SerializeField] private Transform roomListParent;
     [SerializeField] private GameObject roomPanelPrefab;
 
-    private CurrentState curPlayerState;
+    [Header("캐릭터")]
+    public JHT_Character[] characters;
+    public GameObject characterParent;
+
+    
+
+    public CurrentState curPlayerState;
     private Dictionary<string, GameObject> currentRoomDic;
 
     public JHT_RoomManager roomManager;
     public JHT_TeamManager teamManager;
+    public JHT_NetworkUIPanel canvasPanel;
 
-    void Start()
+
+    private void Start()
     {
-        currentRoomDic = new(); 
-        PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
         PhotonNetwork.ConnectUsingSettings();
+        currentRoomDic = new();
+        //PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
+        if(canvasPanel == null)
+            canvasPanel = FindObjectOfType<JHT_NetworkUIPanel>();
+
+        if(!canvasPanel.gameObject.activeSelf)
+            canvasPanel.gameObject.SetActive(true);
+    }
+
+    void Init()
+    {
     }
 
     #region Photon Callbacks
@@ -43,13 +100,25 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
         {
             loadingPanel.SetActive(false);
         }
+
+        if (roomManager == null)
+        {
+            roomManager = FindObjectOfType<JHT_RoomManager>();
+        }
+
+        if (teamManager == null)
+        {
+            teamManager = FindObjectOfType<JHT_TeamManager>();
+        }
+
         PhotonNetwork.JoinLobby();
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
         StateCustomProperty(CurrentState.NotConnect);
-        PhotonNetwork.ConnectUsingSettings();
+        if ((CurrentState)PhotonNetwork.LocalPlayer.CustomProperties["CurState"] == CurrentState.NotConnect)
+            PhotonNetwork.ConnectUsingSettings();
     }
 
     public override void OnJoinedLobby()
@@ -95,11 +164,13 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
 
         roomManager.PlayerPanelSpawn();
         StateCustomProperty(CurrentState.InRoom);
+        characterParent.SetActive(true);
     }
 
     public override void OnLeftRoom()
     {
         StateCustomProperty(CurrentState.Lobby);
+        characterParent.SetActive(false);
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -169,11 +240,62 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
             }
         }
     }
-
     #endregion
 
-    #region CustomProperty
+    #region 게임시작
+    public void GameStart()
+    {
+        if (PhotonNetwork.IsMasterClient && AllPlayerReadyCheck()
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] >= 1
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] >= 1)
+        {
+            StateCustomProperty(CurrentState.InGame);
 
+            if (teamManager != null)
+            {
+                teamManager = null;
+            }
+            if (roomManager != null)
+            {
+                roomManager = null;
+            }
+
+
+            //해당 게임씬 넣기
+            JHT_SceneManager.Instance.AllPlayerChangeScene("GameScenes");
+            StartCoroutine(WaitForLoad(PhotonNetwork.LocalPlayer));
+        }
+    }
+
+    IEnumerator WaitForLoad(Player player)
+    {
+        while (!player.CustomProperties.ContainsKey("Team") || !player.CustomProperties.ContainsKey("Character"))
+            yield return null;
+
+        int playerIndex = (int)player.CustomProperties["Character"];
+        Vector3 spawnPos = (TeamSetting)player.CustomProperties["Team"] == TeamSetting.Red ? new Vector3(35, 0, 0) : new Vector3(-35, 0, 0);
+        Quaternion rot = (TeamSetting)player.CustomProperties["Team"] == TeamSetting.Red ? Quaternion.Euler(0, 270, 0) : Quaternion.Euler(0, 90, 0);
+
+        Debug.Log($"Player name : {characters[playerIndex].name}");
+        GameObject obj = PhotonNetwork.Instantiate(characters[playerIndex].name, spawnPos, rot);
+    }
+
+    public bool AllPlayerReadyCheck()
+    {
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (!player.CustomProperties.TryGetValue("IsReady", out object value) || !(bool)value)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    #endregion
+
+
+    #region CustomProperty
     // Player Network State
     public void StateCustomProperty(CurrentState _curPlayerState)
     {
@@ -232,8 +354,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
     {
         while (!roomManager.playerPanelDic.ContainsKey(targetPlayer.ActorNumber))
             yield return null;
-
-        Debug.Log($"WaitForLoadCharacter : {targetPlayer.ActorNumber}");
 
         if (changedProps.ContainsKey("Character"))
         {

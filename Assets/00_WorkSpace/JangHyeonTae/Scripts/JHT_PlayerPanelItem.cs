@@ -17,12 +17,13 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
     private Button readyButton => GetUI<Button>("PlayerReadyButton");
 
 
-    TeamSetting team;
     private bool isReady;
     private int curCharacterIndex;
 
     public JHT_NetworkUIPanel networkUICanvas;
     private string curMyCharacter;
+
+    public TeamSetting myTeam;
     public void Init(Player player)
     {
         playerNameText.text = player.NickName;
@@ -81,7 +82,7 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
 
         if (player.CustomProperties.TryGetValue("Character", out object value))
         {
-            playerCharacterImage.sprite = networkUICanvas.character[(int)value].icon;
+            playerCharacterImage.sprite = JHT_NetworkManager.NetworkInstance.characters[(int)value].icon;
         }
     }
     #endregion
