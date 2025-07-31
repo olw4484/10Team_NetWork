@@ -58,6 +58,7 @@ public class KMS_NetWorkManager : MonoBehaviourPunCallbacks
     // 방에 들어왔을 때 팀/역할 배정 (MasterClient만 처리 - 동시 접속으로 인한 중복방지)
     public override void OnJoinedRoom()
     {
+#if UNITY_EDITOR
         if (isCommandDebugMode)
         {
             // HQ, CommandPlayer를 같은 위치에 생성
@@ -91,6 +92,7 @@ public class KMS_NetWorkManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.Instantiate("Hero1", heroRedSpawnPoint.position, heroRedSpawnPoint.rotation);
         }
+#endif
 
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.PlayerList.Length == 4)
         {
