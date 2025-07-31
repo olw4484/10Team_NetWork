@@ -3,7 +3,7 @@
 public abstract class YSJ_SimpleSingleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     private static T _instance;
-    [SerializeField, HideInInspector] private bool _isDontDestroyOnLoad = true;
+    [SerializeField, HideInInspector] protected bool isDontDestroyOnLoad = true;
 
     public static T Instance
     {
@@ -20,7 +20,7 @@ public abstract class YSJ_SimpleSingleton<T> : MonoBehaviour where T : MonoBehav
                     GameObject go = new GameObject($"@SimpleSingleton_{typeof(T)}");
                     _instance = go.AddComponent<T>();
 
-                    if ((_instance as YSJ_SimpleSingleton<T>)._isDontDestroyOnLoad)
+                    if ((_instance as YSJ_SimpleSingleton<T>).isDontDestroyOnLoad)
                         DontDestroyOnLoad(go);
                 }
             }
@@ -31,22 +31,20 @@ public abstract class YSJ_SimpleSingleton<T> : MonoBehaviour where T : MonoBehav
     private void Awake() => Init();
     private void OnDestroy() => Destroy();
 
-    protected virtual void Init()
+    private void Init()
     {
+        if (_instance == null)
         {
-            if (_instance == null)
-            {
-                _instance = this as T;
-                if (_isDontDestroyOnLoad)
-                    DontDestroyOnLoad(gameObject);
-            }
-            else if (_instance != this)
-            {
-                Destroy(gameObject);
-            }
+            _instance = this as T;
+            if (isDontDestroyOnLoad)
+                DontDestroyOnLoad(gameObject);
+        }
+        else if (_instance != this)
+        {
+            Destroy(gameObject);
         }
     }
-    protected virtual void Destroy()
+    private void Destroy()
     {
         if (_instance == this)
         {

@@ -5,16 +5,40 @@ public abstract class SceneBase : MonoBehaviour
     // 현재 씬의 고유 ID (상속 클래스에서 지정)
     public abstract SceneID SceneID { get; }
 
-    protected virtual void Awake()
+    [SerializeField] private GameObject[] m_uiPrefabs;
+
+    protected void Awake()
     {
-        RegisterServices(); // 1단계: DI 등록
-        InitManagers();     // 2단계: 매니저 초기화
-        Initialize();       // 3단계: 해당 씬 개별 초기화
-        InitUI();           // 4단계: UI 연결 및 Presenter 주입
+        LoadManagers();
+        Initialize();
+        LoadUI();
     }
 
-    protected abstract void RegisterServices();     // DI 등록
-    protected abstract void InitManagers();         // 매니저 초기화
-    protected abstract void Initialize();           // 개별 초기화
-    protected abstract void InitUI();               // UI 연결 및 Presenter 주입
+    protected abstract void Initialize();
+
+    private void LoadUI()
+    {
+        // UI 프리팹을 순회하며 UI 매니저에 설정
+    }
+
+    // 매니저 등록 및 초기화
+    private void LoadManagers()
+    {
+        Debug.Log($"Scene {SceneID} Load Managers.");
+
+        // 현재 씬에 존재하는 Manager 태그 오브젝트 수집
+        GameObject[] SubscribeManagers = GameObject.FindGameObjectsWithTag("Manager");
+
+        // 기존에 불필요한 매니저 제거
+        ManagerGroup.Instance.ClearManagers();
+
+        // 남아 있는 매니저 클린업 (종료 처리 등)
+        ManagerGroup.Instance.CleanupManagers();
+
+        // 새로 찾은 매니저 오브젝트들을 등록
+        ManagerGroup.Instance.RegisterManager(SubscribeManagers);
+
+        // 등록된 매니저들을 초기화
+        ManagerGroup.Instance.InitializeManagers();
+    }
 }
