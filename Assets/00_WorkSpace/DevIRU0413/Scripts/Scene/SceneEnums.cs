@@ -1,4 +1,5 @@
 public enum SceneID
 {
-    TestScene
+    TestScene,
+    InGameScene,
 }

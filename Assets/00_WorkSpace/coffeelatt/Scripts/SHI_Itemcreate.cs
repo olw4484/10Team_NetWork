@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class SHI_Itemcreate : MonoBehaviour
 {
@@ -8,10 +9,15 @@ public class SHI_Itemcreate : MonoBehaviour
 
     public SHI_Inventory inventory;
 
-    private void Start()
+    private void Start() => InitUseInventory();
+    private void InitUseInventory()
     {
-        inventory = GameObject.Find("inventory").GetComponent<SHI_Inventory>();
+        if (inventory == null)
+        {
+            inventory = LGH_TestGameManager.Instance.localPlayer?.GetComponent<SHI_Inventory>();
+        }
     }
+
     private void Update()
     {
         for (int i = 0; i <= Createitem.Length; i++)
@@ -22,8 +28,18 @@ public class SHI_Itemcreate : MonoBehaviour
             }
         }
     }
+
     public void create(int index)
     {
+        InitUseInventory();
+        if (inventory == null)
+        {
+#if UNITY_EDITOR
+            Debug.Log($"inventory 인벤토리가 없습니다.");
+#endif
+            return;
+        }
+
         if (index >= 0 && index < Createitem.Length)
         {
             GameObject send = Instantiate(Createitem[index], spawnpoint.position, Quaternion.identity);
