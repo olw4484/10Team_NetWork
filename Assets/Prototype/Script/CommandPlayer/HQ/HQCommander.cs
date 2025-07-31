@@ -19,13 +19,13 @@ public class HQCommander : MonoBehaviour, KMS_ISelectable
     {
         if (!IsSelected) return;
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Z))
             OnSpawnMinionButton((int)MinionType.Melee);
 
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.X))
             OnSpawnMinionButton((int)MinionType.Ranged);
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.C))
             OnSpawnMinionButton((int)MinionType.Elite);
 
         // 특수 스킬 확장 가능성 ) HQSkil 2~3개
