@@ -5,7 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
+    path: Assets/00_WorkSpace/sejun-2/Email_Login_Scene.unity
+    guid: 06be8ec50abdce64cbffd790cd64469a
+  - enabled: 1
     path: Assets/00_WorkSpace/JangHyeonTae/Scenes/JHT_Lobby.unity
     guid: 3e6571e36924600489e774378651a9b4
   - enabled: 1
