@@ -19,7 +19,7 @@ public class CommandPlayer : MonoBehaviour
     {
         if (photonView.IsMine)
         {
-            //GameManager.Instance.RegisterPlayer(this);
+            LGH_TestGameManager.Instance.RegisterPlayer(this.gameObject);
         }
     }
 
