@@ -45,6 +45,11 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         model.CurMP.Value = model.MaxMP;
     }
 
+    private void Start()
+    {
+        LGH_TestGameManager.Instance.RegisterPlayer(this.gameObject);
+    }
+
     private void Update()
     {
         if (!pv.IsMine) return;
