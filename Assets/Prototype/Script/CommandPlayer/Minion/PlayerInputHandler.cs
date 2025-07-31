@@ -165,7 +165,11 @@ public class PlayerInputHandler : MonoBehaviour
             Debug.Log($"Ray Hit: {hit.collider.name} on layer {LayerMask.LayerToName(hit.collider.gameObject.layer)}");
 
             var selectable = hit.collider.GetComponent<ISelectable>();
-            if (selectable != null)
+            if (selectable == null)
+            {
+                Debug.LogWarning($"[PlayerInputHandler] {hit.collider.name}에서 ISelectable 컴포넌트를 찾지 못함");
+            }
+            else if (selectable != null)
             {
                 currentSelected?.Deselect();
                 currentSelected = selectable;

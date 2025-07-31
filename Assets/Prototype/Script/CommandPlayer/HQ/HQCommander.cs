@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.AI;
-using static KMS_ISelectable;
+using static ISelectable;
 using static UnityEngine.GraphicsBuffer;
 
-public class HQCommander : MonoBehaviour, KMS_ISelectable 
+public class HQCommander : MonoBehaviour, ISelectable
 {
     [Header("연동 대상")]
     public CommandPlayer player;
@@ -19,13 +19,13 @@ public class HQCommander : MonoBehaviour, KMS_ISelectable
     {
         if (!IsSelected) return;
 
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (Input.GetKeyDown(KeyCode.Q))
             OnSpawnMinionButton((int)MinionType.Melee);
 
-        if (Input.GetKeyDown(KeyCode.X))
+        if (Input.GetKeyDown(KeyCode.W))
             OnSpawnMinionButton((int)MinionType.Ranged);
 
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKeyDown(KeyCode.E))
             OnSpawnMinionButton((int)MinionType.Elite);
 
         // 특수 스킬 확장 가능성 ) HQSkil 2~3개
@@ -80,5 +80,5 @@ public class HQCommander : MonoBehaviour, KMS_ISelectable
         // UI 표시 기능 해제
     }
 
-    public KMS_SelectableType GetSelectableType() => KMS_SelectableType.Building;
+    public SelectableType GetSelectableType() => SelectableType.Building;
 }

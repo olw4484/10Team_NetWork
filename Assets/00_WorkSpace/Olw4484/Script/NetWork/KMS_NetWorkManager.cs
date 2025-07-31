@@ -61,20 +61,31 @@ public class KMS_NetWorkManager : MonoBehaviourPunCallbacks
     {
         if (isCommandDebugMode)
         {
+            // HQ, CommandPlayer를 같은 위치에 생성
             var hqObj = PhotonNetwork.Instantiate("HQ", cmdRedSpawnPoint.position, cmdRedSpawnPoint.rotation);
             var cmdObj = PhotonNetwork.Instantiate("CommandPlayer", cmdRedSpawnPoint.position, cmdRedSpawnPoint.rotation);
 
+            // HQ - CommandPlayer 연결
             var commandPlayer = cmdObj.GetComponent<CommandPlayer>();
             var hq = hqObj.GetComponent<HQCommander>();
             hq.player = commandPlayer;
 
-            // Canvas 연결
+            // Canvas 및 인풋 등 연결
             if (commandPlayer.photonView.IsMine)
             {
                 var canvasObj = Instantiate(canvasPrefab);
                 commandPlayer.goldText = canvasObj.transform.Find("ResourcePanel/GoldText").GetComponent<TMP_Text>();
                 commandPlayer.gearText = canvasObj.transform.Find("ResourcePanel/GearText").GetComponent<TMP_Text>();
                 commandPlayer.playerInputHandler = canvasObj.GetComponent<PlayerInputHandler>();
+
+                // --- 버튼 이벤트 연결 ---
+                var meleeBtn = canvasObj.transform.Find("MinionPanel/MeleeButton").GetComponent<Button>();
+                var rangedBtn = canvasObj.transform.Find("MinionPanel/RangedButton").GetComponent<Button>();
+                var eliteBtn = canvasObj.transform.Find("MinionPanel/EliteButton").GetComponent<Button>();
+
+                meleeBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Melee));
+                rangedBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Ranged));
+                eliteBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Elite));
             }
         }
         if (isHeroDebugMode)
