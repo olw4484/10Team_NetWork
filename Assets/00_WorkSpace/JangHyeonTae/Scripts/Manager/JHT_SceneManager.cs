@@ -1,8 +1,4 @@
 using Photon.Pun;
-using Scripts.Util;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class JHT_SceneManager : YSJ_SimpleSingleton<JHT_SceneManager>
 {
