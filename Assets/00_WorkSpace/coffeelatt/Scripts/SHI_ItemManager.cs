@@ -14,10 +14,7 @@ public class SHI_ItemManager : MonoBehaviour ,IManager
         resultValue = GameObject.Find("Result").GetComponent<SHI_ResultValue>();
         Debug.Log("아이템 매니저 초기화됨");
     } // 초기화 메서드
-    void Init()
-    {
-       
-    } // 초기화 메서드
+    
     public void Cleanup() { } // 정리 메서드
     public GameObject GetGameObject() => this.gameObject; // 현재 게임 오브젝트 반환
 
