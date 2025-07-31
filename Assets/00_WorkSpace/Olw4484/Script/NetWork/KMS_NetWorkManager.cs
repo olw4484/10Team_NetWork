@@ -3,6 +3,7 @@ using Photon.Realtime;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using static UnityEditor.PlayerSettings;
 
 
@@ -153,9 +154,20 @@ public class KMS_NetWorkManager : MonoBehaviourPunCallbacks
             if (commandPlayer.photonView.IsMine)
             {
                 var canvasObj = Instantiate(canvasPrefab);
+
+                // --- Canvas Text 연결 ---
                 commandPlayer.goldText = canvasObj.transform.Find("ResourcePanel/GoldText").GetComponent<TMP_Text>();
                 commandPlayer.gearText = canvasObj.transform.Find("ResourcePanel/GearText").GetComponent<TMP_Text>();
                 commandPlayer.playerInputHandler = canvasObj.GetComponent<PlayerInputHandler>();
+
+                // --- 미니언 생성 버튼 이벤트 연결 ---
+                var meleeBtn = canvasObj.transform.Find("MinionPanel/MeleeButton").GetComponent<Button>();
+                var rangedBtn = canvasObj.transform.Find("MinionPanel/RangedButton").GetComponent<Button>();
+                var eliteBtn = canvasObj.transform.Find("MinionPanel/EliteButton").GetComponent<Button>();
+
+                meleeBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Melee));
+                rangedBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Ranged));
+                eliteBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Elite));
             }
         }
     }
