@@ -1,5 +1,4 @@
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class SHI_Itemcreate : MonoBehaviour
 {
@@ -9,7 +8,6 @@ public class SHI_Itemcreate : MonoBehaviour
 
     public SHI_Inventory inventory;
 
-    private void Start() => InitUseInventory();
     private void InitUseInventory()
     {
         if (inventory == null)
