@@ -1,4 +1,4 @@
-using Firebase.Auth;
+ï»¿using Firebase.Auth;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -21,48 +21,48 @@ public class LobbyPanel : MonoBehaviour
     [SerializeField] Button editProfileButton;
     [SerializeField] Button deleteUserButton;
 
-    private void Awake()    // ÃÊ±âÈ­ ¸Ş¼­µå
+    private void Awake()    // ì´ˆê¸°í™” ë©”ì„œë“œ
     {
         logoutButton.onClick.AddListener(Logout);
         editProfileButton.onClick.AddListener(EditProfile);
         deleteUserButton.onClick.AddListener(DeleteUser);
     }
 
-    private void OnEnable() // ÆĞ³ÎÀÌ È­¸é¿¡ ³ªÅ¸³¯ ¶§¸¶´Ù È£ÃâµÊ
+    private void OnEnable() // íŒ¨ë„ì´ í™”ë©´ì— ë‚˜íƒ€ë‚  ë•Œë§ˆë‹¤ í˜¸ì¶œë¨
     {
-        FirebaseUser user = FirebaseManager.Auth.CurrentUser;   // ÇöÀç ·Î±×ÀÎÇÑ »ç¿ëÀÚ Á¤º¸ °¡Á®¿À±â
+        FirebaseUser user = FirebaseManager.Auth.CurrentUser;   // í˜„ì¬ ë¡œê·¸ì¸í•œ ì‚¬ìš©ì ì •ë³´ ê°€ì ¸ì˜¤ê¸°
 
         emailText.text = user.Email;    
         nameText.text = user.DisplayName;
-        passwordText.text = "ºñ¹Ğ¹øÈ£´Â º¸¾È»ó Ç¥½ÃµÇÁö ¾Ê½À´Ï´Ù"; // ºñ¹Ğ¹øÈ£´Â º¸¾È»ó Ç¥½ÃÇÏÁö ¾ÊÀ½
-        userIdText.text = user.UserId; // »ç¿ëÀÚ ID Ç¥½Ã
+        passwordText.text = "ë¹„ë°€ë²ˆí˜¸ëŠ” ë³´ì•ˆìƒ í‘œì‹œë˜ì§€ ì•ŠìŠµë‹ˆë‹¤"; // ë¹„ë°€ë²ˆí˜¸ëŠ” ë³´ì•ˆìƒ í‘œì‹œí•˜ì§€ ì•ŠìŒ
+        userIdText.text = user.UserId; // ì‚¬ìš©ì ID í‘œì‹œ
 
-        //±¸±ÛÀÌ³ª ÇÃ·¹ÀÌ ½ºÅä¾î µî ´Ù¸¥ ÇÁ·Î¹ÙÀÌ´õ·Î ·Î±×ÀÎÇÑ °æ¿ì,
-        //foreach (IUserInfo userInfo in user.ProviderData) // »ç¿ëÀÚ Á¤º¸¿¡¼­ ÇÁ·Î¹ÙÀÌ´õ µ¥ÀÌÅÍ °¡Á®¿À±â
+        //êµ¬ê¸€ì´ë‚˜ í”Œë ˆì´ ìŠ¤í† ì–´ ë“± ë‹¤ë¥¸ í”„ë¡œë°”ì´ë”ë¡œ ë¡œê·¸ì¸í•œ ê²½ìš°,
+        //foreach (IUserInfo userInfo in user.ProviderData) // ì‚¬ìš©ì ì •ë³´ì—ì„œ í”„ë¡œë°”ì´ë” ë°ì´í„° ê°€ì ¸ì˜¤ê¸°
         //{
-        //    if (userInfo.ProviderId == "password") // ÇÁ·Î¹ÙÀÌ´õ ID°¡ "password"ÀÎ °æ¿ì
+        //    if (userInfo.ProviderId == "password") // í”„ë¡œë°”ì´ë” IDê°€ "password"ì¸ ê²½ìš°
         //    {
-        //        emailText.text = userInfo.Email; // ÀÌ¸ŞÀÏ ÅØ½ºÆ® ¾÷µ¥ÀÌÆ®
-        //        break; // ·çÇÁ Á¾·á
+        //        emailText.text = userInfo.Email; // ì´ë©”ì¼ í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
+        //        break; // ë£¨í”„ ì¢…ë£Œ
         //    }
         //}
 
     }
 
-    private void Logout()   // ·Î±×¾Æ¿ô ¸Ş¼­µå
+    private void Logout()   // ë¡œê·¸ì•„ì›ƒ ë©”ì„œë“œ
     {
-        FirebaseManager.Auth.SignOut(); // Firebase¿¡¼­ ·Î±×¾Æ¿ô
+        FirebaseManager.Auth.SignOut(); // Firebaseì—ì„œ ë¡œê·¸ì•„ì›ƒ
         loginPannel.SetActive(true);
         gameObject.SetActive(false);
     }
 
-    private void EditProfile()  // ÇÁ·ÎÇÊ ¼öÁ¤ ¸Ş¼­µå
+    private void EditProfile()  // í”„ë¡œí•„ ìˆ˜ì • ë©”ì„œë“œ
     {
         editPanel.SetActive(true);
         gameObject.SetActive(false);
     }
 
-    private void DeleteUser()   // È¸¿ø Å»Åğ ¸Ş¼­µå
+    private void DeleteUser()   // íšŒì› íƒˆí‡´ ë©”ì„œë“œ
     {
         deleteUserPanel.SetActive(true);
         gameObject.SetActive(false);

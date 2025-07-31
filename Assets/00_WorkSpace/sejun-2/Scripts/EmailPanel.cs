@@ -1,4 +1,4 @@
-using Firebase.Auth;
+ï»¿using Firebase.Auth;
 using Firebase.Extensions;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,18 +25,18 @@ public class EmailPanel : MonoBehaviour
             {
                 if (task.IsCanceled)
                 {
-                    Debug.LogError("ÀÎÁõ ÀÌ¸ŞÀÏ Àü¼ÛÀÌ Ãë¼ÒµÊ");
+                    Debug.LogError("ì¸ì¦ ì´ë©”ì¼ ì „ì†¡ì´ ì·¨ì†Œë¨");
                     return;
                 }
                 if (task.IsFaulted)
                 {
-                    Debug.LogError($"ÀÎÁõ ÀÌ¸ŞÀÏ Àü¼ÛÀÌ ½ÇÆĞ. ÀÌÀ¯ : {task.Exception}");
+                    Debug.LogError($"ì¸ì¦ ì´ë©”ì¼ ì „ì†¡ì´ ì‹¤íŒ¨. ì´ìœ  : {task.Exception}");
                     return;
                 }
 
-                Debug.Log("ÀÎÁõ ÀÌ¸ŞÀÏ Àü¼Û ¼º°ø");
+                Debug.Log("ì¸ì¦ ì´ë©”ì¼ ì „ì†¡ ì„±ê³µ");
 
-                emailVerificationRoutine = StartCoroutine(EmailVerificationRoutine());  // ÀÌ¸ŞÀÏ ÀÎÁõ È®ÀÎÀ» À§ÇÑ ÄÚ·çÆ¾ ½ÃÀÛ
+                emailVerificationRoutine = StartCoroutine(EmailVerificationRoutine());  // ì´ë©”ì¼ ì¸ì¦ í™•ì¸ì„ ìœ„í•œ ì½”ë£¨í‹´ ì‹œì‘
             });
     }
 
@@ -47,27 +47,27 @@ public class EmailPanel : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    Coroutine emailVerificationRoutine; // ÀÌ¸ŞÀÏ ÀÎÁõ È®ÀÎÀ» À§ÇÑ ÄÚ·çÆ¾
+    Coroutine emailVerificationRoutine; // ì´ë©”ì¼ ì¸ì¦ í™•ì¸ì„ ìœ„í•œ ì½”ë£¨í‹´
     IEnumerator EmailVerificationRoutine()
     {
-        FirebaseUser user = FirebaseManager.Auth.CurrentUser;   // ÇöÀç »ç¿ëÀÚ Á¤º¸ °¡Á®¿À±â
-        WaitForSeconds delay = new WaitForSeconds(2f);  // 2ÃÊ¸¶´Ù ÀÌ¸ŞÀÏ ÀÎÁõ È®ÀÎ
+        FirebaseUser user = FirebaseManager.Auth.CurrentUser;   // í˜„ì¬ ì‚¬ìš©ì ì •ë³´ ê°€ì ¸ì˜¤ê¸°
+        WaitForSeconds delay = new WaitForSeconds(2f);  // 2ì´ˆë§ˆë‹¤ ì´ë©”ì¼ ì¸ì¦ í™•ì¸
 
-        while (true)    // ¹«ÇÑ ·çÇÁ¸¦ ÅëÇØ ÀÌ¸ŞÀÏ ÀÎÁõ »óÅÂ¸¦ ÁÖ±âÀûÀ¸·Î È®ÀÎ
+        while (true)    // ë¬´í•œ ë£¨í”„ë¥¼ í†µí•´ ì´ë©”ì¼ ì¸ì¦ ìƒíƒœë¥¼ ì£¼ê¸°ì ìœ¼ë¡œ í™•ì¸
         {
-            yield return delay; // 2ÃÊ ´ë±â
+            yield return delay; // 2ì´ˆ ëŒ€ê¸°
 
-            user.ReloadAsync(); // »ç¿ëÀÚ Á¤º¸¸¦ »õ·Î°íÄ§ÇÏ¿© ÃÖ½Å »óÅÂ¸¦ ¹İ¿µ
-            if (user.IsEmailVerified)   // ÀÌ¸ŞÀÏ ÀÎÁõÀÌ ¿Ï·áµÇ¾ú´ÂÁö È®ÀÎ
+            user.ReloadAsync(); // ì‚¬ìš©ì ì •ë³´ë¥¼ ìƒˆë¡œê³ ì¹¨í•˜ì—¬ ìµœì‹  ìƒíƒœë¥¼ ë°˜ì˜
+            if (user.IsEmailVerified)   // ì´ë©”ì¼ ì¸ì¦ì´ ì™„ë£Œë˜ì—ˆëŠ”ì§€ í™•ì¸
             {
-                Debug.Log("ÀÎÁõ ¿Ï·á");
+                Debug.Log("ì¸ì¦ ì™„ë£Œ");
                 lobbyPanel.SetActive(true);
                 gameObject.SetActive(false);
-                StopCoroutine(emailVerificationRoutine);    // ÄÚ·çÆ¾ ÁßÁö
+                StopCoroutine(emailVerificationRoutine);    // ì½”ë£¨í‹´ ì¤‘ì§€
             }
             else
             {
-                Debug.Log("ÀÎÁõ ´ë±âÁß...");
+                Debug.Log("ì¸ì¦ ëŒ€ê¸°ì¤‘...");
             }
         }
     }

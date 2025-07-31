@@ -1,4 +1,4 @@
-using Firebase.Auth;
+ï»¿using Firebase.Auth;
 using Firebase.Extensions;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,16 +33,16 @@ public class NicknamePanel : MonoBehaviour
             {
                 if (task.IsCanceled)
                 {
-                    Debug.LogError("À¯Àú ´Ğ³×ÀÓ ¼³Á¤ Ãë¼ÒµÊ");
+                    Debug.LogError("ìœ ì € ë‹‰ë„¤ì„ ì„¤ì • ì·¨ì†Œë¨");
                     return;
                 }
                 if (task.IsFaulted)
                 {
-                    Debug.LogError($"À¯Àú ´Ğ³×ÀÓ ¼³Á¤ ½ÇÆĞ. ÀÌÀ¯ : {task.Exception}");
+                    Debug.LogError($"ìœ ì € ë‹‰ë„¤ì„ ì„¤ì • ì‹¤íŒ¨. ì´ìœ  : {task.Exception}");
                     return;
                 }
 
-                Debug.Log("À¯Àú ´Ğ³×ÀÓ ¼³Á¤ ¼º°ø");
+                Debug.Log("ìœ ì € ë‹‰ë„¤ì„ ì„¤ì • ì„±ê³µ");
                 lobbyPanel.SetActive(true);
                 gameObject.SetActive(false);
             });

@@ -1,4 +1,4 @@
-using Firebase.Auth;
+ï»¿using Firebase.Auth;
 using Firebase.Database;
 using Firebase.Extensions;
 using System;
@@ -14,184 +14,184 @@ public class DatabaseTester : MonoBehaviour
     [SerializeField] Button upButton;
     [SerializeField] Button downButton;
 
-    // Firebase¿¡¼­´Â µñ¼Å³Ê¸® Áö¿ø.
+    // Firebaseì—ì„œëŠ” ë”•ì…”ë„ˆë¦¬ ì§€ì›.
     //[SerializeField] Dictionary<string, object> dictionary = new Dictionary<string, object>();
 
-    [SerializeField] PlayerData data;   // PlayerData °´Ã¼¸¦ Á÷·ÄÈ­ÇÏ¿© Firebase¿¡ ÀúÀåÇÒ µ¥ÀÌÅÍ ±¸Á¶ÀÔ´Ï´Ù.
+    [SerializeField] PlayerData data;   // PlayerData ê°ì²´ë¥¼ ì§ë ¬í™”í•˜ì—¬ Firebaseì— ì €ì¥í•  ë°ì´í„° êµ¬ì¡°ì…ë‹ˆë‹¤.
 
     private DatabaseReference userlevel;
-    private DatabaseReference gameCount;    // °ÔÀÓ È½¼ö¸¦ ÀúÀåÇÏ´Â µ¥ÀÌÅÍº£ÀÌ½º ÂüÁ¶
-    private DatabaseReference winsCount;    // ½Â¸® È½¼ö¸¦ ÀúÀåÇÏ´Â µ¥ÀÌÅÍº£ÀÌ½º ÂüÁ¶
+    private DatabaseReference gameCount;    // ê²Œì„ íšŸìˆ˜ë¥¼ ì €ì¥í•˜ëŠ” ë°ì´í„°ë² ì´ìŠ¤ ì°¸ì¡°
+    private DatabaseReference winsCount;    // ìŠ¹ë¦¬ íšŸìˆ˜ë¥¼ ì €ì¥í•˜ëŠ” ë°ì´í„°ë² ì´ìŠ¤ ì°¸ì¡°
 
     //Transform target;
 
-    private void Awake()    // ½ºÅ©¸³Æ®°¡ È°¼ºÈ­µÉ ¶§ È£ÃâµÇ´Â ÇÔ¼ö
+    private void Awake()    // ìŠ¤í¬ë¦½íŠ¸ê°€ í™œì„±í™”ë  ë•Œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
     {
-        GetUserinfo(); // Firebase¿¡¼­ »ç¿ëÀÚ Á¤º¸¸¦ °¡Á®¿À´Â ÇÔ¼ö¸¦ È£ÃâÇÕ´Ï´Ù.
+        GetUserinfo(); // Firebaseì—ì„œ ì‚¬ìš©ì ì •ë³´ë¥¼ ê°€ì ¸ì˜¤ëŠ” í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 
         testButton.onClick.AddListener(CheckLeaderBoard);
     }
 
-    private void OnEnable() // Firebase ÀÎÁõ »óÅÂ°¡ º¯°æµÉ ¶§¸¶´Ù È£ÃâµÇ´Â ÀÌº¥Æ®¸¦ ±¸µ¶ÇÕ´Ï´Ù.
+    private void OnEnable() // Firebase ì¸ì¦ ìƒíƒœê°€ ë³€ê²½ë  ë•Œë§ˆë‹¤ í˜¸ì¶œë˜ëŠ” ì´ë²¤íŠ¸ë¥¼ êµ¬ë…í•©ë‹ˆë‹¤.
     {
-        FirebaseUser user = FirebaseManager.Auth.CurrentUser;   // ÇöÀç ·Î±×ÀÎµÈ Firebase »ç¿ëÀÚ¸¦ °¡Á®¿É´Ï´Ù.
-        DatabaseReference root = FirebaseManager.Database.RootReference;    // Firebase µ¥ÀÌÅÍº£ÀÌ½ºÀÇ ·çÆ® ÂüÁ¶¸¦ °¡Á®¿É´Ï´Ù.
-        gameCount = root.Child("UserData").Child(user.UserId).Child("gameCount");   // °ÔÀÓ È½¼ö Á¤º¸¸¦ °¡Á®¿Í gameCount º¯¼ö¿¡ ÇÒ´çÇÕ´Ï´Ù.
+        FirebaseUser user = FirebaseManager.Auth.CurrentUser;   // í˜„ì¬ ë¡œê·¸ì¸ëœ Firebase ì‚¬ìš©ìë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+        DatabaseReference root = FirebaseManager.Database.RootReference;    // Firebase ë°ì´í„°ë² ì´ìŠ¤ì˜ ë£¨íŠ¸ ì°¸ì¡°ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+        gameCount = root.Child("UserData").Child(user.UserId).Child("gameCount");   // ê²Œì„ íšŸìˆ˜ ì •ë³´ë¥¼ ê°€ì ¸ì™€ gameCount ë³€ìˆ˜ì— í• ë‹¹í•©ë‹ˆë‹¤.
         winsCount = root.Child("UserData").Child(user.UserId).Child("winsCount");
 
-        gameCount.ValueChanged += gameCount_ValueChanged; // °ÔÀÓ È½¼ö µ¥ÀÌÅÍº£ÀÌ½ºÀÇ °ªÀÌ º¯°æµÉ ¶§¸¶´Ù È£ÃâµÇ´Â ÀÌº¥Æ®¸¦ ±¸µ¶ÇÕ´Ï´Ù.
-        winsCount.ValueChanged += winsCount_ValueChanged; // ½Â¸® È½¼ö µ¥ÀÌÅÍº£ÀÌ½ºÀÇ °ªÀÌ º¯°æµÉ ¶§¸¶´Ù È£ÃâµÇ´Â ÀÌº¥Æ®¸¦ ±¸µ¶ÇÕ´Ï´Ù.
+        gameCount.ValueChanged += gameCount_ValueChanged; // ê²Œì„ íšŸìˆ˜ ë°ì´í„°ë² ì´ìŠ¤ì˜ ê°’ì´ ë³€ê²½ë  ë•Œë§ˆë‹¤ í˜¸ì¶œë˜ëŠ” ì´ë²¤íŠ¸ë¥¼ êµ¬ë…í•©ë‹ˆë‹¤.
+        winsCount.ValueChanged += winsCount_ValueChanged; // ìŠ¹ë¦¬ íšŸìˆ˜ ë°ì´í„°ë² ì´ìŠ¤ì˜ ê°’ì´ ë³€ê²½ë  ë•Œë§ˆë‹¤ í˜¸ì¶œë˜ëŠ” ì´ë²¤íŠ¸ë¥¼ êµ¬ë…í•©ë‹ˆë‹¤.
     }
 
-    private void OnDisable() // Firebase ÀÎÁõ »óÅÂ°¡ º¯°æµÉ ¶§¸¶´Ù È£ÃâµÇ´Â ÀÌº¥Æ®¸¦ ±¸µ¶ ÇØÁ¦ÇÕ´Ï´Ù.
+    private void OnDisable() // Firebase ì¸ì¦ ìƒíƒœê°€ ë³€ê²½ë  ë•Œë§ˆë‹¤ í˜¸ì¶œë˜ëŠ” ì´ë²¤íŠ¸ë¥¼ êµ¬ë… í•´ì œí•©ë‹ˆë‹¤.
     {
-        gameCount.ValueChanged -= gameCount_ValueChanged; // °ÔÀÓ È½¼ö µ¥ÀÌÅÍº£ÀÌ½ºÀÇ °ªÀÌ º¯°æµÉ ¶§¸¶´Ù È£ÃâµÇ´Â ÀÌº¥Æ®¸¦ ±¸µ¶ ÇØÁ¦ÇÕ´Ï´Ù.
-        winsCount.ValueChanged -= winsCount_ValueChanged; // ½Â¸® È½¼ö µ¥ÀÌÅÍº£ÀÌ½ºÀÇ °ªÀÌ º¯°æµÉ ¶§¸¶´Ù È£ÃâµÇ´Â ÀÌº¥Æ®¸¦ ±¸µ¶ ÇØÁ¦ÇÕ´Ï´Ù.
+        gameCount.ValueChanged -= gameCount_ValueChanged; // ê²Œì„ íšŸìˆ˜ ë°ì´í„°ë² ì´ìŠ¤ì˜ ê°’ì´ ë³€ê²½ë  ë•Œë§ˆë‹¤ í˜¸ì¶œë˜ëŠ” ì´ë²¤íŠ¸ë¥¼ êµ¬ë… í•´ì œí•©ë‹ˆë‹¤.
+        winsCount.ValueChanged -= winsCount_ValueChanged; // ìŠ¹ë¦¬ íšŸìˆ˜ ë°ì´í„°ë² ì´ìŠ¤ì˜ ê°’ì´ ë³€ê²½ë  ë•Œë§ˆë‹¤ í˜¸ì¶œë˜ëŠ” ì´ë²¤íŠ¸ë¥¼ êµ¬ë… í•´ì œí•©ë‹ˆë‹¤.
     }
 
-    // ½Â¸® È½¼ö µ¥ÀÌÅÍº£ÀÌ½ºÀÇ °ªÀÌ º¯°æµÉ ¶§¸¶´Ù È£ÃâµÇ´Â ÀÌº¥Æ® ÇÚµé·¯ÀÔ´Ï´Ù.
+    // ìŠ¹ë¦¬ íšŸìˆ˜ ë°ì´í„°ë² ì´ìŠ¤ì˜ ê°’ì´ ë³€ê²½ë  ë•Œë§ˆë‹¤ í˜¸ì¶œë˜ëŠ” ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ì…ë‹ˆë‹¤.
     private void winsCount_ValueChanged(object sender, ValueChangedEventArgs args)
     {
         DataSnapshot snapshot = args.Snapshot;
-        data.winsCount = (int)(long)snapshot.Value; // °ÔÀÓ È½¼ö¸¦ °¡Á®¿Í PlayerDataÀÇ gameCount¿¡ ÀúÀåÇÕ´Ï´Ù.
-        Debug.Log($"winsCount°¡ {data.gameCount} ·Î º¯°æµÊ"); // °ÔÀÓ È½¼ö°¡ º¯°æµÉ ¶§¸¶´Ù ·Î±×¸¦ Ãâ·ÂÇÕ´Ï´Ù.
+        data.winsCount = (int)(long)snapshot.Value; // ê²Œì„ íšŸìˆ˜ë¥¼ ê°€ì ¸ì™€ PlayerDataì˜ gameCountì— ì €ì¥í•©ë‹ˆë‹¤.
+        Debug.Log($"winsCountê°€ {data.gameCount} ë¡œ ë³€ê²½ë¨"); // ê²Œì„ íšŸìˆ˜ê°€ ë³€ê²½ë  ë•Œë§ˆë‹¤ ë¡œê·¸ë¥¼ ì¶œë ¥í•©ë‹ˆë‹¤.
     }
 
-    // °ÔÀÓ È½¼ö µ¥ÀÌÅÍº£ÀÌ½ºÀÇ °ªÀÌ º¯°æµÉ ¶§¸¶´Ù È£ÃâµÇ´Â ÀÌº¥Æ® ÇÚµé·¯ÀÔ´Ï´Ù.
+    // ê²Œì„ íšŸìˆ˜ ë°ì´í„°ë² ì´ìŠ¤ì˜ ê°’ì´ ë³€ê²½ë  ë•Œë§ˆë‹¤ í˜¸ì¶œë˜ëŠ” ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ì…ë‹ˆë‹¤.
     private void gameCount_ValueChanged(object sender, ValueChangedEventArgs args)
     {
         DataSnapshot snapshot = args.Snapshot;
-        data.gameCount = (int)(long)snapshot.Value; // °ÔÀÓ È½¼ö¸¦ °¡Á®¿Í PlayerDataÀÇ gameCount¿¡ ÀúÀåÇÕ´Ï´Ù.
-        Debug.Log($"gameCount°¡ {data.gameCount} ·Î º¯°æµÊ"); // °ÔÀÓ È½¼ö°¡ º¯°æµÉ ¶§¸¶´Ù ·Î±×¸¦ Ãâ·ÂÇÕ´Ï´Ù.
+        data.gameCount = (int)(long)snapshot.Value; // ê²Œì„ íšŸìˆ˜ë¥¼ ê°€ì ¸ì™€ PlayerDataì˜ gameCountì— ì €ì¥í•©ë‹ˆë‹¤.
+        Debug.Log($"gameCountê°€ {data.gameCount} ë¡œ ë³€ê²½ë¨"); // ê²Œì„ íšŸìˆ˜ê°€ ë³€ê²½ë  ë•Œë§ˆë‹¤ ë¡œê·¸ë¥¼ ì¶œë ¥í•©ë‹ˆë‹¤.
     }
 
-    // µ¥ÀÌÅÍº£ÀÌ½ºÀÇ ·¹º§ °ªÀÌ º¯°æµÉ ¶§¸¶´Ù È£ÃâµÇ´Â ÀÌº¥Æ® ÇÚµé·¯ÀÔ´Ï´Ù.
+    // ë°ì´í„°ë² ì´ìŠ¤ì˜ ë ˆë²¨ ê°’ì´ ë³€ê²½ë  ë•Œë§ˆë‹¤ í˜¸ì¶œë˜ëŠ” ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ì…ë‹ˆë‹¤.
     private void userLevel_ValueChanged(object sender, ValueChangedEventArgs args)
     {
         DataSnapshot snapshot = args.Snapshot;
-        data.level = (int)(long)snapshot.Value; // µ¥ÀÌÅÍº£ÀÌ½º¿¡¼­ °¡Á®¿Â °ªÀ» PlayerDataÀÇ level¿¡ ÀúÀåÇÕ´Ï´Ù.
-        Debug.Log($"levelÀÌ {data.level} ·Î º¯°æµÊ"); // ·¹º§ÀÌ º¯°æµÉ ¶§¸¶´Ù ·Î±×¸¦ Ãâ·ÂÇÕ´Ï´Ù.
+        data.level = (int)(long)snapshot.Value; // ë°ì´í„°ë² ì´ìŠ¤ì—ì„œ ê°€ì ¸ì˜¨ ê°’ì„ PlayerDataì˜ levelì— ì €ì¥í•©ë‹ˆë‹¤.
+        Debug.Log($"levelì´ {data.level} ë¡œ ë³€ê²½ë¨"); // ë ˆë²¨ì´ ë³€ê²½ë  ë•Œë§ˆë‹¤ ë¡œê·¸ë¥¼ ì¶œë ¥í•©ë‹ˆë‹¤.
     }
 
-    private void LevelUp()  // ¼­¹ö¿¡ ·¹º§¾÷À» ½ÅÃ»ÇÔ
+    private void LevelUp()  // ì„œë²„ì— ë ˆë²¨ì—…ì„ ì‹ ì²­í•¨
     {
-        userlevel.SetValueAsync(data.level + 1); // ÇöÀç ·¹º§¿¡ 1À» ´õÇÏ¿© µ¥ÀÌÅÍº£ÀÌ½º¿¡ ÀúÀåÇÕ´Ï´Ù.
+        userlevel.SetValueAsync(data.level + 1); // í˜„ì¬ ë ˆë²¨ì— 1ì„ ë”í•˜ì—¬ ë°ì´í„°ë² ì´ìŠ¤ì— ì €ì¥í•©ë‹ˆë‹¤.
     }
 
-    private void LevelDown()    // ¼­¹ö¿¡ ·¹º§´Ù¿îÀ» ½ÅÃ»ÇÔ
+    private void LevelDown()    // ì„œë²„ì— ë ˆë²¨ë‹¤ìš´ì„ ì‹ ì²­í•¨
     {
-        userlevel.SetValueAsync(data.level - 1); // ÇöÀç ·¹º§¿¡ 1À» ¸¶ÀÌ³Ê½º ÇÏ¿© µ¥ÀÌÅÍº£ÀÌ½º¿¡ ÀúÀåÇÕ´Ï´Ù.
+        userlevel.SetValueAsync(data.level - 1); // í˜„ì¬ ë ˆë²¨ì— 1ì„ ë§ˆì´ë„ˆìŠ¤ í•˜ì—¬ ë°ì´í„°ë² ì´ìŠ¤ì— ì €ì¥í•©ë‹ˆë‹¤.
     }
 
     private void GameCountUp()
     {
-        gameCount.SetValueAsync(data.gameCount + 1); // °ÔÀÓ È½¼ö¸¦ 1 Áõ°¡½ÃÅµ´Ï´Ù.
-        //gameCount.SetValueAsync(data.gameCount - 1); // °ÔÀÓ È½¼ö¸¦ 1 °¨¼Ò½ÃÅµ´Ï´Ù.
+        gameCount.SetValueAsync(data.gameCount + 1); // ê²Œì„ íšŸìˆ˜ë¥¼ 1 ì¦ê°€ì‹œí‚µë‹ˆë‹¤.
+        //gameCount.SetValueAsync(data.gameCount - 1); // ê²Œì„ íšŸìˆ˜ë¥¼ 1 ê°ì†Œì‹œí‚µë‹ˆë‹¤.
     }
 
     private void WinsCountUp()
     {
-        winsCount.SetValueAsync(data.winsCount + 1); // ½Â¸® È½¼ö¸¦ 1 Áõ°¡½ÃÅµ´Ï´Ù.
-        //winsCount.SetValueAsync(data.winsCount - 1); // ½Â¸® È½¼ö¸¦ 1 °¨¼Ò½ÃÅµ´Ï´Ù.
+        winsCount.SetValueAsync(data.winsCount + 1); // ìŠ¹ë¦¬ íšŸìˆ˜ë¥¼ 1 ì¦ê°€ì‹œí‚µë‹ˆë‹¤.
+        //winsCount.SetValueAsync(data.winsCount - 1); // ìŠ¹ë¦¬ íšŸìˆ˜ë¥¼ 1 ê°ì†Œì‹œí‚µë‹ˆë‹¤.
     }
 
 
-    //private void SetData() // dictionary »ç¿ëÇÏ¿© Firebase¿¡ µ¥ÀÌÅÍ¸¦ ÀúÀåÇÏ´Â ÇÔ¼ö
+    //private void SetData() // dictionary ì‚¬ìš©í•˜ì—¬ Firebaseì— ë°ì´í„°ë¥¼ ì €ì¥í•˜ëŠ” í•¨ìˆ˜
     //{
-    //    // Firebase µ¥ÀÌÅÍº£ÀÌ½ºÀÇ ·çÆ® ÂüÁ¶¸¦ °¡Á®¿É´Ï´Ù.
+    //    // Firebase ë°ì´í„°ë² ì´ìŠ¤ì˜ ë£¨íŠ¸ ì°¸ì¡°ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
     //    DatabaseReference reference = FirebaseDatabase.DefaultInstance.RootReference;
-    //    dictionary["ÀÌ¸§"] = "±èÀü»ç";
-    //    dictionary["·¹º§"] = 1;
-    //    dictionary["Èû"] = 10;
-    //    dictionary["¼Óµµ"] = 20;
-    //    dictionary["Å©¸®Æ¼ÄÃ"] = 0.2;
-    //    reference.SetValueAsync(dictionary);// Firebase µ¥ÀÌÅÍº£ÀÌ½º¿¡ text º¯¼ö¸¦ ÀúÀåÇÕ´Ï´Ù.
+    //    dictionary["ì´ë¦„"] = "ê¹€ì „ì‚¬";
+    //    dictionary["ë ˆë²¨"] = 1;
+    //    dictionary["í˜"] = 10;
+    //    dictionary["ì†ë„"] = 20;
+    //    dictionary["í¬ë¦¬í‹°ì»¬"] = 0.2;
+    //    reference.SetValueAsync(dictionary);// Firebase ë°ì´í„°ë² ì´ìŠ¤ì— text ë³€ìˆ˜ë¥¼ ì €ì¥í•©ë‹ˆë‹¤.
     //}
 
 
-    private void SetJsonData() //PlayerData °´Ã¼¸¦ JSON ¹®ÀÚ¿­À» ¸ğµÎ µ¤¾î¾º¿ö ÀúÀå ÇÏ´Â ÇÔ¼ö
+    private void SetJsonData() //PlayerData ê°ì²´ë¥¼ JSON ë¬¸ìì—´ì„ ëª¨ë‘ ë®ì–´ì”Œì›Œ ì €ì¥ í•˜ëŠ” í•¨ìˆ˜
     {
-        FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // ÇöÀç ·Î±×ÀÎµÈ Firebase »ç¿ëÀÚ¸¦ °¡Á®¿É´Ï´Ù.
-        // Firebase µ¥ÀÌÅÍº£ÀÌ½ºÀÇ ·çÆ® ÂüÁ¶¸¦ °¡Á®¿É´Ï´Ù.
+        FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // í˜„ì¬ ë¡œê·¸ì¸ëœ Firebase ì‚¬ìš©ìë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+        // Firebase ë°ì´í„°ë² ì´ìŠ¤ì˜ ë£¨íŠ¸ ì°¸ì¡°ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
         DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference;
         DatabaseReference userInfo = root.Child("UserData").Child(user.UserId);
 
-        string json = JsonUtility.ToJson(data); // PlayerData °´Ã¼¸¦ JSON ¹®ÀÚ¿­·Î º¯È¯ÇÕ´Ï´Ù.
+        string json = JsonUtility.ToJson(data); // PlayerData ê°ì²´ë¥¼ JSON ë¬¸ìì—´ë¡œ ë³€í™˜í•©ë‹ˆë‹¤.
         Debug.Log(json);
-        userInfo.SetRawJsonValueAsync(json);    // Firebase µ¥ÀÌÅÍº£ÀÌ½º¿¡ JSON ¹®ÀÚ¿­À» ¸ğµÎ µ¤¾î¾º¿ö ÀúÀåÇÕ´Ï´Ù.
+        userInfo.SetRawJsonValueAsync(json);    // Firebase ë°ì´í„°ë² ì´ìŠ¤ì— JSON ë¬¸ìì—´ì„ ëª¨ë‘ ë®ì–´ì”Œì›Œ ì €ì¥í•©ë‹ˆë‹¤.
 
-        //DatabaseReference levelRef = userInfo.Child("level");   // ÇÏ³ª¸¸ ¹Ù²Ù°í ½ÍÀ»¶§
+        //DatabaseReference levelRef = userInfo.Child("level");   // í•˜ë‚˜ë§Œ ë°”ê¾¸ê³  ì‹¶ì„ë•Œ
         //levelRef.SetValueAsync(3);  
     }
 
 
-    //private void DataUpdate()     // UpdateChildrenAsync ·Î Æ¯Á¤ Å°¿¡ ´ëÇÑ °ª¸¸À» ¾÷µ¥ÀÌÆ®ÇÏ´Â ÇÔ¼ö
+    //private void DataUpdate()     // UpdateChildrenAsync ë¡œ íŠ¹ì • í‚¤ì— ëŒ€í•œ ê°’ë§Œì„ ì—…ë°ì´íŠ¸í•˜ëŠ” í•¨ìˆ˜
     //{
-    //    FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // ÇöÀç ·Î±×ÀÎµÈ Firebase »ç¿ëÀÚ¸¦ °¡Á®¿É´Ï´Ù.
-    //    DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference; // Firebase µ¥ÀÌÅÍº£ÀÌ½ºÀÇ ·çÆ® ÂüÁ¶¸¦ °¡Á®¿É´Ï´Ù.
-    //    DatabaseReference userInfo = root.Child("UserData").Child(user.UserId); // UserData ¾Æ·¡¿¡ ÇöÀç »ç¿ëÀÚÀÇ ID·Î ÇÏÀ§ ÂüÁ¶¸¦ ¸¸µì´Ï´Ù.
+    //    FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // í˜„ì¬ ë¡œê·¸ì¸ëœ Firebase ì‚¬ìš©ìë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+    //    DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference; // Firebase ë°ì´í„°ë² ì´ìŠ¤ì˜ ë£¨íŠ¸ ì°¸ì¡°ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+    //    DatabaseReference userInfo = root.Child("UserData").Child(user.UserId); // UserData ì•„ë˜ì— í˜„ì¬ ì‚¬ìš©ìì˜ IDë¡œ í•˜ìœ„ ì°¸ì¡°ë¥¼ ë§Œë“­ë‹ˆë‹¤.
 
     //    Dictionary<string, object> dictionry = new Dictionary<string, object>();
     //    dictionry["level"] = 10;
     //    dictionry["speed"] = 3.5;
-    //    dictionry["skill/0"] = "½º¸Å½¬"; // ¸®½ºÆ®ÀÇ Ã¹ ¹øÂ° ¿ä¼Ò
+    //    dictionry["skill/0"] = "ìŠ¤ë§¤ì‰¬"; // ë¦¬ìŠ¤íŠ¸ì˜ ì²« ë²ˆì§¸ ìš”ì†Œ
 
-    //    userInfo.UpdateChildrenAsync(dictionry);    // Æ¯Á¤µÈ Å°¿¡ ´ëÇÑ °ª¸¸À» ¾÷µ¥ÀÌÆ®ÇÕ´Ï´Ù.
+    //    userInfo.UpdateChildrenAsync(dictionry);    // íŠ¹ì •ëœ í‚¤ì— ëŒ€í•œ ê°’ë§Œì„ ì—…ë°ì´íŠ¸í•©ë‹ˆë‹¤.
     //}
 
 
-    private void Delete(string value)     // "value" Å°¸¦ »èÁ¦ÇÏ´Â ÇÔ¼ö -> nullÀ» ³Ö¾î¼­ »èÁ¦ °¡´É
+    private void Delete(string value)     // "value" í‚¤ë¥¼ ì‚­ì œí•˜ëŠ” í•¨ìˆ˜ -> nullì„ ë„£ì–´ì„œ ì‚­ì œ ê°€ëŠ¥
     {
-        //target = GameObject.Find("Player").transform; // "Player"¶ó´Â ÀÌ¸§ÀÇ °ÔÀÓ ¿ÀºêÁ§Æ®¸¦ Ã£¾Æ¼­ ±× Æ®·£½ºÆûÀ» target¿¡ ÇÒ´çÇÕ´Ï´Ù.
+        //target = GameObject.Find("Player").transform; // "Player"ë¼ëŠ” ì´ë¦„ì˜ ê²Œì„ ì˜¤ë¸Œì íŠ¸ë¥¼ ì°¾ì•„ì„œ ê·¸ íŠ¸ëœìŠ¤í¼ì„ targetì— í• ë‹¹í•©ë‹ˆë‹¤.
 
-        FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // ÇöÀç ·Î±×ÀÎµÈ Firebase »ç¿ëÀÚ¸¦ °¡Á®¿É´Ï´Ù.
-        DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference; // Firebase µ¥ÀÌÅÍº£ÀÌ½ºÀÇ ·çÆ® ÂüÁ¶¸¦ °¡Á®¿É´Ï´Ù.
-        DatabaseReference userInfo = root.Child("UserData").Child(user.UserId); // UserData ¾Æ·¡¿¡ ÇöÀç »ç¿ëÀÚÀÇ ID·Î ÇÏÀ§ ÂüÁ¶¸¦ ¸¸µì´Ï´Ù.
+        FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // í˜„ì¬ ë¡œê·¸ì¸ëœ Firebase ì‚¬ìš©ìë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+        DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference; // Firebase ë°ì´í„°ë² ì´ìŠ¤ì˜ ë£¨íŠ¸ ì°¸ì¡°ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+        DatabaseReference userInfo = root.Child("UserData").Child(user.UserId); // UserData ì•„ë˜ì— í˜„ì¬ ì‚¬ìš©ìì˜ IDë¡œ í•˜ìœ„ ì°¸ì¡°ë¥¼ ë§Œë“­ë‹ˆë‹¤.
 
-        //userInfo.Child("value").SetValueAsync(null);    // "clear" Å°ÀÇ °ªÀ» null·Î ¼³Á¤ÇÏ¿© ÇØ´ç Å°¸¦ »èÁ¦ÇÕ´Ï´Ù.
-        userInfo.Child("value").RemoveValueAsync(); // "value" Å°¸¦ »èÁ¦ÇÏ´Â ¶Ç ´Ù¸¥ ¹æ¹ı
+        //userInfo.Child("value").SetValueAsync(null);    // "clear" í‚¤ì˜ ê°’ì„ nullë¡œ ì„¤ì •í•˜ì—¬ í•´ë‹¹ í‚¤ë¥¼ ì‚­ì œí•©ë‹ˆë‹¤.
+        userInfo.Child("value").RemoveValueAsync(); // "value" í‚¤ë¥¼ ì‚­ì œí•˜ëŠ” ë˜ ë‹¤ë¥¸ ë°©ë²•
     }
 
 
-    private void GetUserinfo() // Firebase¿¡¼­ GetValueAsync, GetRawJsonValue·Î µ¥ÀÌÅÍ¸¦ °¡Á®¿À´Â ÇÔ¼ö
+    private void GetUserinfo() // Firebaseì—ì„œ GetValueAsync, GetRawJsonValueë¡œ ë°ì´í„°ë¥¼ ê°€ì ¸ì˜¤ëŠ” í•¨ìˆ˜
     {
-        FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // ÇöÀç ·Î±×ÀÎµÈ Firebase »ç¿ëÀÚ¸¦ °¡Á®¿É´Ï´Ù.
-        DatabaseReference root = FirebaseManager.Database.RootReference;    // Firebase µ¥ÀÌÅÍº£ÀÌ½ºÀÇ ·çÆ® ÂüÁ¶¸¦ °¡Á®¿É´Ï´Ù.
-        DatabaseReference userInfo = root.Child("UserData").Child(user.UserId); // UserData ¾Æ·¡¿¡ ÇöÀç »ç¿ëÀÚÀÇ ID·Î ÇÏÀ§ ÂüÁ¶¸¦ ¸¸µì´Ï´Ù.
+        FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // í˜„ì¬ ë¡œê·¸ì¸ëœ Firebase ì‚¬ìš©ìë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+        DatabaseReference root = FirebaseManager.Database.RootReference;    // Firebase ë°ì´í„°ë² ì´ìŠ¤ì˜ ë£¨íŠ¸ ì°¸ì¡°ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+        DatabaseReference userInfo = root.Child("UserData").Child(user.UserId); // UserData ì•„ë˜ì— í˜„ì¬ ì‚¬ìš©ìì˜ IDë¡œ í•˜ìœ„ ì°¸ì¡°ë¥¼ ë§Œë“­ë‹ˆë‹¤.
 
-        userInfo.GetValueAsync().ContinueWithOnMainThread(task => // GetValueAsync ¸Ş¼­µå¸¦ »ç¿ëÇÏ¿© µ¥ÀÌÅÍ¸¦ °¡Á®¿É´Ï´Ù.
+        userInfo.GetValueAsync().ContinueWithOnMainThread(task => // GetValueAsync ë©”ì„œë“œë¥¼ ì‚¬ìš©í•˜ì—¬ ë°ì´í„°ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
         {
-            if (task.IsCanceled) // ÀÛ¾÷ÀÌ Ãë¼ÒµÈ °æ¿ì
+            if (task.IsCanceled) // ì‘ì—…ì´ ì·¨ì†Œëœ ê²½ìš°
             {
-                Debug.LogError("µ¥ÀÌÅÍ °¡Á®¿À±â ÀÛ¾÷ÀÌ Ãë¼ÒµÇ¾ú½À´Ï´Ù.");
+                Debug.LogError("ë°ì´í„° ê°€ì ¸ì˜¤ê¸° ì‘ì—…ì´ ì·¨ì†Œë˜ì—ˆìŠµë‹ˆë‹¤.");
                 return;
             }
-            if (task.IsFaulted) // ÀÛ¾÷ÀÌ ½ÇÆĞÇÑ °æ¿ì
+            if (task.IsFaulted) // ì‘ì—…ì´ ì‹¤íŒ¨í•œ ê²½ìš°
             {
-                Debug.LogError("µ¥ÀÌÅÍ¸¦ °¡Á®¿À´Â µ¥ ½ÇÆĞÇß½À´Ï´Ù: " + task.Exception);
+                Debug.LogError("ë°ì´í„°ë¥¼ ê°€ì ¸ì˜¤ëŠ” ë° ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤: " + task.Exception);
             }
 
-            DataSnapshot snapshot = task.Result; // °á°ú¸¦ DataSnapshotÀ¸·Î °¡Á®¿É´Ï´Ù.
+            DataSnapshot snapshot = task.Result; // ê²°ê³¼ë¥¼ DataSnapshotìœ¼ë¡œ ê°€ì ¸ì˜µë‹ˆë‹¤.
 
-            //Debug.Log($"½º³Ü¼¦ child count : {snapshot.ChildrenCount}");
-            //bool clear = (bool)snapshot.Child("clear").Value;   // "clear" Å°ÀÇ °ªÀ» °¡Á®¿É´Ï´Ù. Çüº¯È¯ ÇÊ¿ä.
-            //Debug.Log($"clear : {clear}"); // "clear" Å°ÀÇ °ªÀ» Ãâ·ÂÇÕ´Ï´Ù.
-            //long level = (long)snapshot.Child("level").Value; // "level" Å°ÀÇ °ªÀ» °¡Á®¿É´Ï´Ù. Çüº¯È¯ ÇÊ¿ä.
-            //Debug.Log($"level : {level}"); // "level" Å°ÀÇ °ªÀ» Ãâ·ÂÇÕ´Ï´Ù.
-            //string name = (string)snapshot.Child("name").Value; // "name" Å°ÀÇ °ªÀ» °¡Á®¿É´Ï´Ù. Çüº¯È¯ ÇÊ¿ä.
-            //Debug.Log($"name : {name}"); // "name" Å°ÀÇ °ªÀ» Ãâ·ÂÇÕ´Ï´Ù.
-            //float speed = (float)(double)snapshot.Child("speed").Value; // "speed" Å°ÀÇ °ªÀ» °¡Á®¿É´Ï´Ù. Çüº¯È¯ ÇÊ¿ä.
-            //Debug.Log($"speed : {speed}"); // "speed" Å°ÀÇ °ªÀ» Ãâ·ÂÇÕ´Ï´Ù.
-            //List<object> skill = (List<object>)snapshot.Child("skill").Value; // "skill" Å°ÀÇ °ªÀ» °¡Á®¿É´Ï´Ù. Çüº¯È¯ ÇÊ¿ä.
-            //for (int i = 0; i < skill.Count; i++) // skill ¸®½ºÆ®ÀÇ °¢ ¿ä¼Ò¸¦ Ãâ·ÂÇÕ´Ï´Ù.
+            //Debug.Log($"ìŠ¤ë„µìƒ· child count : {snapshot.ChildrenCount}");
+            //bool clear = (bool)snapshot.Child("clear").Value;   // "clear" í‚¤ì˜ ê°’ì„ ê°€ì ¸ì˜µë‹ˆë‹¤. í˜•ë³€í™˜ í•„ìš”.
+            //Debug.Log($"clear : {clear}"); // "clear" í‚¤ì˜ ê°’ì„ ì¶œë ¥í•©ë‹ˆë‹¤.
+            //long level = (long)snapshot.Child("level").Value; // "level" í‚¤ì˜ ê°’ì„ ê°€ì ¸ì˜µë‹ˆë‹¤. í˜•ë³€í™˜ í•„ìš”.
+            //Debug.Log($"level : {level}"); // "level" í‚¤ì˜ ê°’ì„ ì¶œë ¥í•©ë‹ˆë‹¤.
+            //string name = (string)snapshot.Child("name").Value; // "name" í‚¤ì˜ ê°’ì„ ê°€ì ¸ì˜µë‹ˆë‹¤. í˜•ë³€í™˜ í•„ìš”.
+            //Debug.Log($"name : {name}"); // "name" í‚¤ì˜ ê°’ì„ ì¶œë ¥í•©ë‹ˆë‹¤.
+            //float speed = (float)(double)snapshot.Child("speed").Value; // "speed" í‚¤ì˜ ê°’ì„ ê°€ì ¸ì˜µë‹ˆë‹¤. í˜•ë³€í™˜ í•„ìš”.
+            //Debug.Log($"speed : {speed}"); // "speed" í‚¤ì˜ ê°’ì„ ì¶œë ¥í•©ë‹ˆë‹¤.
+            //List<object> skill = (List<object>)snapshot.Child("skill").Value; // "skill" í‚¤ì˜ ê°’ì„ ê°€ì ¸ì˜µë‹ˆë‹¤. í˜•ë³€í™˜ í•„ìš”.
+            //for (int i = 0; i < skill.Count; i++) // skill ë¦¬ìŠ¤íŠ¸ì˜ ê° ìš”ì†Œë¥¼ ì¶œë ¥í•©ë‹ˆë‹¤.
             //{
             //    Debug.Log($"skill : {skill[i]}");
             //}
 
-            string json = snapshot.GetRawJsonValue();   // GetRawJsonValue ¸Ş¼­µå¸¦ »ç¿ëÇÏ¿© JSON ¹®ÀÚ¿­À» °¡Á®¿É´Ï´Ù.
-            //Debug.Log($"JSON µ¥ÀÌÅÍ: {json}");
-            PlayerData playerData = JsonUtility.FromJson<PlayerData>(json); // JSON ¹®ÀÚ¿­À» PlayerData °´Ã¼·Î º¯È¯ÇÕ´Ï´Ù.
-            data = playerData; // °¡Á®¿Â µ¥ÀÌÅÍ¸¦ data º¯¼ö¿¡ ÀúÀåÇÕ´Ï´Ù.
+            string json = snapshot.GetRawJsonValue();   // GetRawJsonValue ë©”ì„œë“œë¥¼ ì‚¬ìš©í•˜ì—¬ JSON ë¬¸ìì—´ì„ ê°€ì ¸ì˜µë‹ˆë‹¤.
+            //Debug.Log($"JSON ë°ì´í„°: {json}");
+            PlayerData playerData = JsonUtility.FromJson<PlayerData>(json); // JSON ë¬¸ìì—´ì„ PlayerData ê°ì²´ë¡œ ë³€í™˜í•©ë‹ˆë‹¤.
+            data = playerData; // ê°€ì ¸ì˜¨ ë°ì´í„°ë¥¼ data ë³€ìˆ˜ì— ì €ì¥í•©ë‹ˆë‹¤.
 
             //Debug.Log($"name: {playerData.name}");
             //Debug.Log($"level: {playerData.level}");
@@ -206,66 +206,66 @@ public class DatabaseTester : MonoBehaviour
     }
 
 
-    //private void UpdateTransaction() // RunTransaction -> Æ®·£Àè¼ÇÀ» ½ÇÇàÇÏ¿© µ¥ÀÌÅÍº£ÀÌ½ºÀÇ °ªÀ» ¾÷µ¥ÀÌÆ®ÇÏ´Â ÇÔ¼ö
+    //private void UpdateTransaction() // RunTransaction -> íŠ¸ëœì­ì…˜ì„ ì‹¤í–‰í•˜ì—¬ ë°ì´í„°ë² ì´ìŠ¤ì˜ ê°’ì„ ì—…ë°ì´íŠ¸í•˜ëŠ” í•¨ìˆ˜
     //{
-    //    FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // ÇöÀç ·Î±×ÀÎµÈ Firebase »ç¿ëÀÚ¸¦ °¡Á®¿É´Ï´Ù.
+    //    FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // í˜„ì¬ ë¡œê·¸ì¸ëœ Firebase ì‚¬ìš©ìë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
 
-    //    DatabaseReference root = FirebaseManager.Database.RootReference; // Firebase µ¥ÀÌÅÍº£ÀÌ½ºÀÇ ·çÆ® ÂüÁ¶¸¦ °¡Á®¿É´Ï´Ù.
-    //    DatabaseReference userCount = root.Child("GameData").Child("TotalUser"); // "GameData" ¾Æ·¡¿¡ "TotalUser"¶ó´Â ÇÏÀ§ ÂüÁ¶¸¦ ¸¸µì´Ï´Ù.
+    //    DatabaseReference root = FirebaseManager.Database.RootReference; // Firebase ë°ì´í„°ë² ì´ìŠ¤ì˜ ë£¨íŠ¸ ì°¸ì¡°ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+    //    DatabaseReference userCount = root.Child("GameData").Child("TotalUser"); // "GameData" ì•„ë˜ì— "TotalUser"ë¼ëŠ” í•˜ìœ„ ì°¸ì¡°ë¥¼ ë§Œë“­ë‹ˆë‹¤.
 
     //    userCount.RunTransaction(mutableData =>
     //    {
-    //        if (mutableData.Value == null) // mutableDataÀÇ °ªÀÌ nullÀÎ °æ¿ì ¿¹¿ÜÃ³¸® ²À ÇØ¾ßÇÔ.!
+    //        if (mutableData.Value == null) // mutableDataì˜ ê°’ì´ nullì¸ ê²½ìš° ì˜ˆì™¸ì²˜ë¦¬ ê¼­ í•´ì•¼í•¨.!
     //        {
-    //            Debug.Log("TotalUser°¡ ºñ¾î ÀÖ½À´Ï´Ù. ÃÊ±â°ªÀ» ¼³Á¤ÇÕ´Ï´Ù.");
-    //            mutableData.Value = 1; // ÃÊ±â°ªÀ» 1À¸·Î ¼³Á¤ÇÕ´Ï´Ù. ³ª ÇÑ¸í ÀÖÀ»Å×´Ï.
-    //            return TransactionResult.Success(mutableData); // Æ®·£Àè¼ÇÀ» ¼º°øÀ¸·Î ¹İÈ¯ÇÕ´Ï´Ù.
+    //            Debug.Log("TotalUserê°€ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤. ì´ˆê¸°ê°’ì„ ì„¤ì •í•©ë‹ˆë‹¤.");
+    //            mutableData.Value = 1; // ì´ˆê¸°ê°’ì„ 1ìœ¼ë¡œ ì„¤ì •í•©ë‹ˆë‹¤. ë‚˜ í•œëª… ìˆì„í…Œë‹ˆ.
+    //            return TransactionResult.Success(mutableData); // íŠ¸ëœì­ì…˜ì„ ì„±ê³µìœ¼ë¡œ ë°˜í™˜í•©ë‹ˆë‹¤.
     //        }
 
     //        long totaluserCount = (long)mutableData.Value;
-    //        mutableData.Value = totaluserCount + 1; // ÇöÀç »ç¿ëÀÚ ¼ö¸¦ Áõ°¡½ÃÅµ´Ï´Ù.
+    //        mutableData.Value = totaluserCount + 1; // í˜„ì¬ ì‚¬ìš©ì ìˆ˜ë¥¼ ì¦ê°€ì‹œí‚µë‹ˆë‹¤.
 
-    //        return TransactionResult.Success(mutableData); // Æ®·£Àè¼ÇÀ» ¼º°øÀ¸·Î ¹İÈ¯ÇÕ´Ï´Ù.
+    //        return TransactionResult.Success(mutableData); // íŠ¸ëœì­ì…˜ì„ ì„±ê³µìœ¼ë¡œ ë°˜í™˜í•©ë‹ˆë‹¤.
     //    });
     //}
 
 
-    private void CheckLeaderBoard()     // Firebase¿¡¼­ OrderByChild, GetValueAsync¸¦ »ç¿ëÇÏ¿© ·©Å· µ¥ÀÌÅÍ¸¦ °¡Á®¿À´Â ÇÔ¼ö
+    private void CheckLeaderBoard()     // Firebaseì—ì„œ OrderByChild, GetValueAsyncë¥¼ ì‚¬ìš©í•˜ì—¬ ë­í‚¹ ë°ì´í„°ë¥¼ ê°€ì ¸ì˜¤ëŠ” í•¨ìˆ˜
     {
-        DatabaseReference root = FirebaseManager.Database.RootReference; // Firebase µ¥ÀÌÅÍº£ÀÌ½ºÀÇ ·çÆ® ÂüÁ¶¸¦ °¡Á®¿É´Ï´Ù.
-        DatabaseReference UserRef = root.Child("UserData"); // "UserData"¶ó´Â ÇÏÀ§ ÂüÁ¶¸¦ wordRef¿¡ ÇÒ´çÇÕ´Ï´Ù.
+        DatabaseReference root = FirebaseManager.Database.RootReference; // Firebase ë°ì´í„°ë² ì´ìŠ¤ì˜ ë£¨íŠ¸ ì°¸ì¡°ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+        DatabaseReference UserRef = root.Child("UserData"); // "UserData"ë¼ëŠ” í•˜ìœ„ ì°¸ì¡°ë¥¼ wordRefì— í• ë‹¹í•©ë‹ˆë‹¤.
 
-        // wordRef¿¡ OrderByChild("winsCount")¸¦ »ç¿ëÇÏ¿© "winsCount" Å°¸¦ ±âÁØÀ¸·Î Á¤·ÄµÈ µ¥ÀÌÅÍ¸¦ °¡Á®¿É´Ï´Ù.
-        // LimitToFirst(10)À» Ãß°¡ÇÏ¿© »óÀ§ 10°³ÀÇ µ¥ÀÌÅÍ¸¦ °¡Á®¿Ã ¼ö ÀÖ´Ù.
-        // .StartAt("B").EndAt("E") BºÎÅÍ E±îÁöÀÇ ¹üÀ§·Î °¡Á®¿Ã ¼ö ÀÖ´Ù.
+        // wordRefì— OrderByChild("winsCount")ë¥¼ ì‚¬ìš©í•˜ì—¬ "winsCount" í‚¤ë¥¼ ê¸°ì¤€ìœ¼ë¡œ ì •ë ¬ëœ ë°ì´í„°ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+        // LimitToFirst(10)ì„ ì¶”ê°€í•˜ì—¬ ìƒìœ„ 10ê°œì˜ ë°ì´í„°ë¥¼ ê°€ì ¸ì˜¬ ìˆ˜ ìˆë‹¤.
+        // .StartAt("B").EndAt("E") Bë¶€í„° Eê¹Œì§€ì˜ ë²”ìœ„ë¡œ ê°€ì ¸ì˜¬ ìˆ˜ ìˆë‹¤.
         UserRef.OrderByChild("winsCount").GetValueAsync().ContinueWithOnMainThread(task =>
         {
-            if (task.IsCanceled) // ÀÛ¾÷ÀÌ Ãë¼ÒµÈ °æ¿ì
+            if (task.IsCanceled) // ì‘ì—…ì´ ì·¨ì†Œëœ ê²½ìš°
             {
-                Debug.LogError("µ¥ÀÌÅÍ °¡Á®¿À±â ÀÛ¾÷ÀÌ Ãë¼ÒµÇ¾ú½À´Ï´Ù.");
+                Debug.LogError("ë°ì´í„° ê°€ì ¸ì˜¤ê¸° ì‘ì—…ì´ ì·¨ì†Œë˜ì—ˆìŠµë‹ˆë‹¤.");
                 return;
             }
-            if (task.IsFaulted) // ÀÛ¾÷ÀÌ ½ÇÆĞÇÑ °æ¿ì
+            if (task.IsFaulted) // ì‘ì—…ì´ ì‹¤íŒ¨í•œ ê²½ìš°
             {
-                Debug.LogError("µ¥ÀÌÅÍ¸¦ °¡Á®¿À´Â µ¥ ½ÇÆĞÇß½À´Ï´Ù: " + task.Exception);
+                Debug.LogError("ë°ì´í„°ë¥¼ ê°€ì ¸ì˜¤ëŠ” ë° ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤: " + task.Exception);
                 return;
             }
-            Debug.Log("µ¥ÀÌÅÍ º£ÀÌ½º ÀĞ±â ¼º°ø");
-            DataSnapshot snapshot = task.Result; // °á°ú¸¦ DataSnapshotÀ¸·Î °¡Á®¿É´Ï´Ù.
+            Debug.Log("ë°ì´í„° ë² ì´ìŠ¤ ì½ê¸° ì„±ê³µ");
+            DataSnapshot snapshot = task.Result; // ê²°ê³¼ë¥¼ DataSnapshotìœ¼ë¡œ ê°€ì ¸ì˜µë‹ˆë‹¤.
 
-            // DataSnapshotÀÇ ÀÚ½ÄµéÀ» ¿ª¼øÀ¸·Î °¡Á®¿É´Ï´Ù.
-            var children = snapshot.Children.Reverse().ToList(); // .ToList() ·Î º¯È¯ÇØ¾ß for¹®¿¡¼­ »ç¿ëÇÒ ¼ö ÀÖ½À´Ï´Ù.
+            // DataSnapshotì˜ ìì‹ë“¤ì„ ì—­ìˆœìœ¼ë¡œ ê°€ì ¸ì˜µë‹ˆë‹¤.
+            var children = snapshot.Children.Reverse().ToList(); // .ToList() ë¡œ ë³€í™˜í•´ì•¼ forë¬¸ì—ì„œ ì‚¬ìš©í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
             for (int i = 0; i < children.Count; i++)
             {
                 var child = children[i];
-                Debug.Log($"{i + 1}µî {child.Child("name").Value} :  {child.Child("winsCount").Value} ½Â");
+                Debug.Log($"{i + 1}ë“± {child.Child("name").Value} :  {child.Child("winsCount").Value} ìŠ¹");
             }
         });
     }
 }
 
 
-[Serializable]  // Serializable ¾îÆ®¸®ºäÆ®¸¦ »ç¿ëÇÏ¿© ÀÌ Å¬·¡½º°¡ JSONÀ¸·Î Á÷·ÄÈ­µÉ ¼ö ÀÖµµ·Ï ÇÕ´Ï´Ù.
+[Serializable]  // Serializable ì–´íŠ¸ë¦¬ë·°íŠ¸ë¥¼ ì‚¬ìš©í•˜ì—¬ ì´ í´ë˜ìŠ¤ê°€ JSONìœ¼ë¡œ ì§ë ¬í™”ë  ìˆ˜ ìˆë„ë¡ í•©ë‹ˆë‹¤.
 public class PlayerData
 {
     public string name;
@@ -276,12 +276,12 @@ public class PlayerData
 }
 
 
-[Serializable]  // Serializable ¾îÆ®¸®ºäÆ®¸¦ »ç¿ëÇÏ¿© ÀÌ Å¬·¡½º°¡ JSONÀ¸·Î Á÷·ÄÈ­µÉ ¼ö ÀÖµµ·Ï ÇÕ´Ï´Ù.
+[Serializable]  // Serializable ì–´íŠ¸ë¦¬ë·°íŠ¸ë¥¼ ì‚¬ìš©í•˜ì—¬ ì´ í´ë˜ìŠ¤ê°€ JSONìœ¼ë¡œ ì§ë ¬í™”ë  ìˆ˜ ìˆë„ë¡ í•©ë‹ˆë‹¤.
 public class LeaderBoardData
 {
-    public List<Ranking> ranker; // ·©Å· ¸®½ºÆ®¸¦ ÀúÀåÇÏ´Â ¸®½ºÆ®
+    public List<Ranking> ranker; // ë­í‚¹ ë¦¬ìŠ¤íŠ¸ë¥¼ ì €ì¥í•˜ëŠ” ë¦¬ìŠ¤íŠ¸
 
-    [Serializable]  // Serializable ¾îÆ®¸®ºäÆ®¸¦ »ç¿ëÇÏ¿© ÀÌ Å¬·¡½º°¡ JSONÀ¸·Î Á÷·ÄÈ­µÉ ¼ö ÀÖµµ·Ï ÇÕ´Ï´Ù.
+    [Serializable]  // Serializable ì–´íŠ¸ë¦¬ë·°íŠ¸ë¥¼ ì‚¬ìš©í•˜ì—¬ ì´ í´ë˜ìŠ¤ê°€ JSONìœ¼ë¡œ ì§ë ¬í™”ë  ìˆ˜ ìˆë„ë¡ í•©ë‹ˆë‹¤.
     public class Ranking
     {
         public string name;

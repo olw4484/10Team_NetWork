@@ -1,4 +1,4 @@
-using Firebase.Auth;
+ï»¿using Firebase.Auth;
 using Firebase.Extensions;
 using Google;
 using System.Collections;
@@ -46,42 +46,42 @@ public class LoginPanel : MonoBehaviour
 			{
 				if (task.IsCanceled)
 				{
-					Debug.LogError("·Î±×ÀÎÀÌ Ãë¼ÒµÊ");
+					Debug.LogError("ë¡œê·¸ì¸ì´ ì·¨ì†Œë¨");
 					return;
 				}
 				if (task.IsFaulted)
 				{
-                    // ·Î±×ÀÎ ½ÇÆĞ½Ã ·Î±×ÀÎ ½ÇÆĞ ÆĞ³Î È°¼ºÈ­
+                    // ë¡œê·¸ì¸ ì‹¤íŒ¨ì‹œ ë¡œê·¸ì¸ ì‹¤íŒ¨ íŒ¨ë„ í™œì„±í™”
 					LoginFailPanel.SetActive(true);
 					gameObject.SetActive(false);
-                    Debug.LogError($"·Î±×ÀÎ¿¡ ½ÇÆĞÇÔ. ÀÌÀ¯ : {task.Exception}");
+                    Debug.LogError($"ë¡œê·¸ì¸ì— ì‹¤íŒ¨í•¨. ì´ìœ  : {task.Exception}");
 					return;
 				}
 
-				Debug.Log("·Î±×ÀÎ ¼º°ø");
+				Debug.Log("ë¡œê·¸ì¸ ì„±ê³µ");
                 //AuthResult result = task.Result;
                 //FirebaseUser user = result.User;
-                //Debug.Log($"À¯ÀúÀÇ ÀÌ¸ŞÀÏ : {user.Email}");
-                //Debug.Log($"À¯ÀúÀÇ ´Ğ³×ÀÓ : {user.DisplayName}");
+                //Debug.Log($"ìœ ì €ì˜ ì´ë©”ì¼ : {user.Email}");
+                //Debug.Log($"ìœ ì €ì˜ ë‹‰ë„¤ì„ : {user.DisplayName}");
 
-                //1.ÀÌ¹Ì ÀÌ¸ŞÀÏ ÀÎÁõÀ» ¸¶Ä£ À¯ÀúÀÎ °æ¿ì´Â ·Îºñ·Î
+                //1.ì´ë¯¸ ì´ë©”ì¼ ì¸ì¦ì„ ë§ˆì¹œ ìœ ì €ì¸ ê²½ìš°ëŠ” ë¡œë¹„ë¡œ
                 FirebaseUser user = task.Result.User;
                 if (user.IsEmailVerified == true)
                 {
-                    // 1-1. ¾ÆÁ÷ ´Ğ³×ÀÓ ¼³Á¤À» ÇÏÁö ¾ÊÀº °æ¿ì
+                    // 1-1. ì•„ì§ ë‹‰ë„¤ì„ ì„¤ì •ì„ í•˜ì§€ ì•Šì€ ê²½ìš°
                     if (user.DisplayName == "")
                     {
                         nicknamePanel.SetActive(true);
                         gameObject.SetActive(false);
                     }
-                    // 1-2. ´Ğ³×ÀÓ ¼³Á¤µµ ¿Ï·áÇÑ °æ¿ì
+                    // 1-2. ë‹‰ë„¤ì„ ì„¤ì •ë„ ì™„ë£Œí•œ ê²½ìš°
                     else
                     {
                         lobbyPanel.SetActive(true);
                         gameObject.SetActive(false);
                     }
                 }
-                //2.ÀÌ¸ŞÀÏ ÀÎÁõÀÌ ¾ÆÁ÷ µÇÁö ¾ÊÀº À¯Àú´Â ÀÌ¸ŞÀÏ ÀÎÁõÀ» ´ë±â
+                //2.ì´ë©”ì¼ ì¸ì¦ì´ ì•„ì§ ë˜ì§€ ì•Šì€ ìœ ì €ëŠ” ì´ë©”ì¼ ì¸ì¦ì„ ëŒ€ê¸°
                 else
                 {
                     emailPanel.SetActive(true);
@@ -90,27 +90,27 @@ public class LoginPanel : MonoBehaviour
             });
     }
 
-	private void ResetPass()    // ÆĞ½º¿öµå Àç¼³Á¤ ÀÌ¸ŞÀÏ Àü¼Û
+	private void ResetPass()    // íŒ¨ìŠ¤ì›Œë“œ ì¬ì„¤ì • ì´ë©”ì¼ ì „ì†¡
     {
 		FirebaseManager.Auth.SendPasswordResetEmailAsync(idInput.text)
 			.ContinueWithOnMainThread(task =>
 			{
 				if (task.IsCanceled)
 				{
-					Debug.LogError("ÆĞ½º¿öµå Àç¼³Á¤ ÀÌ¸ŞÀÏ Àü¼Û Ãë¼ÒµÊ");
+					Debug.LogError("íŒ¨ìŠ¤ì›Œë“œ ì¬ì„¤ì • ì´ë©”ì¼ ì „ì†¡ ì·¨ì†Œë¨");
 					return;
 				}
 				if (task.IsFaulted)
 				{
-					Debug.LogError($"ÆĞ½º¿öµå Àç¼³Á¤ ÀÌ¸ŞÀÏ Àü¼Û ½ÇÆĞ. ÀÌÀ¯ : {task.Exception}");
+					Debug.LogError($"íŒ¨ìŠ¤ì›Œë“œ ì¬ì„¤ì • ì´ë©”ì¼ ì „ì†¡ ì‹¤íŒ¨. ì´ìœ  : {task.Exception}");
 					return;
 				}
 
-				Debug.Log("ÆĞ½º¿öµå Àç¼³Á¤ ÀÌ¸ŞÀÏ Àü¼Û ¼º°ø");
+				Debug.Log("íŒ¨ìŠ¤ì›Œë“œ ì¬ì„¤ì • ì´ë©”ì¼ ì „ì†¡ ì„±ê³µ");
 			});
 	}
 
-    // Google ·Î±×ÀÎ ¹öÆ° Å¬¸¯ ½Ã È£ÃâµÇ´Â ÇÔ¼ö
+    // Google ë¡œê·¸ì¸ ë²„íŠ¼ í´ë¦­ ì‹œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
     private void GoogleLogin()
     {
         //Firebase.Auth.Credential credential =

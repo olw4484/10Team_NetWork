@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using UnityEngine;
@@ -6,16 +6,16 @@ using UnityEngine.SceneManagement;
 
 public class SceneChanger : MonoBehaviour
 {
-    // <¾À ÀüÈ¯>
-    // ÇÁ·ÎÁ§Æ®¿¡ Æ÷ÇÔµÈ ´Ù¸¥ ¾ÀÀ» ·ÎµùÇÏ°í ±âÁ¸ÀÇ ¾ÀÀÇ ³»¿ëÀ» »èÁ¦ÇÔ
+    // <ì”¬ ì „í™˜>
+    // í”„ë¡œì íŠ¸ì— í¬í•¨ëœ ë‹¤ë¥¸ ì”¬ì„ ë¡œë”©í•˜ê³  ê¸°ì¡´ì˜ ì”¬ì˜ ë‚´ìš©ì„ ì‚­ì œí•¨
     public static void ChageScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
     }
 
 
-    // <¾À Ãß°¡>
-    // ÇÁ·ÎÁ§Æ®¿¡ Æ÷ÇÔµÈ ´Ù¸¥ ¾ÀÀ» ·ÎµùÇÏ°í ±âÁ¸ÀÇ ¾ÀÀÇ ³»¿ëÀ» À¯ÁöÇÔ
+    // <ì”¬ ì¶”ê°€>
+    // í”„ë¡œì íŠ¸ì— í¬í•¨ëœ ë‹¤ë¥¸ ì”¬ì„ ë¡œë”©í•˜ê³  ê¸°ì¡´ì˜ ì”¬ì˜ ë‚´ìš©ì„ ìœ ì§€í•¨
     public static void AddScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
