@@ -1,5 +1,6 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -65,32 +66,25 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
 
     [Header("캐릭터")]
     public JHT_Character[] characters;
-    public GameObject characterParent;
-
-    
 
     public CurrentState curPlayerState;
     private Dictionary<string, GameObject> currentRoomDic;
 
     public JHT_RoomManager roomManager;
     public JHT_TeamManager teamManager;
-    public JHT_NetworkUIPanel canvasPanel;
 
+    public Action<bool> OnGameStart;
 
     private void Start()
     {
-        PhotonNetwork.ConnectUsingSettings();
         currentRoomDic = new();
-        PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
-        if(canvasPanel == null)
-            canvasPanel = FindObjectOfType<JHT_NetworkUIPanel>();
-
-        if(!canvasPanel.gameObject.activeSelf)
-            canvasPanel.gameObject.SetActive(true);
+        Init();
     }
 
-    void Init()
+    public void Init()
     {
+        PhotonNetwork.ConnectUsingSettings();
+        //PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName; 
     }
 
     #region Photon Callbacks
@@ -140,7 +134,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
     {
         lobbyPanel.SetActive(false);
         roomPanel.SetActive(true);
-
         StartCoroutine(CallPlayer());
     }
 
@@ -163,14 +156,13 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
         }
 
         roomManager.PlayerPanelSpawn();
+        SetGameCustomProperty(false);
         StateCustomProperty(CurrentState.InRoom);
-        characterParent.SetActive(true);
     }
 
     public override void OnLeftRoom()
     {
         StateCustomProperty(CurrentState.Lobby);
-        characterParent.SetActive(false);
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -242,57 +234,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
-    #region 게임시작
-    public void GameStart()
-    {
-        if (PhotonNetwork.IsMasterClient && AllPlayerReadyCheck()
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] >= 1
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] >= 1)
-        {
-            StateCustomProperty(CurrentState.InGame);
-
-            if (teamManager != null)
-            {
-                teamManager = null;
-            }
-            if (roomManager != null)
-            {
-                roomManager = null;
-            }
-
-
-            //해당 게임씬 넣기
-            JHT_SceneManager.Instance.AllPlayerChangeScene("GameScenes");
-            StartCoroutine(WaitForLoad(PhotonNetwork.LocalPlayer));
-        }
-    }
-
-    IEnumerator WaitForLoad(Player player)
-    {
-        while (!player.CustomProperties.ContainsKey("Team") || !player.CustomProperties.ContainsKey("Character"))
-            yield return null;
-
-        int playerIndex = (int)player.CustomProperties["Character"];
-        Vector3 spawnPos = (TeamSetting)player.CustomProperties["Team"] == TeamSetting.Red ? new Vector3(35, 0, 0) : new Vector3(-35, 0, 0);
-        Quaternion rot = (TeamSetting)player.CustomProperties["Team"] == TeamSetting.Red ? Quaternion.Euler(0, 270, 0) : Quaternion.Euler(0, 90, 0);
-
-        Debug.Log($"Player name : {characters[playerIndex].name}");
-        GameObject obj = PhotonNetwork.Instantiate(characters[playerIndex].name, spawnPos, rot);
-    }
-
-    public bool AllPlayerReadyCheck()
-    {
-        foreach (Player player in PhotonNetwork.PlayerList)
-        {
-            if (!player.CustomProperties.TryGetValue("IsReady", out object value) || !(bool)value)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-    #endregion
+    
 
 
     #region CustomProperty
@@ -305,6 +247,20 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LocalPlayer.SetCustomProperties(curState); //전역변수 저장 느낌
     }
 
+    public void SetGameCustomProperty(bool _value)
+    {
+        ExitGames.Client.Photon.Hashtable gameStart = new();
+        bool isStart = _value;
+        gameStart["GamePlay"] = isStart;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(gameStart);
+
+
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("GamePlay", out object value))
+        {
+            OnGameStart?.Invoke((bool)value);
+        }
+    }
+
     // 프로퍼티 변화가 생겼을때 호출, 호출이 되어야할 로직이 있을 사용
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
@@ -312,6 +268,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
             teamManager.redCount = (int)propertiesThatChanged["RedCount"];
         if (propertiesThatChanged.ContainsKey("BlueCount"))
             teamManager.blueCount = (int)propertiesThatChanged["BlueCount"];
+
     }
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
@@ -328,7 +285,30 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
         {
             StartCoroutine(WaitForLoadCharacter(targetPlayer, changedProps));
         }
-          
+
+        if (changedProps.ContainsKey("GamePlay"))
+        {
+            StartCoroutine(GameStartCor(targetPlayer, changedProps));
+        }
+
+    }
+
+    IEnumerator GameStartCor(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    {
+        yield return null;
+        if (changedProps.TryGetValue("GamePlay",out object value))
+        {
+            if ((bool)value)
+            {
+                roomManager.canvasPanel.SetActive(!(bool)value);
+                PhotonNetwork.LoadLevel("GameScenes");
+            }
+            else
+            {
+                roomManager.canvasPanel.SetActive(!(bool)value);
+                StateCustomProperty(CurrentState.Lobby);
+            }
+        }
     }
 
     IEnumerator WaitForAddDic(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
@@ -368,4 +348,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
         }
     }
     #endregion
+
+    
 }

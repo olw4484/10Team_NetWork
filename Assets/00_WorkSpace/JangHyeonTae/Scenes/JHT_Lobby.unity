@@ -2468,11 +2468,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0984631fda865684fa530cabc9b59809, type: 2}
   - {fileID: 11400000, guid: e8ba4bfa8c4934548bf7fe9d237958f4, type: 2}
   - {fileID: 11400000, guid: beb4b1365d09c474a8ac263cdebf1215, type: 2}
-  characterParent: {fileID: 1480186154}
   curPlayerState: 0
   roomManager: {fileID: 1507226707}
   teamManager: {fileID: 471917353}
-  canvasPanel: {fileID: 272861284}
 --- !u!4 &862841095
 Transform:
   m_ObjectHideFlags: 0
@@ -4540,7 +4538,6 @@ GameObject:
   - component: {fileID: 1480186155}
   - component: {fileID: 1480186159}
   - component: {fileID: 1480186158}
-  - component: {fileID: 1480186157}
   - component: {fileID: 1480186156}
   m_Layer: 5
   m_Name: CharacterParent
@@ -4548,7 +4545,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1480186155
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4597,18 +4594,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &1480186157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480186154}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23863073dff8c7e4685847d8a33ff23d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1480186158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4802,9 +4787,8 @@ MonoBehaviour:
   playerBluePanelParent: {fileID: 363056907}
   startButton: {fileID: 1501886081}
   leaveRoomButton: {fileID: 596641540}
-  redButton: {fileID: 0}
-  blueButton: {fileID: 0}
   teamManager: {fileID: 471917353}
+  canvasPanel: {fileID: 272861278}
 --- !u!4 &1507226708
 Transform:
   m_ObjectHideFlags: 0
