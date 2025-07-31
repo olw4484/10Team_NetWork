@@ -1,8 +1,8 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
+public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
 {
     #region Fields
 
@@ -10,17 +10,24 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
     private Dictionary<Canvas, List<JHT_BaseUI>> _uiMap = new();
     private YSJ_PopupController _popupController = new();
 
+    public int Priority => (int)ManagerPriority.UIManager;
+    public bool IsDontDestroy => isDontDestroyOnLoad;
+
     #endregion
 
-    #region Init Methods
 
-    protected override void Init()
+    #region IManager
+    public void Initialize()
     {
-        base.Init();
         InitCanvasLayers();
         _popupController.Init();
     }
 
+    public void Cleanup() { }
+    public GameObject GetGameObject() => this.gameObject;
+    #endregion
+
+    #region Init Methods
     private void InitCanvasLayers()
     {
         foreach (YSJ_UIType layer in System.Enum.GetValues(typeof(YSJ_UIType)))
@@ -45,7 +52,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
     private Canvas CreateCanvas(YSJ_CanvasProfile profile)
     {
         GameObject go = new GameObject(profile.canvasName);
-        go.transform.SetParent(this.transform); // UIManager ÀÚ½ÄÀ¸·Î µî·Ï
+        go.transform.SetParent(this.transform); // UIManager ìì‹ìœ¼ë¡œ ë“±ë¡
 
         Canvas canvas = go.AddComponent<Canvas>();
         canvas.renderMode = profile.renderMode;
@@ -81,7 +88,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
             var count = _popupController.GetPopupCount();
             _popupController.CloseAll();
 #if UNITY_EDITOR
-            Debug.Log($"[UIManager] {layer} ·¹ÀÌ¾îÀÇ {count}°³ UI ¿ÀºêÁ§Æ®°¡ Á¦°ÅµÇ¾ú½À´Ï´Ù.");
+            Debug.Log($"[UIManager] {layer} ë ˆì´ì–´ì˜ {count}ê°œ UI ì˜¤ë¸Œì íŠ¸ê°€ ì œê±°ë˜ì—ˆìŠµë‹ˆë‹¤.");
 #endif
             return;
         }
@@ -89,7 +96,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
         if (!_canvasMap.TryGetValue(layer, out Canvas canvas))
         {
 #if UNITY_EDITOR
-            Debug.LogWarning($"[UIManager] {layer} ·¹ÀÌ¾î¿¡ ÇØ´çÇÏ´Â Canvas°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning($"[UIManager] {layer} ë ˆì´ì–´ì— í•´ë‹¹í•˜ëŠ” Canvasê°€ ì—†ìŠµë‹ˆë‹¤.");
 #endif
             return;
         }
@@ -103,7 +110,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
         }
 
 #if UNITY_EDITOR
-        Debug.Log($"[UIManager] {layer} ·¹ÀÌ¾îÀÇ {childCount}°³ UI ¿ÀºêÁ§Æ®°¡ Á¦°ÅµÇ¾ú½À´Ï´Ù.");
+        Debug.Log($"[UIManager] {layer} ë ˆì´ì–´ì˜ {childCount}ê°œ UI ì˜¤ë¸Œì íŠ¸ê°€ ì œê±°ë˜ì—ˆìŠµë‹ˆë‹¤.");
 #endif
     }
 
@@ -114,7 +121,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
             TypeClear(kvp.Key);
         }
 #if UNITY_EDITOR
-        Debug.Log("[UIManager] ¸ğµç Canvas ·¹ÀÌ¾îÀÇ UI ¿ÀºêÁ§Æ®¸¦ Á¤¸®Çß½À´Ï´Ù.");
+        Debug.Log("[UIManager] ëª¨ë“  Canvas ë ˆì´ì–´ì˜ UI ì˜¤ë¸Œì íŠ¸ë¥¼ ì •ë¦¬í–ˆìŠµë‹ˆë‹¤.");
 #endif
     }
 
@@ -152,5 +159,6 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>
         _popupController.CloseTop();
     }
 
+    
     #endregion
 }
