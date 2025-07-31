@@ -14,15 +14,15 @@ public class SHI_InventoryUI : MonoBehaviour
 
     private void Start()
     {
-        inventory = SHI_Inventory.instance;
+        inventory = GameObject.Find("inventory").GetComponent<SHI_Inventory>();
         //for (int i = 0; i < SHI_Inventory.instance.maxSlots; i++)
         //{
         //    slots.Add(Instantiate(slotPrefab, slotParent));
-            
+
         //}
-            
-        SHI_Inventory.instance.itemadd.AddListener(UpdateUI);
-        SHI_Inventory.instance.itemremove.RemoveListener(UpdateUI);
+
+        inventory.itemadd.AddListener(UpdateUI);
+        inventory.itemremove.RemoveListener(UpdateUI);
        InitSlots(inventory.maxSlots);
     }
     private void InitSlots(int count)
