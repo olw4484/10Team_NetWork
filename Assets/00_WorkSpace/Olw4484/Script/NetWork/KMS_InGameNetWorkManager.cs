@@ -12,7 +12,7 @@ using UnityEngine.UI;
 //    Blue
 //}
 
-public class KMS_NetWorkManager : MonoBehaviourPunCallbacks
+public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
 {
 
     public Transform heroRedSpawnPoint;
@@ -30,6 +30,10 @@ public class KMS_NetWorkManager : MonoBehaviourPunCallbacks
     public bool isHeroDebugMode = false;
     public bool isCommandDebugMode = false;
 #endif
+    public int Priority => (int)ManagerPriority.InGameNetworkManager;
+
+    public bool IsDontDestroy => true;
+
     private void Start()
     {
         string randomName = $"Tester{UnityEngine.Random.Range(1000, 9999)}";
@@ -183,4 +187,28 @@ public class KMS_NetWorkManager : MonoBehaviourPunCallbacks
             }
         }
     }
+
+    public void Initialize()
+    {
+#if UNITY_EDITOR
+        if (!isCommandDebugMode && !isHeroDebugMode)
+        {
+            string randomName = $"Tester{UnityEngine.Random.Range(1000, 9999)}";
+            ConnectToPhoton(randomName);
+        }
+#else
+    string randomName = $"Player{UnityEngine.Random.Range(1000, 9999)}";
+    ConnectToPhoton(randomName);
+#endif
+    }
+
+    public void Cleanup()
+    {
+        if (PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.Disconnect();
+        }
+    }
+
+    public GameObject GetGameObject()=> this.gameObject;
 }
