@@ -190,6 +190,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 202c0b6e639bdc54c8e4f863f7cf5146, type: 3}
+--- !u!114 &456099898 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8316246981922170259, guid: 0a26fb94bd79ef34dbf878789788352c, type: 3}
+  m_PrefabInstance: {fileID: 1388316835}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a41148665112f343a940f5e0a337605, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &460937109
 GameObject:
   m_ObjectHideFlags: 0
@@ -442,7 +453,7 @@ MonoBehaviour:
   - {fileID: 6909216629791466805, guid: cd45a13a55ce09c4c9a97e6916a9fbc6, type: 3}
   - {fileID: 417341040573441857, guid: b573bf6298a1e344a9813999eb874fc9, type: 3}
   spawnpoint: {fileID: 670093675}
-  inventory: {fileID: 0}
+  inventory: {fileID: 456099898}
 --- !u!4 &670093675
 Transform:
   m_ObjectHideFlags: 0
@@ -1443,7 +1454,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 8130233224327725621, guid: c23ac9cc122398d419907d6adfe52b80, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 8130233224327725621, guid: c23ac9cc122398d419907d6adfe52b80, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

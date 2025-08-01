@@ -14,7 +14,7 @@ public class SHI_InventoryUI : MonoBehaviour
 
     private void Start()
     {
-        inventory = GameObject.Find("inventory").GetComponent<SHI_Inventory>();
+        //inventory = GameObject.Find("Hero1").GetComponent<SHI_Inventory>();
         //for (int i = 0; i < SHI_Inventory.instance.maxSlots; i++)
         //{
         //    slots.Add(Instantiate(slotPrefab, slotParent));

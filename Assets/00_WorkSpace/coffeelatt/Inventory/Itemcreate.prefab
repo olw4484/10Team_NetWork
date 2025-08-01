@@ -55,4 +55,4 @@ MonoBehaviour:
   - {fileID: 6909216629791466805, guid: cd45a13a55ce09c4c9a97e6916a9fbc6, type: 3}
   - {fileID: 417341040573441857, guid: b573bf6298a1e344a9813999eb874fc9, type: 3}
   spawnpoint: {fileID: 208338308293613794}
-  inventory: {fileID: 0}
+  inventory: {fileID: 8316246981922170259, guid: 0a26fb94bd79ef34dbf878789788352c, type: 3}
