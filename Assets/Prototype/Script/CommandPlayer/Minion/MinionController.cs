@@ -383,10 +383,15 @@ public class MinionController : MonoBehaviour, IDamageable, ISelectable
     void RPC_TryAttack(int targetViewID)
     {
         view?.PlayMinionAttackAnimation();
+
         var targetPV = PhotonView.Find(targetViewID);
         if (targetPV != null)
-            targetPV.RPC("RPC_TakeDamage", RpcTarget.All, attackPower, photonView.ViewID);
+        {
+            GameObject targetObj = targetPV.gameObject;
+            //HandleAttack(targetObj); // 타입별 오버라이드
+        }
     }
+
     [PunRPC]
     void RPC_TakeDamage(int damage, int attackerViewID)
     {
