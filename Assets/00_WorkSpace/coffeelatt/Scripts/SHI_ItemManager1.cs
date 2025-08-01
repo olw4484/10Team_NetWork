@@ -5,19 +5,8 @@ using static SHI_ItemBase;
 
 
 
-public class SHI_ItemManager : MonoBehaviour ,IManager
+public class SHI_ItemManager1 : MonoBehaviour
 {
-    public int Priority => (int)ManagerPriority.ItemManager;
-    public bool IsDontDestroy => false; // 이 매니저는 씬 전환 시 파괴됨
-    public void Initialize() 
-    {
-        resultValue = GameObject.Find("Result").GetComponent<SHI_ResultValue>();
-        Debug.Log("아이템 매니저 초기화됨");
-    } // 초기화 메서드
-    
-    public void Cleanup() { } // 정리 메서드
-    public GameObject GetGameObject() => this.gameObject; // 현재 게임 오브젝트 반환
-
     //public static SHI_ItemManager instance;  //필요없어보임.
     //[SerializeField] GameObject player; // 플레이어 오브젝트를 참조하기 위한 변수
     public float Thp = 0; // 아이템이 증가시키는 HP 양
@@ -59,7 +48,7 @@ public class SHI_ItemManager : MonoBehaviour ,IManager
     }
     private void Update()
     {
-        
+
     }
     public bool UseItem(SHI_ItemBase item)
     {
