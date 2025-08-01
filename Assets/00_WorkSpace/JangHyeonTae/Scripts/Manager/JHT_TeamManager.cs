@@ -8,12 +8,12 @@ using TMPro;
 
 public enum TeamSetting
 {
-    None,
     Red,
-    Blue
+    Blue,
+    None
 }
 
-public class JHT_TeamManager : MonoBehaviour
+public class JHT_TeamManager : MonoBehaviour, IManager
 {
     [SerializeField] private GameObject blueFullPopup;
     [SerializeField] private GameObject redFullPopup;
@@ -30,7 +30,26 @@ public class JHT_TeamManager : MonoBehaviour
 
     private CurrentState curState;
 
-    private void Awake()
+
+    #region IManager
+
+    public bool IsDontDestroy => false;
+
+    public void Initialize()
+    {
+        Init();
+    }
+
+    public void Cleanup()
+    {
+        Outit();
+    }
+
+    public GameObject GetGameObject() => this.gameObject;
+
+    #endregion
+
+    private void Init()
     {
         OnRedSelect += RedTeamSelect;
         OnBlueSelect += BlueTeamSelect;
@@ -40,7 +59,7 @@ public class JHT_TeamManager : MonoBehaviour
         OnCantChangeBlue += CantBlueChange;
     }
 
-    private void OnDestroy()
+    private void Outit()
     {
         OnRedSelect -= RedTeamSelect;
         OnBlueSelect -= BlueTeamSelect;
@@ -49,7 +68,6 @@ public class JHT_TeamManager : MonoBehaviour
         OnCantChangeRed -= CantRedChange;
         OnCantChangeBlue -= CantBlueChange;
     }
-
 
     #region Red/Blue 팀 값설정
     //blueCount 값만 올리기
@@ -183,6 +201,7 @@ public class JHT_TeamManager : MonoBehaviour
         count["RedCount"] = red;
         count["BlueCount"] = blue;
         PhotonNetwork.CurrentRoom.SetCustomProperties(count);
+        
 
         ExitGames.Client.Photon.Hashtable props = new();
         props["Team"] = setting;
@@ -214,5 +233,6 @@ public class JHT_TeamManager : MonoBehaviour
     {
         YSJ_UISpawnFactory.SpawnPopup(blueFullPopup);
     }
+
     #endregion
 }

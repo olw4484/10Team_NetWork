@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
@@ -54,10 +55,65 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
 
     private bool isSecret;
 
-    [SerializeField] private JHT_RoomManager roomManager;
-    [SerializeField] private JHT_TeamManager teamManager;
-    private void Start()
+    private JHT_RoomManager roomManager;     // Manager가 아닌 스크립트도 ManagerGroup.Instance.GetManager<JHT_RoomManager>()로 접급해야하는지
+    private JHT_TeamManager teamManager;     // Manager가 아닌 스크립트도 ManagerGroup.Instance.GetManager<JHT_TeamManager>()로 접급해야하는지
+
+    #region NetworkManager
+    private GameObject loadingPanel => GetUI("LoadingPanel");
+    
+    private RectTransform roomListParent => GetUI<RectTransform>("RoomPanelItemParent");
+    
+    private JHT_NetworkManager networkManager;
+    #endregion
+
+    #region RoomManager
+     private RectTransform playerRedPanelParent => GetUI<RectTransform>("PlayerListRedParent");
+    private RectTransform playerBluePanelParent => GetUI<RectTransform>("PlayerListBlueParent");
+    #endregion
+
+    #region TeamManager
+
+    public void TeamInit()
     {
+        teamManager = ManagerGroup.Instance.GetManager<JHT_TeamManager>();
+
+
+        #region 팀 들어가고 나가기
+        Color redBasicColor = redTeamPanel.color;
+        Color blueBasicColor = blueTeamPanel.color;
+
+        GetEvent("RedTeamPanel").Enter += data => redTeamPanel.color = new Color(redTeamPanel.color.r, redTeamPanel.color.g, redTeamPanel.color.b, 0.4f);
+        GetEvent("RedTeamPanel").Exit += data => redTeamPanel.color = redBasicColor;
+
+        GetEvent("BlueTeamPanel").Enter += data => blueTeamPanel.color = new Color(blueTeamPanel.color.r, blueTeamPanel.color.g, blueTeamPanel.color.b, 0.4f);
+        GetEvent("BlueTeamPanel").Exit += data => blueTeamPanel.color = blueBasicColor;
+
+
+        GetEvent("RedTeamPanel").Click += data =>
+        {
+            teamManager.OnRedSelect?.Invoke(PhotonNetwork.LocalPlayer);
+
+        };
+
+        GetEvent("BlueTeamPanel").Click += data =>
+        {
+            teamManager.OnBlueSelect?.Invoke(PhotonNetwork.LocalPlayer);
+
+        };
+        #endregion
+    }
+    #endregion
+    public void NetInit()
+    {
+        networkManager = ManagerGroup.Instance.GetManager<JHT_NetworkManager>();
+
+        if (networkManager == null)
+            networkManager = FindObjectOfType<JHT_NetworkManager>();
+
+        networkManager.OnLoading += AddLoading;
+        networkManager.OnLobbyIn += AddLobby;
+        networkManager.OnRoomIn += AddRoom;
+        networkManager.OnParent += AddParent;
         #region 룸 버튼 이벤트
         GetEvent("CreateLobbyButton").Click += data =>
         {
@@ -117,29 +173,6 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         #endregion
 
 
-        #region 팀 들어가고 나가기
-        Color redBasicColor = redTeamPanel.color;
-        Color blueBasicColor = blueTeamPanel.color;
-
-        GetEvent("RedTeamPanel").Enter += data => redTeamPanel.color = new Color(redTeamPanel.color.r, redTeamPanel.color.g, redTeamPanel.color.b, 0.4f);
-        GetEvent("RedTeamPanel").Exit += data => redTeamPanel.color = redBasicColor;
-
-        GetEvent("BlueTeamPanel").Enter += data => blueTeamPanel.color = new Color(blueTeamPanel.color.r, blueTeamPanel.color.g, blueTeamPanel.color.b, 0.4f);
-        GetEvent("BlueTeamPanel").Exit += data => blueTeamPanel.color = blueBasicColor;
-
-
-        GetEvent("RedTeamPanel").Click += data =>
-        {
-            teamManager.OnRedSelect?.Invoke(PhotonNetwork.LocalPlayer);
-
-        };
-
-        GetEvent("BlueTeamPanel").Click += data =>
-        {
-            teamManager.OnBlueSelect?.Invoke(PhotonNetwork.LocalPlayer);
-
-        };
-        #endregion
         
 
         #region Character select
@@ -215,6 +248,71 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         #endregion
     }
 
+    public void RoomInit()
+    {
+        roomManager = ManagerGroup.Instance.GetManager<JHT_RoomManager>();
+
+        if (roomManager == null)
+        {
+            roomManager = FindObjectOfType<JHT_RoomManager>();
+        }
+
+        roomManager.OnStartButtonActive += StartButtonActive;
+        roomManager.OnSetRedParent += RedParent;
+        roomManager.OnSetBlueParent += BlueParent;
+
+        GetEvent("StartButton").Click += data =>
+        {
+            roomManager.GameStart();
+        };
+
+    }
+
+    #region RoomManager Event
+
+    private void StartButtonActive(bool value)
+    {
+        startButton.interactable = value;
+    }
+
+    private RectTransform RedParent()
+    {
+        return playerRedPanelParent;
+    }
+
+    private RectTransform BlueParent()
+    {
+        return playerBluePanelParent;
+    }
+
+    #endregion 
+
+    #region NetworkManager Event
+    private void AddLoading(bool value)
+    {
+        if (loadingPanel.activeSelf)
+            loadingPanel.SetActive(value);
+    }
+
+    private void AddLobby(bool value)
+    {
+        lobbyPanel.SetActive(value);
+    }
+
+    private void AddRoom(bool value, bool value2 = false)
+    {
+        roomPanel.SetActive(value);
+        if (value2)
+        {
+            lobbyPanel.SetActive(!value2);
+        }
+    }
+
+    private RectTransform AddParent()
+    {
+        return roomListParent;
+    }
+    #endregion
 
     private IEnumerator ButtonColorChange()
     {
