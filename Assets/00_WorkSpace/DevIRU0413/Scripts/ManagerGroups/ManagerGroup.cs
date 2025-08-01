@@ -80,19 +80,25 @@ public class ManagerGroup : MonoBehaviour
     public void InitializeManagers()
     {
         _isManagersInitialized = false;
-        SortManagersByPriorityAscending(_unregisteredManagers);
+        // SortManagersByPriorityAscending(_unregisteredManagers);
 
+#if UNITY_EDITOR
+        Debug.Log($"[ManagerGroup-Init]: Start Initialize");
+#endif 
         foreach (var manager in _unregisteredManagers)
         {
             manager.Initialize();
             GameObject goM = manager.GetGameObject();
             if (goM == null)
             {
-                Debug.LogError($"[Dnot Init] {goM.name} !!!");
+#if UNITY_EDITOR
+                Debug.LogError($"[ManagerGroup-Init]: Have Not Manager GameObject");
+#endif
                 continue;
             }
-
-            Debug.Log($"[Init] {goM.name}");
+#if UNITY_EDITOR
+            Debug.Log($"[ManagerGroup-Init]: {goM.name}");
+#endif
             _registeredManagers.Add(manager);
             goM.transform.parent = transform;
         }
@@ -106,6 +112,9 @@ public class ManagerGroup : MonoBehaviour
     /// </summary>
     public void CleanupManagers()
     {
+#if UNITY_EDITOR
+        Debug.Log($"[ManagerGroup-Cleanup]: Start Cleanup");
+#endif 
         for (int i = 0; i < _registeredManagers.Count; i++)
         {
             IManager manager = _registeredManagers[i];
@@ -118,7 +127,9 @@ public class ManagerGroup : MonoBehaviour
             }
 
             manager.Cleanup();
-            Debug.Log($"[Cleanup] {go.name}");
+#if UNITY_EDITOR
+            Debug.Log($"[ManagerGroup-Cleanup]: {go.name}");
+#endif
         }
     }
 
@@ -128,6 +139,9 @@ public class ManagerGroup : MonoBehaviour
     /// <param name="forceClear">강제 정리 여부</param>
     public void ClearManagers(bool forceClear = false)
     {
+#if UNITY_EDITOR
+        Debug.Log($"[ManagerGroup-Clear]: Start Clear");
+#endif 
         for (int i = 0; i < _registeredManagers.Count; i++)
         {
             IManager manager = _registeredManagers[i];
@@ -144,7 +158,9 @@ public class ManagerGroup : MonoBehaviour
                 manager.Cleanup();
                 string name = go.name;
                 Destroy(go);
-                Debug.Log($"[Clear] {name}");
+#if UNITY_EDITOR
+                Debug.Log($"[ManagerGroup-Clear]: {name}");
+#endif 
             }
         }
     }
@@ -153,10 +169,23 @@ public class ManagerGroup : MonoBehaviour
     {
         ClearManagers(true);
     }
+
+    public T GetManager<T>() where T : Component
+    {
+        foreach (var manager in _registeredManagers)
+        {
+            if (manager is T tManager)
+            {
+                return tManager as T;
+            }
+        }
+        return null;
+    }
     #endregion
 
     #region PrivateMethod
 
+    /*
     private void SortManagersByPriorityAscending(List<IManager> list)
     {
         for (int i = 0; i < list.Count - 1; i++)
@@ -188,6 +217,7 @@ public class ManagerGroup : MonoBehaviour
             }
         }
     }
+    */
 
     #endregion
 }

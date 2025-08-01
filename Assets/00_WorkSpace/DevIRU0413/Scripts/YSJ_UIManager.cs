@@ -5,14 +5,11 @@ using UnityEngine.UI;
 public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
 {
     #region Fields
-
     private readonly Dictionary<YSJ_UIType, Canvas> _canvasMap = new();
     private Dictionary<Canvas, List<JHT_BaseUI>> _uiMap = new();
     private YSJ_PopupController _popupController = new();
 
-    public int Priority => (int)ManagerPriority.UIManager;
     public bool IsDontDestroy => isDontDestroyOnLoad;
-
     #endregion
 
 

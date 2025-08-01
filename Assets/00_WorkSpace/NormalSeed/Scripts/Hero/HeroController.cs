@@ -1,4 +1,4 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,7 +23,7 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
     public readonly int MOVE_HASH = Animator.StringToHash("Move");
     public readonly int ATTACK_HASH = Animator.StringToHash("Attack");
     public readonly int DEAD_HASH = Animator.StringToHash("Dead");
-    // °¢ Hero¸¶´Ù ½ºÅ³ ¾Ö´Ï¸ŞÀÌ¼Ç Á¸Àç
+    // ê° Heroë§ˆë‹¤ ìŠ¤í‚¬ ì• ë‹ˆë©”ì´ì…˜ ì¡´ì¬
 
     private void Awake() => Init();
 
@@ -37,7 +37,7 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
 
         atkDelay = 0f;
 
-        // ÀÓ½Ã·Î Hero1À» ¼±ÅÃÇÑ °ÍÀ¸·Î °¡Á¤ -> °ÔÀÓÀÌ ½ÃÀÛµÇ¸é HeroTypeÀ» °áÁ¤ÇÏ°Ô
+        // ì„ì‹œë¡œ Hero1ì„ ì„ íƒí•œ ê²ƒìœ¼ë¡œ ê°€ì • -> ê²Œì„ì´ ì‹œì‘ë˜ë©´ HeroTypeì„ ê²°ì •í•˜ê²Œ
         heroType = 0;
         model.GetInitStats(heroType);
 
@@ -47,7 +47,23 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
 
     private void Start()
     {
-        LGH_TestGameManager.Instance.RegisterPlayer(this.gameObject);
+        StartCoroutine(RegisterRoutine());
+    }
+
+    private IEnumerator RegisterRoutine()
+    {
+        GameObject manager = null;
+        while (manager == null)
+        {
+            manager = GameObject.Find("GameManager");
+            LGH_TestGameManager gm = manager.GetComponent<LGH_TestGameManager>();
+            if (gm != null)
+            {
+                gm.RegisterPlayer(this.gameObject);
+                break;
+            }
+        }
+        yield return null;
     }
 
     private void Update()
@@ -58,7 +74,7 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         {
             //if (atkDelay <= 0f)
             //{
-            //    mov.HeroAttack(model.MoveSpd, (int)model.Atk, model.AtkRange); // ÃßÈÄ damage º¯¼ö´Â µ¥¹ÌÁö °ø½Ä¿¡ µû¶ó ¹Ù²ãÁÙ ÇÊ¿ä°¡ ÀÖÀ½
+            //    mov.HeroAttack(model.MoveSpd, (int)model.Atk, model.AtkRange); // ì¶”í›„ damage ë³€ìˆ˜ëŠ” ë°ë¯¸ì§€ ê³µì‹ì— ë”°ë¼ ë°”ê¿”ì¤„ í•„ìš”ê°€ ìˆìŒ
             //    atkDelay = 1 / model.AtkSpd;
             //}
             mov.HandleRightClick(model.MoveSpd, (int)model.Atk, model.AtkRange, atkDelay);
@@ -87,6 +103,6 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
     public void TakeDamage(int amount)
     {
         model.CurHP.Value -= amount;
-        Debug.Log($"{amount}ÀÇ µ¥¹ÌÁö¸¦ ÀÔÀ½. ÇöÀç HP : {model.CurHP.Value}");
+        Debug.Log($"{amount}ì˜ ë°ë¯¸ì§€ë¥¼ ì…ìŒ. í˜„ì¬ HP : {model.CurHP.Value}");
     }
 }
