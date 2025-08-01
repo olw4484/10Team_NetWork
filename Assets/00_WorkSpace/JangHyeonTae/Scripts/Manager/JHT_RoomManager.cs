@@ -17,6 +17,7 @@ public class JHT_RoomManager : MonoBehaviour, IManager
     public Action<bool> OnStartButtonActive;
     public Func<RectTransform> OnSetRedParent;
     public Func<RectTransform> OnSetBlueParent;
+    public Action OnLeaveRoom;
 
     #region IManager
 
@@ -40,6 +41,7 @@ public class JHT_RoomManager : MonoBehaviour, IManager
     private void Init()
     {
         ManagerGroup.Instance.GetManager<JHT_TeamManager>().OnChangeTeam += ChangeTeam;
+        OnLeaveRoom += LeaveRoom;
     }
 
     private void Outit()
@@ -206,32 +208,6 @@ public class JHT_RoomManager : MonoBehaviour, IManager
             Destroy(obj.gameObject);
         }
 
-        ExitGames.Client.Photon.Hashtable props = new();
-
-        if ((TeamSetting)player.CustomProperties["Team"] == TeamSetting.Blue)
-        {
-            int currentBlue = (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"];
-            if (currentBlue > 0)
-            {
-                props["BlueCount"] = currentBlue - 1;
-                PhotonNetwork.CurrentRoom.SetCustomProperties(props);
-                Debug.Log($"[RoomManager - PlayerLeaveRoom] : {(int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"]}");
-            }
-        }
-        else if ((TeamSetting)player.CustomProperties["Team"] == TeamSetting.Red)
-        {
-            int currentRed = (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"];
-            if (currentRed > 0)
-            {
-                props["RedCount"] = currentRed - 1;
-                PhotonNetwork.CurrentRoom.SetCustomProperties(props);
-                Debug.Log($"[RoomManager - PlayerLeaveRoom] : {(int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"]}");
-            }
-        }
-        else
-        {
-            Debug.LogError("[RoomManager - PlayerLeaveRoom] : Not set team");
-        }
     }
     #endregion
 
@@ -313,15 +289,44 @@ public class JHT_RoomManager : MonoBehaviour, IManager
         }
         playerPanelDic.Clear();
 
+
+        ExitGames.Client.Photon.Hashtable props = new();
+
+        if ((TeamSetting)PhotonNetwork.LocalPlayer.CustomProperties["Team"] == TeamSetting.Blue)
+        {
+            int currentBlue = (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"];
+            if (currentBlue > 0)
+            {
+                props["BlueCount"] = currentBlue - 1;
+                PhotonNetwork.CurrentRoom.SetCustomProperties(props);
+                Debug.Log($"[RoomManager - PlayerLeaveRoom] : {(int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"]}");
+            }
+        }
+        else if ((TeamSetting)PhotonNetwork.LocalPlayer.CustomProperties["Team"] == TeamSetting.Red)
+        {
+            int currentRed = (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"];
+            if (currentRed > 0)
+            {
+                props["RedCount"] = currentRed - 1;
+                PhotonNetwork.CurrentRoom.SetCustomProperties(props);
+                Debug.Log($"[RoomManager - PlayerLeaveRoom] : {(int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"]}");
+            }
+        }
+        else
+        {
+            Debug.LogError("[RoomManager - PlayerLeaveRoom] : Not set team");
+        }
+
         if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out object value))
         {
             if ((TeamSetting)value == TeamSetting.Blue || (TeamSetting)value == TeamSetting.Red)
             {
-                ExitGames.Client.Photon.Hashtable props = new();
                 props["Team"] = null;
                 PhotonNetwork.LocalPlayer.SetCustomProperties(props);
             }
         }
+
+        
 
         PhotonNetwork.LeaveRoom();
     }

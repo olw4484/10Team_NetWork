@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
@@ -165,11 +164,6 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
             createRoomPanel.SetActive(false);
         };
 
-        GetEvent("LeaveRoomButton").Click += data =>
-        {
-            roomPanel.SetActive(false);
-            lobbyPanel.SetActive(true);
-        };
         #endregion
 
 
@@ -252,6 +246,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
     {
         roomManager = ManagerGroup.Instance.GetManager<JHT_RoomManager>();
 
+
         if (roomManager == null)
         {
             roomManager = FindObjectOfType<JHT_RoomManager>();
@@ -264,6 +259,14 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         GetEvent("StartButton").Click += data =>
         {
             roomManager.GameStart();
+        };
+
+
+        GetEvent("LeaveRoomButton").Click += data =>
+        {
+            roomPanel.SetActive(false);
+            lobbyPanel.SetActive(true);
+            roomManager.OnLeaveRoom?.Invoke();
         };
 
     }
@@ -292,6 +295,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
     {
         if (loadingPanel.activeSelf)
             loadingPanel.SetActive(value);
+            
     }
 
     private void AddLobby(bool value)

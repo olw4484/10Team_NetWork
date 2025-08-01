@@ -100,6 +100,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
     {
         OnLoading?.Invoke(false);
         PhotonNetwork.JoinLobby();
+        Debug.Log("마스터서버 접속");
     }
 
     public override void OnDisconnected(DisconnectCause cause)
@@ -117,11 +118,11 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
 
     public override void OnCreatedRoom()
     {
-        //ExitGames.Client.Photon.Hashtable roomInit = new();
-        //roomInit["RedCount"] = 0;
-        //roomInit["BlueCount"] = 0;
-        //PhotonNetwork.CurrentRoom.SetCustomProperties(roomInit);
-        ManagerGroup.Instance.GetManager<JHT_TeamManager>().SetTeamCount(0, 0);
+        ExitGames.Client.Photon.Hashtable roomInit = new();
+        roomInit["RedCount"] = 0;
+        roomInit["BlueCount"] = 0;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(roomInit);
+        //ManagerGroup.Instance.GetManager<JHT_TeamManager>().SetTeamCount(0, 0);
     }
 
 
@@ -344,5 +345,11 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
     }
     #endregion
 
-    
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            Debug.Log($"현재 방 인원 수 : {PhotonNetwork.CurrentRoom.PlayerCount}");
+        }
+    }
 }
