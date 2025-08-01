@@ -1,6 +1,7 @@
 ﻿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -56,6 +57,8 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         {
             yield return null; // GameManager가 생성되기를 기다림
         }
+        LGH_TestGameManager.Instance.RegisterPlayer(this.gameObject);
+        yield break;
     }
 
     private void Update()
