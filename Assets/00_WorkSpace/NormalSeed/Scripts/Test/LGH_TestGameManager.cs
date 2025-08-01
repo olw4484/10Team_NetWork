@@ -45,6 +45,12 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks, IManager
                 player.gameObject.SetActive(true);
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            Debug.Log($"플레이어 정보 : {(string)PhotonNetwork.LocalPlayer.CustomProperties["Team"]}");
+            Debug.Log($"플레이어 정보 : {(string)PhotonNetwork.LocalPlayer.CustomProperties["Role"]}");
+        }
     }
 
     public void RegisterPlayer(GameObject player)
@@ -58,9 +64,23 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks, IManager
             Debug.Log(playerList.Count + "명 로딩 완료");
         }
 
+        if (playerList.Count == GAME_START_PLAYER_COUNT)
+        {
+            ActivateAllPlayers();
+        }
         // InitLocalPlayer(player); // 플레이어 한
     }
     // 로딩이 완료되면 SetActive(false)를 해놨던 플레이어들을 모두 SetActive(true)로
+    private void ActivateAllPlayers()
+    {
+        foreach (GameObject player in playerList)
+        {
+            if (player != null)
+                player.SetActive(true);
+        }
+
+        Debug.Log("모든 플레이어 활성화됨!");
+    }
 
     //public override void OnJoinedRoom()
     //{
