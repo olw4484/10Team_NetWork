@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -17,7 +17,7 @@ public abstract class JHT_BaseUI : MonoBehaviour
         InitRectObject();
         InitObjectCmp();
 
-        YSJ_UIManager.Instance.RegisterUI(this);
+        YSJ_UIManager.Instance?.RegisterUI(this);
     }
     private void InitRectObject()
     {
