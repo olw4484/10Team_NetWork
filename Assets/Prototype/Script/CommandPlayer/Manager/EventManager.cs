@@ -1,25 +1,30 @@
+using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EventManager : MonoBehaviour
+public class EventManager : MonoBehaviour, IManager
 {
     public static EventManager Instance { get; private set; }
 
-    // 싱글턴 초기화
+    public int Priority => (int)ManagerPriority.EventManager;
 
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
+    public bool IsDontDestroy => false;
 
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-    }
+    // 싱글턴 초기화 / IManager의 Initialize를 사용하므로 주석처리
+
+    //private void Awake()
+    //{
+    //    if (Instance != null && Instance != this)
+    //    {
+    //        Destroy(gameObject);
+    //        return;
+    //    }
+    //
+    //    Instance = this;
+    //    DontDestroyOnLoad(gameObject);
+    //}
 
     // Minion을 잡았을 때
 
@@ -52,4 +57,28 @@ public class EventManager : MonoBehaviour
     {
         OnResourceChanged?.Invoke(teamId, currentGold);
     }
+
+    public void Initialize()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+
+        if (IsDontDestroy)
+            DontDestroyOnLoad(gameObject);
+    }
+
+    public void Cleanup()
+    {
+        if (PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.Disconnect();
+        }
+    }
+
+    public GameObject GetGameObject() => this.gameObject;
 }

@@ -25,108 +25,19 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
 
     public GameObject canvasPrefab;
 
-    // 디버깅 모드
-#if UNITY_EDITOR
-    public bool isHeroDebugMode = false;
-    public bool isCommandDebugMode = false;
-#endif
     public int Priority => (int)ManagerPriority.InGameNetworkManager;
 
-    public bool IsDontDestroy => true;
+    public bool IsDontDestroy => false;
 
-    private void Start()
+    // GemeStart 초기화
+    private void StartSpawnProcess()
     {
-        string randomName = $"Tester{UnityEngine.Random.Range(1000, 9999)}";
-        ConnectToPhoton(randomName);
+        StartCoroutine(WaitForPlayerAssignmentAndSpawn());
     }
 
-    private void ConnectToPhoton(string nickName)
+    private IEnumerator WaitForPlayerAssignmentAndSpawn()
     {
-        Debug.Log($"Connect to Photon as {nickName}");
-        PhotonNetwork.AuthValues = new AuthenticationValues(nickName);
-        PhotonNetwork.AutomaticallySyncScene = true;
-        PhotonNetwork.NickName = nickName;
-        PhotonNetwork.ConnectUsingSettings();
-    }
-
-    public override void OnConnectedToMaster()
-    {
-        PhotonNetwork.JoinLobby();
-    }
-
-    public override void OnJoinedLobby()
-    {
-        PhotonNetwork.JoinRandomOrCreateRoom();
-    }
-
-    // 방에 들어왔을 때 팀/역할 배정 (MasterClient만 처리 - 동시 접속으로 인한 중복방지)
-    public override void OnJoinedRoom()
-    {
-#if UNITY_EDITOR
-        if (isCommandDebugMode)
-        {
-            // HQ, CommandPlayer를 같은 위치에 생성
-            var hqObj = PhotonNetwork.Instantiate("HQ", cmdRedSpawnPoint.position, cmdRedSpawnPoint.rotation);
-            var cmdObj = PhotonNetwork.Instantiate("CommandPlayer", cmdRedSpawnPoint.position, cmdRedSpawnPoint.rotation);
-
-            // HQ - CommandPlayer 연결
-            var commandPlayer = cmdObj.GetComponent<CommandPlayer>();
-            var hq = hqObj.GetComponent<HQCommander>();
-            hq.player = commandPlayer;
-
-            // Canvas 및 인풋 등 연결
-            if (commandPlayer.photonView.IsMine)
-            {
-                var canvasObj = Instantiate(canvasPrefab);
-                commandPlayer.goldText = canvasObj.transform.Find("ResourcePanel/GoldText").GetComponent<TMP_Text>();
-                commandPlayer.gearText = canvasObj.transform.Find("ResourcePanel/GearText").GetComponent<TMP_Text>();
-                commandPlayer.playerInputHandler = canvasObj.GetComponent<PlayerInputHandler>();
-
-                // --- 버튼 이벤트 연결 ---
-                var meleeBtn = canvasObj.transform.Find("MinionPanel/MeleeButton").GetComponent<Button>();
-                var rangedBtn = canvasObj.transform.Find("MinionPanel/RangedButton").GetComponent<Button>();
-                var eliteBtn = canvasObj.transform.Find("MinionPanel/EliteButton").GetComponent<Button>();
-
-                meleeBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Melee));
-                rangedBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Ranged));
-                eliteBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Elite));
-            }
-        }
-        if (isHeroDebugMode)
-        {
-            PhotonNetwork.Instantiate("Hero1", heroRedSpawnPoint.position, heroRedSpawnPoint.rotation);
-        }
-#endif
-
-        if (PhotonNetwork.IsMasterClient && PhotonNetwork.PlayerList.Length == 4)
-        {
-            int red = 0, blue = 0;
-            foreach (var player in PhotonNetwork.PlayerList)
-            {
-                // Team - 0: Red, 1: Blue
-                // Role - 0: Hero, 1: Command
-                ExitGames.Client.Photon.Hashtable props = new();
-                if (red <= blue)
-                {
-                    props["Team"] = 0;
-                    props["Role"] = red == 0 ? "Hero" : "Command";
-                    red++;
-                }
-                else
-                {
-                    props["Team"] = 1;
-                    props["Role"] = blue == 0 ? "Hero" : "Command";
-                    blue++;
-                }
-                player.SetCustomProperties(props);
-            }
-        }
-        // 배정이 완료될 때까지 대기 후 스폰 진행
-        StartCoroutine(WaitForRoomPropertiesAndJoin());
-    }
-
-    private IEnumerator WaitForRoomPropertiesAndJoin()
-    {
+        int heroIndex = 0;
         // Role이 할당될 때까지 대기
         while (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Role"))
             yield return null;
@@ -135,11 +46,11 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
             yield return null;
 
         // 배정된 정보로 내 플레이어 오브젝트 스폰
-        SetRole();
+        SetRole(heroIndex);
     }
 
     // 역할에 따라 오브젝트 스폰
-    private void SetRole()
+    private void SetRole(int heroIndex)
     {
         int myTeamId = (int)PhotonNetwork.LocalPlayer.CustomProperties["Team"];
         string myRole = (string)PhotonNetwork.LocalPlayer.CustomProperties["Role"];
@@ -149,7 +60,7 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
             // Hero만 생성
             Vector3 pos = (myTeamId == 0) ? heroRedSpawnPoint.position : heroBlueSpawnPoint.position;
             Quaternion rot = (myTeamId == 0) ? heroRedSpawnPoint.rotation : heroBlueSpawnPoint.rotation;
-            PhotonNetwork.Instantiate("Hero1", pos, rot);
+            PhotonNetwork.Instantiate($"Hero{heroIndex}", pos, rot);
         }
         else if (myRole == "Command")
         {
@@ -165,41 +76,38 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
 
             var commandPlayer = cmdObj.GetComponent<CommandPlayer>();
             var hq = hqObj.GetComponent<HQCommander>();
-            hq.player = commandPlayer;
+            BindCommandPlayer(commandPlayer, hq);
+        }
+    }
 
-            if (commandPlayer.photonView.IsMine)
-            {
-                var canvasObj = Instantiate(canvasPrefab);
+    private void BindCommandPlayer(CommandPlayer commandPlayer, HQCommander hq)
+    {
+        hq.player = commandPlayer;
 
-                // --- Canvas Text 연결 ---
-                commandPlayer.goldText = canvasObj.transform.Find("ResourcePanel/GoldText").GetComponent<TMP_Text>();
-                commandPlayer.gearText = canvasObj.transform.Find("ResourcePanel/GearText").GetComponent<TMP_Text>();
-                commandPlayer.playerInputHandler = canvasObj.GetComponent<PlayerInputHandler>();
+        if (commandPlayer.photonView.IsMine)
+        {
+            var canvasObj = Instantiate(canvasPrefab);
 
-                // --- 미니언 생성 버튼 이벤트 연결 ---
-                var meleeBtn = canvasObj.transform.Find("MinionPanel/MeleeButton").GetComponent<Button>();
-                var rangedBtn = canvasObj.transform.Find("MinionPanel/RangedButton").GetComponent<Button>();
-                var eliteBtn = canvasObj.transform.Find("MinionPanel/EliteButton").GetComponent<Button>();
+            // --- Canvas Text 연결 ---
+            commandPlayer.goldText = canvasObj.transform.Find("ResourcePanel/GoldText").GetComponent<TMP_Text>();
+            commandPlayer.gearText = canvasObj.transform.Find("ResourcePanel/GearText").GetComponent<TMP_Text>();
+            commandPlayer.playerInputHandler = canvasObj.GetComponent<PlayerInputHandler>();
 
-                meleeBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Melee));
-                rangedBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Ranged));
-                eliteBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Elite));
-            }
+            // --- 미니언 생성 버튼 이벤트 연결 ---
+            var meleeBtn = canvasObj.transform.Find("MinionPanel/MeleeButton").GetComponent<Button>();
+            var rangedBtn = canvasObj.transform.Find("MinionPanel/RangedButton").GetComponent<Button>();
+            var eliteBtn = canvasObj.transform.Find("MinionPanel/EliteButton").GetComponent<Button>();
+
+            meleeBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Melee));
+            rangedBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Ranged));
+            eliteBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Elite));
         }
     }
 
     public void Initialize()
     {
-#if UNITY_EDITOR
-        if (!isCommandDebugMode && !isHeroDebugMode)
-        {
-            string randomName = $"Tester{UnityEngine.Random.Range(1000, 9999)}";
-            ConnectToPhoton(randomName);
-        }
-#else
-    string randomName = $"Player{UnityEngine.Random.Range(1000, 9999)}";
-    ConnectToPhoton(randomName);
-#endif
+        if (PhotonNetwork.InRoom)
+            StartSpawnProcess();
     }
 
     public void Cleanup()

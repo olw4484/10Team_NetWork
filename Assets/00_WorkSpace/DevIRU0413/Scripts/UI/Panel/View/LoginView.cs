@@ -27,8 +27,6 @@ public class LoginView : YSJ_HUDBaseUI, ILoginView
 
     public void Init(LoginPresenter presenter)
     {
-        InitBaseUI();
-
         _binder = new YSJ_UIBinder<LoginUI>(this);
 
         _presenter = presenter;

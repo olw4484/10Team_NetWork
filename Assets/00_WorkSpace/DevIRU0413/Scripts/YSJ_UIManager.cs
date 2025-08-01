@@ -19,7 +19,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
         _popupController.Init();
     }
 
-    public void Cleanup() { }
+    public void Cleanup() { AllClear(); }
     public GameObject GetGameObject() => this.gameObject;
     #endregion
 
@@ -127,19 +127,40 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
 
     public void RegisterUI(JHT_BaseUI baseUI)
     {
-        if (baseUI == null) return;
+        if (baseUI == null)
+        {
+#if UNITY_EDITOR
+            Debug.LogError("[UIManager-RegisterUI]: Not baseUI");
+#endif
+            return;
+        }
+
+        Canvas typeCanvas = GetCanvas(baseUI.UIType);
+        if (_uiMap[typeCanvas].Contains(baseUI))
+        {
+#if UNITY_EDITOR
+            Debug.LogWarning($"[UIManager-RegisterUI]: is Contains {baseUI}.");
+#endif
+            return;
+        }
+
         if (baseUI.UIType == YSJ_UIType.Popup)
             _popupController.Register(baseUI.gameObject);
 
-        Canvas typeCanvas = GetCanvas(baseUI.UIType);
         baseUI.transform.parent = typeCanvas.transform;
-
         _uiMap[typeCanvas]?.Add(baseUI);
     }
 
     public void UnRegisterUI(JHT_BaseUI baseUI)
     {
-        if (baseUI == null) return;
+        if (baseUI == null)
+        {
+#if UNITY_EDITOR
+            Debug.LogError("[UIManager-UnRegisterUI]: Not baseUI");
+#endif
+            return;
+        }
+
         if (baseUI.UIType == YSJ_UIType.Popup)
             _popupController.Unregister(baseUI.gameObject);
 
@@ -155,6 +176,5 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
         _popupController.CloseTop();
     }
 
-    
     #endregion
 }

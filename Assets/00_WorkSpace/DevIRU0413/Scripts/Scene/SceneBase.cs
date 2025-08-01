@@ -5,8 +5,12 @@ public abstract class SceneBase : MonoBehaviour
 {
     // 현재 씬의 고유 ID (상속 클래스에서 지정)
     public abstract SceneID SceneID { get; }
+    
+    [Header("Manager")]
+    [SerializeField] private GameObject[] _managersInOrder;
 
-    [SerializeField] private GameObject[] managersInOrder;
+    [Header("Audio")]
+    [SerializeField] private AudioClip _bgm;
 
     public Action OnInitializeAction;
 
@@ -15,7 +19,6 @@ public abstract class SceneBase : MonoBehaviour
         InitSystem();
         LoadManagers();
         Initialize();
-        LoadUI();
 
         YSJ_SystemManager.Instance.ChangeState(SystemStateType.Playing);
     }
@@ -25,9 +28,16 @@ public abstract class SceneBase : MonoBehaviour
 #if UNITY_EDITOR
         Debug.Log($"[SceneBase-InitSystem]: Scene {SceneID} Initialize.");
 #endif
-        // 시스템 매니저 초기화
-        YSJ_SystemManager systemManager = YSJ_SystemManager.Instance;
-        ManagerGroup.Instance.RegisterManager(systemManager);
+        // 시스템 초기화
+        ManagerGroup.Instance.RegisterManager(YSJ_SystemManager.Instance);
+
+        // ResourceManager
+        // SceneManagerEx
+        ManagerGroup.Instance.RegisterManager(YSJ_AudioManager.Instance);
+        ManagerGroup.Instance.RegisterManager(YSJ_UIManager.Instance);
+        ManagerGroup.Instance.RegisterManager(YSJ_PoolManager.Instance);
+
+        ManagerGroup.Instance.InitializeManagers();
     }
 
     // 매니저 등록 및 초기화
@@ -47,25 +57,20 @@ public abstract class SceneBase : MonoBehaviour
 
         // 새로 찾은 매니저 오브젝트들을 등록
         // ManagerGroup.Instance.RegisterManager(SubscribeManagers);
-        ManagerGroup.Instance.RegisterManager(managersInOrder);
+        ManagerGroup.Instance.RegisterManager(_managersInOrder);
 
         // 등록된 매니저들을 초기화
         ManagerGroup.Instance.InitializeManagers();
     }
 
+    // 시스템 매니저 보장되고, 등록하려고 했던 매니저들이 모두 초기화된 후 호출됨
     protected virtual void Initialize()
     {
 #if UNITY_EDITOR
         Debug.Log($"[SceneBase-Initialize]: Scene {SceneID} Initialize.");
 #endif
+        ManagerGroup.Instance.GetManager<YSJ_AudioManager>().PlayBgm(_bgm);
+
         OnInitializeAction?.Invoke();
-    }
-
-    private void LoadUI()
-    {
-        // UI 프리팹을 순회하며 UI 매니저에 설정
-
-        // 현재 씬에 존재하는 BaseUI 오브젝트 수집
-        // GameObject[] SubscribeManagers = GameObject.FindGameObjectsWithTag("Manager");
     }
 }

@@ -54,4 +54,14 @@ public class YSJ_Pool
             _poolStack.Push(obj);
         }
     }
+
+    public void Clear()
+    {
+        while (_poolStack.Count > 0)
+        {
+            GameObject obj = _poolStack.Pop();
+            GameObject.Destroy(obj);
+        }
+        _poolStack.Clear();
+    }
 }
