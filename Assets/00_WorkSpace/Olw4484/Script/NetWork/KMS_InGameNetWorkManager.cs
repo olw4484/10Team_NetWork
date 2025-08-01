@@ -12,7 +12,7 @@ using UnityEngine.UI;
 //    Blue
 //}
 
-public class KMS_NetWorkManager : MonoBehaviourPunCallbacks , IManager
+public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
 {
 
     public Transform heroRedSpawnPoint;
@@ -30,7 +30,7 @@ public class KMS_NetWorkManager : MonoBehaviourPunCallbacks , IManager
     public bool isHeroDebugMode = false;
     public bool isCommandDebugMode = false;
 #endif
-    public int Priority => (int)ManagerPriority.NetworkManager;
+    public int Priority => (int)ManagerPriority.InGameNetworkManager;
 
     public bool IsDontDestroy => true;
 

@@ -17,6 +17,7 @@
     RoomManager,
 
     GameManager,            // Extra Manager
+    InGameNetworkManager,
     SkillManager,
     EventManager,
     ItemManager,
