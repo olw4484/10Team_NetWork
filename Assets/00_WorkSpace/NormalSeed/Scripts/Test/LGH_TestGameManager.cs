@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LGH_TestGameManager : MonoBehaviourPunCallbacks
+public class LGH_TestGameManager : MonoBehaviourPunCallbacks, IManager
 {
     private const int GAME_START_PLAYER_COUNT = 4;
 
     public static LGH_TestGameManager Instance { get; private set; }
+
+    public bool IsDontDestroy => false;
 
     public CameraController camController;
     public TestSkillManager skillManager;
@@ -35,7 +37,7 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        // 테스트용 : 플레이어 활성화 키를 ESC로 설정
+        //테스트용: 플레이어 활성화 키를 ESC로 설정
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             foreach (GameObject player in playerList)
@@ -60,10 +62,10 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks
     }
     // 로딩이 완료되면 SetActive(false)를 해놨던 플레이어들을 모두 SetActive(true)로
 
-    public override void OnJoinedRoom()
-    {
-        StartCoroutine(WaitForLocalPlayer());
-    }
+    //public override void OnJoinedRoom()
+    //{
+    //    StartCoroutine(WaitForLocalPlayer());
+    //}
 
     private IEnumerator WaitForLocalPlayer()
     {
@@ -102,4 +104,19 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks
             inventoryView.Open();
         }
     }
+
+    // OnJoinedRoom에서 하던 플레이어 참조 작업을 Initalize로 이관
+    public void Initialize()
+    {
+        StartCoroutine(WaitForLocalPlayer());
+    }
+
+    public void Cleanup()
+    {
+        playerList.Clear();
+        localPlayer = null;
+        Instance = null;
+    }
+
+    public GameObject GetGameObject() => this.gameObject;
 }
