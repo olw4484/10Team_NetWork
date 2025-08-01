@@ -795,6 +795,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &916842225 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8604599422569831470, guid: 0a26fb94bd79ef34dbf878789788352c, type: 3}
+  m_PrefabInstance: {fileID: 1388316835}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dd7c88fd72c2fe47abc0f46a97b8d51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &952197665
 GameObject:
   m_ObjectHideFlags: 0
@@ -1221,11 +1232,57 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 8604599422569831470, guid: 0a26fb94bd79ef34dbf878789788352c, type: 3}
+      propertyPath: addstat
+      value: 
+      objectReference: {fileID: 1623200368}
+    m_RemovedComponents:
+    - {fileID: 2546214805056832290, guid: 0a26fb94bd79ef34dbf878789788352c, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 476591363673325679, guid: 0a26fb94bd79ef34dbf878789788352c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1623200368}
   m_SourcePrefab: {fileID: 100100000, guid: 0a26fb94bd79ef34dbf878789788352c, type: 3}
+--- !u!1 &1623200366 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 476591363673325679, guid: 0a26fb94bd79ef34dbf878789788352c, type: 3}
+  m_PrefabInstance: {fileID: 1388316835}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1623200368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1623200366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a55c4c6a68673b4cbfe6f7261c4cc12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Thp: 0
+  Tmp: 0
+  Tatk: 0
+  TcoolDown: 1
+  TmoveSpeed: 0
+  TatkSpeed: 0
+  TcritChance: 0
+  TskillPower: 1
+  TrangeUp: 0
+  TlifeSteal: 0
+  TminionHitup: 1
+  TminionHitup2: 0
+  TnexusHitUp: 1
+  Tallup: 1
+  TminionDamageDown: 1
+  TminionAttackRegeneration: 0
+  refrash:
+    m_PersistentCalls:
+      m_Calls: []
+  stat: {fileID: 0}
+  resultValue: {fileID: 916842225}
 --- !u!1 &1953645224
 GameObject:
   m_ObjectHideFlags: 0
