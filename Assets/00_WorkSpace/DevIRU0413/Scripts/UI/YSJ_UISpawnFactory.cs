@@ -1,27 +1,24 @@
-using Runtime.UI;
+Ôªøusing Runtime.UI;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class YSJ_UISpawnFactory
 {
     // spawn for prefab
-    public static GameObject SpawnUI(GameObject prefab, YSJ_UIType layer, int extraOrder = 0)
+    public static GameObject SpawnUI(GameObject prefab)
     {
-        Canvas parentCanvas = YSJ_UIManager.Instance.GetCanvas(layer);
-        if (parentCanvas == null)
-        {
-            Debug.LogError($"[UISpawnFactory] {layer}_Canvas∞° UIManagerø° º≥¡§µ«æÓ ¿÷¡ˆ æ Ω¿¥œ¥Ÿ.");
-            return null;
-        }
-
         GameObject uiObject = GameObject.Instantiate(prefab);
         JHT_BaseUI uiComp = uiObject.GetOrAddComponent<JHT_BaseUI>();
-
+        if (uiComp == null)
+        {
+            Debug.LogError($"[UISpawnFactory] UI component not found on prefab: {prefab.name}");
+            return null;
+        }
         return uiObject;
     }
 
     // spawn for resource
-    public static GameObject SpawnUI(string resourcePath, YSJ_UIType layer, int extraOrder = 0)
+    public static GameObject SpawnUI(string resourcePath)
     {
         GameObject prefab = Resources.Load<GameObject>(resourcePath);
         if (prefab == null)
@@ -30,7 +27,7 @@ public class YSJ_UISpawnFactory
             return null;
         }
 
-        return SpawnUI(prefab, layer, extraOrder);
+        return SpawnUI(prefab);
     }
 
     // spawn for prefab
@@ -38,13 +35,13 @@ public class YSJ_UISpawnFactory
     {
         if (popupPrefab == null)
         {
-            Debug.LogError("ShowPopup: popupPrefab¿Ã ∫ÒæÓ¿÷¿Ω");
+            Debug.LogError("ShowPopup: popupPrefabÏù¥ ÎπÑÏñ¥ÏûàÏùå");
             return null;
         }
 
-        var popup = SpawnUI(popupPrefab, YSJ_UIType.Popup);
+        var popup = SpawnUI(popupPrefab);
 
-        // RectTransform ¿ßƒ° √ ±‚»≠ («ÆΩ∫≈©∏∞ ¡ﬂæ”)
+        // RectTransform ÏúÑÏπò Ï¥àÍ∏∞Ìôî (ÌíÄÏä§ÌÅ¨Î¶∞ Ï§ëÏïô)
         var rect = popup.GetComponent<RectTransform>();
         if (rect != null)
         {
