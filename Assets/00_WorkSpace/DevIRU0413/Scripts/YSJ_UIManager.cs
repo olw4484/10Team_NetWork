@@ -12,7 +12,6 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
     public bool IsDontDestroy => isDontDestroyOnLoad;
     #endregion
 
-
     #region IManager
     public void Initialize()
     {

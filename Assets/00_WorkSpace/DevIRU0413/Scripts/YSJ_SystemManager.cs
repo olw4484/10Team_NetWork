@@ -15,10 +15,14 @@ public enum SystemStateType
 
 public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManager
 {
+    private bool _isInitialized = false;
+
     #region Field
     public ILoadingUI LoadingUI;
 
+    public SceneBase CurrentSceneBase { get; private set; }
     public SceneID CurrentSceneID { get; private set; }
+
     public SystemStateType CurrentState { get; private set; }
 
     public int Priority => (int)ManagerPriority.SystemManager;
@@ -28,13 +32,22 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
     #region IManager
     public void Initialize()
     {
+        if (_isInitialized) return;
+
         GameObject sceneBaseGO = GameObject.FindGameObjectWithTag("SceneBase");
         SceneBase sceneBaseCmp = sceneBaseGO.GetComponent<SceneBase>();
 
-        if (sceneBaseCmp != null)
-            CurrentSceneID = sceneBaseCmp.SceneID;
+        if (sceneBaseCmp == null)
+        {
+            Debug.LogError("SceneBase 컴포넌트가 존재하지 않습니다. 시스템 매니저 초기화 실패.");
+            return;
+        }
 
+        CurrentSceneBase = sceneBaseCmp;
+        CurrentSceneID = sceneBaseCmp.SceneID;
         ChangeState(SystemStateType.Init);
+
+        _isInitialized = false;
     }
     public void Cleanup() { }
     public GameObject GetGameObject() => this.gameObject;
@@ -121,7 +134,7 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
         return PlayerPrefs.GetFloat("Volume", 0.5f);
     }
 
-    
+
 
     #endregion
 }

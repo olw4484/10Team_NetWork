@@ -6,6 +6,6 @@ public class TestScene : SceneBase
 
     protected override void Initialize()
     {
-
+        base.Initialize();
     }
 }

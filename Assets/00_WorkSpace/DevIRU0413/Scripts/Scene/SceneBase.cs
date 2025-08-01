@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public abstract class SceneBase : MonoBehaviour
 {
@@ -7,28 +8,34 @@ public abstract class SceneBase : MonoBehaviour
 
     [SerializeField] private GameObject[] managersInOrder;
 
+    public Action OnInitializeAction;
+
     protected void Awake()
     {
+        InitSystem();
         LoadManagers();
         Initialize();
         LoadUI();
+
+        YSJ_SystemManager.Instance.ChangeState(SystemStateType.Playing);
     }
 
-    protected abstract void Initialize();
-
-    private void LoadUI()
+    private void InitSystem()
     {
-        // UI 프리팹을 순회하며 UI 매니저에 설정
-
-        // 현재 씬에 존재하는 BaseUI 오브젝트 수집
-        // GameObject[] SubscribeManagers = GameObject.FindGameObjectsWithTag("Manager");
+#if UNITY_EDITOR
+        Debug.Log($"[SceneBase-InitSystem]: Scene {SceneID} Initialize.");
+#endif
+        // 시스템 매니저 초기화
+        YSJ_SystemManager systemManager = YSJ_SystemManager.Instance;
+        ManagerGroup.Instance.RegisterManager(systemManager);
     }
 
     // 매니저 등록 및 초기화
     private void LoadManagers()
     {
-        Debug.Log($"[SceneBase]: Scene {SceneID} Load Managers.");
-
+#if UNITY_EDITOR
+        Debug.Log($"[SceneBase-LoadManagers]: Scene {SceneID} Initialize.");
+#endif
         // 현재 씬에 존재하는 Manager 태그 오브젝트 수집
         // GameObject[] SubscribeManagers = GameObject.FindGameObjectsWithTag("Manager");
 
@@ -44,5 +51,21 @@ public abstract class SceneBase : MonoBehaviour
 
         // 등록된 매니저들을 초기화
         ManagerGroup.Instance.InitializeManagers();
+    }
+
+    protected virtual void Initialize()
+    {
+#if UNITY_EDITOR
+        Debug.Log($"[SceneBase-Initialize]: Scene {SceneID} Initialize.");
+#endif
+        OnInitializeAction?.Invoke();
+    }
+
+    private void LoadUI()
+    {
+        // UI 프리팹을 순회하며 UI 매니저에 설정
+
+        // 현재 씬에 존재하는 BaseUI 오브젝트 수집
+        // GameObject[] SubscribeManagers = GameObject.FindGameObjectsWithTag("Manager");
     }
 }
