@@ -4,10 +4,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ResourceSystem : MonoBehaviour
+public class ResourceSystem : MonoBehaviour, IManager
 {
     public enum ResourceType { Gold, Gear }
     public static ResourceSystem Instance { get; private set; }
+
+    public int Priority => (int)ManagerPriority.ResourceSystem;
+
+    public bool IsDontDestroy => true;
 
     [Header("Resource Settings")]
     public int currentGold = 0;
@@ -111,5 +115,25 @@ public class ResourceSystem : MonoBehaviour
             _ => 0
         };
     }
+
+    public void Initialize()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+
+    public void Cleanup()
+    {
+        if (PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.Disconnect();
+        }
+    }
+
+    public GameObject GetGameObject() => this.gameObject;
 }
 
