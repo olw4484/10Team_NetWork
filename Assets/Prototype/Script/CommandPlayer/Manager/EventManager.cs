@@ -10,7 +10,7 @@ public class EventManager : MonoBehaviour, IManager
 
     public int Priority => (int)ManagerPriority.EventManager;
 
-    public bool IsDontDestroy => true;
+    public bool IsDontDestroy => false;
 
     // 싱글턴 초기화 / IManager의 Initialize를 사용하므로 주석처리
 

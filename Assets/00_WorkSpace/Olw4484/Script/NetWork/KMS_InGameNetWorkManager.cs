@@ -27,7 +27,7 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
 
     public int Priority => (int)ManagerPriority.InGameNetworkManager;
 
-    public bool IsDontDestroy => true;
+    public bool IsDontDestroy => false;
 
     // GemeStart √ ±‚»≠
     private void StartSpawnProcess()
