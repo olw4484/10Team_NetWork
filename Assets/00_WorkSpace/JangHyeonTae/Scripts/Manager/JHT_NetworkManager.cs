@@ -91,6 +91,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
         mainLobbyPanel = Instantiate(mainLobbyPanel);
         mainLobbyPanel.TeamInit();
         mainLobbyPanel.NetInit();
+        mainLobbyPanel.RoomInit();
         //PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
     }
 
@@ -116,19 +117,16 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
 
     public override void OnCreatedRoom()
     {
-        ExitGames.Client.Photon.Hashtable roomInit = new();
-        roomInit["RedCount"] = 0;
-        roomInit["BlueCount"] = 0;
-        PhotonNetwork.CurrentRoom.SetCustomProperties(roomInit);
-
+        //ExitGames.Client.Photon.Hashtable roomInit = new();
+        //roomInit["RedCount"] = 0;
+        //roomInit["BlueCount"] = 0;
+        //PhotonNetwork.CurrentRoom.SetCustomProperties(roomInit);
+        ManagerGroup.Instance.GetManager<JHT_TeamManager>().SetTeamCount(0, 0);
     }
-    //여기까지 참조한 다른 클래스 없음
 
 
     public override void OnJoinedRoom()
     {
-        OnRoomIn?.Invoke(true,true);
-        mainLobbyPanel.RoomInit();
         StartCoroutine(CallPlayer());
     }
 
@@ -140,7 +138,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
             yield return null;
         }
 
-        yield return new WaitForSeconds(0.1f);
 
         if (PhotonNetwork.IsMasterClient)
             ManagerGroup.Instance.GetManager<JHT_TeamManager>().SetPlayerTeam(PhotonNetwork.LocalPlayer);
@@ -153,6 +150,14 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
         ManagerGroup.Instance.GetManager<JHT_RoomManager>().PlayerPanelSpawn();
         ManagerGroup.Instance.GetManager<JHT_RoomManager>().SetGameCustomProperty(false);
         StateCustomProperty(CurrentState.InRoom);
+
+        yield return new WaitUntil(() =>
+       PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("CurState") &&
+       (CurrentState)PhotonNetwork.LocalPlayer.CustomProperties["CurState"] == CurrentState.InRoom);
+
+        OnRoomIn?.Invoke(true, true);
+        Debug.Log($"현재 상태 {PhotonNetwork.LocalPlayer.CustomProperties["CurState"]}");
+        Debug.Log($"{PhotonNetwork.LocalPlayer.ActorNumber} 생성 액터넘버");
     }
 
     public override void OnLeftRoom()
@@ -297,7 +302,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
             {
                 if (mainLobbyPanel.gameObject.activeSelf)
                     mainLobbyPanel.gameObject.SetActive(!(bool)value);
-                StateCustomProperty(CurrentState.Lobby);
             }
         }
     }

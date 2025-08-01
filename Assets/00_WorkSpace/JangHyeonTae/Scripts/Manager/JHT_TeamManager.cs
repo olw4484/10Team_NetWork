@@ -28,8 +28,9 @@ public class JHT_TeamManager : MonoBehaviour, IManager
     public event Action OnCantChangeBlue;
     public Action<Player, int, int> OnChangeTeam;
 
-    private CurrentState curState;
 
+    private bool isRoom;
+    public Action<bool> OnState;
 
     #region IManager
 
@@ -77,12 +78,14 @@ public class JHT_TeamManager : MonoBehaviour, IManager
 
         if (blueCount >= 2)
         {
+            Debug.Log("[TeamManager - BlueTeamSelect] : 블루팀 못감");
             OnCantChangeBlue?.Invoke();
             return;
         }
 
         if (player.CustomProperties.TryGetValue("CurState", out object value))
         {
+
             //플레이어 게임상태 가져와서 구분
             if ((CurrentState)value == CurrentState.InRoom)
             {
@@ -103,6 +106,7 @@ public class JHT_TeamManager : MonoBehaviour, IManager
         }
     }
 
+
     IEnumerator AddBlueValueCor()
     {
         yield return new WaitForSeconds(0.1f);
@@ -117,6 +121,7 @@ public class JHT_TeamManager : MonoBehaviour, IManager
 
         if (redCount >= 2)
         {
+            Debug.Log("[TeamManager - RedTeamSelect] : 레드팀 못감");
             OnCantChangeRed?.Invoke();
             return;
         }
@@ -171,9 +176,7 @@ public class JHT_TeamManager : MonoBehaviour, IManager
             setting = TeamSetting.Red;
         }
 
-        ExitGames.Client.Photon.Hashtable props = new();
-        props["Team"] = setting;
-        player.SetCustomProperties(props);
+        SetTeam(setting, player);
     }
     #endregion
 
@@ -197,17 +200,11 @@ public class JHT_TeamManager : MonoBehaviour, IManager
             setting = TeamSetting.Blue;
         }
 
-        ExitGames.Client.Photon.Hashtable count = new();
-        count["RedCount"] = red;
-        count["BlueCount"] = blue;
-        PhotonNetwork.CurrentRoom.SetCustomProperties(count);
-        
-
-        ExitGames.Client.Photon.Hashtable props = new();
-        props["Team"] = setting;
-        player.SetCustomProperties(props);
+        SetTeamCount(red, blue);
+        SetTeam(setting, player);
     }
     #endregion
+
 
     #region 룸에 red,blue Count 생성
     public void SetTeamCount(int red, int blue)
@@ -219,6 +216,13 @@ public class JHT_TeamManager : MonoBehaviour, IManager
         teamCount["RedCount"] = redCount;
         teamCount["BlueCount"] = blueCount;
         PhotonNetwork.CurrentRoom.SetCustomProperties(teamCount);
+    }
+
+    public void SetTeam(TeamSetting setting,Player player)
+    {
+        ExitGames.Client.Photon.Hashtable props = new();
+        props["Team"] = setting;
+        player.SetCustomProperties(props);
     }
 
     #endregion

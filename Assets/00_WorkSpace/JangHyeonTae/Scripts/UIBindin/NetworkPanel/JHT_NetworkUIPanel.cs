@@ -67,7 +67,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
     #endregion
 
     #region RoomManager
-     private RectTransform playerRedPanelParent => GetUI<RectTransform>("PlayerListRedParent");
+    private RectTransform playerRedPanelParent => GetUI<RectTransform>("PlayerListRedParent");
     private RectTransform playerBluePanelParent => GetUI<RectTransform>("PlayerListBlueParent");
     #endregion
 
@@ -98,7 +98,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         GetEvent("BlueTeamPanel").Click += data =>
         {
             teamManager.OnBlueSelect?.Invoke(PhotonNetwork.LocalPlayer);
-
+            Debug.Log($"{PhotonNetwork.LocalPlayer.ActorNumber} 블루버튼 클릭");
         };
         #endregion
     }
