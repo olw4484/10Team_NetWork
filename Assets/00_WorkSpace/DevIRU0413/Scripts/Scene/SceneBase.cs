@@ -30,7 +30,7 @@ public abstract class SceneBase : MonoBehaviour
         Debug.Log($"[SceneBase]: Scene {SceneID} Load Managers.");
 
         // 현재 씬에 존재하는 Manager 태그 오브젝트 수집
-        GameObject[] SubscribeManagers = GameObject.FindGameObjectsWithTag("Manager");
+        // GameObject[] SubscribeManagers = GameObject.FindGameObjectsWithTag("Manager");
 
         // 기존에 불필요한 매니저 제거
         ManagerGroup.Instance.ClearManagers();
@@ -39,7 +39,8 @@ public abstract class SceneBase : MonoBehaviour
         ManagerGroup.Instance.CleanupManagers();
 
         // 새로 찾은 매니저 오브젝트들을 등록
-        ManagerGroup.Instance.RegisterManager(SubscribeManagers);
+        // ManagerGroup.Instance.RegisterManager(SubscribeManagers);
+        ManagerGroup.Instance.RegisterManager(managersInOrder);
 
         // 등록된 매니저들을 초기화
         ManagerGroup.Instance.InitializeManagers();
