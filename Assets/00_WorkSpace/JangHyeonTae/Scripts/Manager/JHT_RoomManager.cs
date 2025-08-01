@@ -3,42 +3,57 @@ using Photon.Realtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class JHT_RoomManager : MonoBehaviourPun
+public class JHT_RoomManager : MonoBehaviour, IManager
 {
+
     [SerializeField] private GameObject playerPanelPrefab;
-    [SerializeField] private Transform playerRedPanelParent;
-    [SerializeField] private Transform playerBluePanelParent;
-    public Button startButton;
-    [SerializeField] private Button leaveRoomButton;
-
     public Dictionary<int, JHT_PlayerPanelItem> playerPanelDic = new();
-    [SerializeField] private JHT_TeamManager teamManager;
+
+    public Action<bool> OnGameStart;
+    public Action<bool> OnStartButtonActive;
+    public Func<RectTransform> OnSetRedParent;
+    public Func<RectTransform> OnSetBlueParent;
+
+    #region IManager
+
+    public bool IsDontDestroy => false;
 
 
-    public GameObject canvasPanel;
-    private void Start()
+    public void Initialize()
     {
-        startButton.onClick.AddListener(GameStart);
-        leaveRoomButton.onClick.AddListener(LeaveRoom);
-        teamManager.OnChangeTeam += ChangeTeam;
+        Init();
     }
 
-    private void OnDestroy()
+    public void Cleanup()
     {
-        startButton.onClick.RemoveListener(GameStart);
-        leaveRoomButton.onClick.RemoveListener(LeaveRoom);
-        teamManager.OnChangeTeam -= ChangeTeam;
+        Outit();
     }
+
+    public GameObject GetGameObject() => this.gameObject;
+
+    #endregion
+
+    private void Init()
+    {
+        ManagerGroup.Instance.GetManager<JHT_TeamManager>().OnChangeTeam += ChangeTeam;
+    }
+
+    private void Outit()
+    {
+        ManagerGroup.Instance.GetManager<JHT_TeamManager>().OnChangeTeam -= ChangeTeam;
+    }
+
 
     #region 원래는 다른플레이어 패널 생성 이었지만 지금은 마스터 클라이언트가 바뀔시에만 사용(OnPlayerPropertiesUpdate에서 다른 플레이어 생성)
     public void PlayerPanelSpawn(Player player)
     {
         if (playerPanelDic.TryGetValue(player.ActorNumber, out JHT_PlayerPanelItem panel))
         {
-            startButton.interactable = true;
+            OnStartButtonActive?.Invoke(true);
             panel.Init(player);
             return;
         }
@@ -58,7 +73,7 @@ public class JHT_RoomManager : MonoBehaviourPun
 
         if (!PhotonNetwork.IsMasterClient)
         {
-            startButton.interactable = false;
+            OnStartButtonActive?.Invoke(false);
         }
 
         foreach (Player player in PhotonNetwork.PlayerList)
@@ -70,7 +85,6 @@ public class JHT_RoomManager : MonoBehaviourPun
                 JHT_PlayerPanelItem playerPanel = obj.GetComponent<JHT_PlayerPanelItem>();
                 playerPanel.Init(player);
                 playerPanelDic.Add(player.ActorNumber, playerPanel);
-                Debug.Log($"My Player 딕셔너리에 추가  : Key - {player.ActorNumber}, Value - {playerPanel}");
             }
             else
             {
@@ -95,7 +109,7 @@ public class JHT_RoomManager : MonoBehaviourPun
 
         if (!PhotonNetwork.IsMasterClient)
         {
-            startButton.interactable = false;
+            OnStartButtonActive?.Invoke(false);
         }
 
         StartCoroutine(SetTeamCor(player,red,blue));
@@ -111,7 +125,7 @@ public class JHT_RoomManager : MonoBehaviourPun
             yield return null;
         }
 
-        teamManager.SetChangePlayerTeam(player, _red, _blue);
+        ManagerGroup.Instance.GetManager<JHT_TeamManager>().SetChangePlayerTeam(player, _red, _blue);
 
         while (!player.CustomProperties.ContainsKey("Team"))
             yield return null;
@@ -125,8 +139,7 @@ public class JHT_RoomManager : MonoBehaviourPun
     }
 
 
-    //팀바꾸기 동기화(OnPlayerPropertiesUpdate에서 생성) -> 각 플레이어가 역할을 팀을 배정받을 때 생성
-    // -> PlayerPanelSpawn(Player player)의 역할 대체
+    //팀바꾸기 동기화(OnPlayerPropertiesUpdate에서 생성)
     public void OtherPlayerChangeTeam(Player player)
     {
         if (player == PhotonNetwork.LocalPlayer)
@@ -159,8 +172,6 @@ public class JHT_RoomManager : MonoBehaviourPun
         JHT_PlayerPanelItem newPanel = obj.GetComponent<JHT_PlayerPanelItem>();
         newPanel.Init(player);
         playerPanelDic.Add(player.ActorNumber, newPanel);
-
-
     }
     #endregion
 
@@ -171,16 +182,16 @@ public class JHT_RoomManager : MonoBehaviourPun
         {
             if ((int)value == (int)TeamSetting.Blue)
             {
-                return playerBluePanelParent;
+                return OnSetBlueParent?.Invoke();
             }
             else
             {
-                return playerRedPanelParent;
+                return OnSetRedParent?.Invoke();
             }
         }
         else
         {
-            Debug.Log($"TeamManager SetParentFromCustomProperty 팀 정보 없음 {PhotonNetwork.LocalPlayer.ActorNumber}");
+            Debug.LogError($"TeamManager SetParentFromCustomProperty 팀 정보 없음 {PhotonNetwork.LocalPlayer.ActorNumber}");
             return null;
         }
     }
@@ -204,7 +215,7 @@ public class JHT_RoomManager : MonoBehaviourPun
             {
                 props["BlueCount"] = currentBlue - 1;
                 PhotonNetwork.CurrentRoom.SetCustomProperties(props);
-                Debug.Log("Leave blueteam");
+                Debug.Log($"[RoomManager - PlayerLeaveRoom] : {(int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"]}");
             }
         }
         else if ((TeamSetting)player.CustomProperties["Team"] == TeamSetting.Red)
@@ -214,38 +225,66 @@ public class JHT_RoomManager : MonoBehaviourPun
             {
                 props["RedCount"] = currentRed - 1;
                 PhotonNetwork.CurrentRoom.SetCustomProperties(props);
-                Debug.Log("Leave redteam");
+                Debug.Log($"[RoomManager - PlayerLeaveRoom] : {(int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"]}");
             }
+        }
+        else
+        {
+            Debug.LogError("[RoomManager - PlayerLeaveRoom] : Not set team");
         }
     }
     #endregion
 
+
     #region 게임시작
+    
     public void GameStart()
     {
+        
         if (PhotonNetwork.IsMasterClient && AllPlayerReadyCheck()
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] >= 1
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] >= 1)
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] >= 1          //여기 2:2로 바꿔야함
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] >= 1)        //여기 2:2로 바꿔야함
         {
-            JHT_NetworkManager.NetworkInstance.StateCustomProperty(CurrentState.InGame);
-            JHT_NetworkManager.NetworkInstance.SetGameCustomProperty(true);
+            SetGameCustomProperty(true);
 
             //해당 게임씬 넣기
             StartCoroutine(WaitForLoad(PhotonNetwork.LocalPlayer));
-
         }
     }
 
     IEnumerator WaitForLoad(Player player)
     {
-        while (!player.CustomProperties.ContainsKey("Team") || !player.CustomProperties.ContainsKey("Character"))
+        while (!player.CustomProperties.ContainsKey("Team") || !player.CustomProperties.ContainsKey("Character") ||
+            !player.CustomProperties.ContainsKey("Role"))
             yield return null;
 
         int playerIndex = (int)player.CustomProperties["Character"];
-        Vector3 spawnPos = (TeamSetting)player.CustomProperties["Team"] == TeamSetting.Red ? new Vector3(35, 0, 0) : new Vector3(-35, 0, 0);
-        Quaternion rot = (TeamSetting)player.CustomProperties["Team"] == TeamSetting.Red ? Quaternion.Euler(0, 270, 0) : Quaternion.Euler(0, 90, 0);
 
-        GameObject obj = PhotonNetwork.Instantiate(JHT_NetworkManager.NetworkInstance.characters[playerIndex].name, spawnPos, rot);
+        SetHeroCustomProperty((TeamSetting)player.CustomProperties["Team"]);
+
+        //ManagerGroup.Instance.GetManager<KMS_InGameNetWorkManager>().SetRole(playerIndex);
+    }
+
+    public void SetHeroCustomProperty(TeamSetting setting)
+    {
+        ExitGames.Client.Photon.Hashtable roles = new();
+        string setJob = setting == 0 ? "Hero" : "command";
+        roles["Role"] = setJob;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(roles);
+    }
+
+    public void SetGameCustomProperty(bool _value)
+    {
+        ExitGames.Client.Photon.Hashtable gameStart = new();
+        bool isStart = _value;
+        gameStart["GamePlay"] = isStart;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(gameStart);
+
+
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("GamePlay", out object value))
+        {
+            OnGameStart?.Invoke((bool)value);
+        }
     }
 
 
@@ -303,4 +342,6 @@ public class JHT_RoomManager : MonoBehaviourPun
             }
         }
     }
+
+    
 }
