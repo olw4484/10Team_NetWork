@@ -17,8 +17,8 @@ public class PlayerInputHandler : MonoBehaviour
     private float dragThreshold = 10f;
 
     private ISelectable currentSelected;
-    private List<MinionController> selectedMinions = new();
- 
+    public List<BaseMinionController> selectedMinions = new();
+
 
     void Update()
     {
@@ -208,7 +208,7 @@ public class PlayerInputHandler : MonoBehaviour
                     else // 타겟 (적이 될 수 있음)
                     {
                         PhotonView targetView = hit.transform.GetComponent<PhotonView>();
-                        if (targetView != null)
+                        if (hit.transform.TryGetComponent<IDamageable>(out var dmg))
                             minion.photonView.RPC("RpcSetTarget", RpcTarget.All, targetView.ViewID);
                     }
                 }
