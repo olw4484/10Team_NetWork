@@ -24,10 +24,17 @@ public class MinionController : BaseMinionController, ISelectable
         this.isManual = isManual;
     }
 
+
     // ----- 선택 인터페이스 (ISelectable) -----
     public void Select() => view?.SetHighlight(true);
     public void Deselect() => view?.SetHighlight(false);
     public SelectableType GetSelectableType() => SelectableType.Minion;
+
+    public override void SetSelected(bool isSelected)
+    {
+        if (isSelected) Select();
+        else Deselect();
+    }
 
     // ----- RPC 제어 -----
     [PunRPC]

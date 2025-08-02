@@ -19,7 +19,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
     public MinionDataSO data;
 
     [Header("Components")]
-    protected PhotonView photonView;
+    public PhotonView photonView;
     protected NavMeshAgent agent;
     protected MinionView view;
 
@@ -213,6 +213,8 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
     {
         waypointGroup = group;
     }
+
+    public virtual void SetSelected(bool isSelected) { }
 
     public virtual void Initialize(MinionDataSO data, Transform target, WaypointGroup waypointGroup = null, int teamId = 0)
     {

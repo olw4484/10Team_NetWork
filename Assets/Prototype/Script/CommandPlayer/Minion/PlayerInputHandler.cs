@@ -17,7 +17,7 @@ public class PlayerInputHandler : MonoBehaviour
     private float dragThreshold = 10f;
 
     private ISelectable currentSelected;
-    public List<BaseMinionController> selectedMinions = new();
+    private List<BaseMinionController> selectedMinions = new();
 
 
     void Update()
@@ -185,10 +185,6 @@ public class PlayerInputHandler : MonoBehaviour
                         break;
                 }
             }
-        }
-        else
-        {
-
         }
     }
 
