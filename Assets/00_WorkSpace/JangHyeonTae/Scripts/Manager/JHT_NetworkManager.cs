@@ -238,8 +238,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
     #endregion
 
 
-
-
     #region CustomProperty
     // Player Network State
 
@@ -249,6 +247,37 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
         CurrentState curstate = _curPlayerState;
         curState["CurState"] = curstate; // 위에까지 작성과정
         PhotonNetwork.LocalPlayer.SetCustomProperties(curState); //전역변수 저장 느낌
+    }
+
+    public void SetHeroCustomProperty(TeamSetting setting)
+    {
+        int setRedCount = 0;
+        int setBlueCount = 0;
+        ExitGames.Client.Photon.Hashtable roles = new();
+        int setTeam = (int)setting;
+        string setJob = null;
+
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team",out object value))
+        {
+            if ((int)value == 0)
+            {
+                setJob = setRedCount == 0 ? "Hero" : "Command";
+                setRedCount++;
+            }
+            else
+            {
+                setJob = setBlueCount == 0 ? "Hero" : "Command";
+                setBlueCount++;
+            }
+        }
+        else
+        {
+            Debug.LogError("NetworkManager - ConnectGameScene] 게임 시작시 팀정보 없음");
+        }
+
+        roles["Team"] = setTeam;
+        roles["Role"] = setJob;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(roles);
     }
 
     // 프로퍼티 변화가 생겼을때 호출, 호출이 되어야할 로직이 있을 사용
@@ -297,7 +326,8 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
             {
                 if(mainLobbyPanel.gameObject.activeSelf)
                     mainLobbyPanel.gameObject.SetActive(!(bool)value);
-                PhotonNetwork.LoadLevel("GameScenes");
+
+                ConnectGameScene();
             }
             else
             {
@@ -342,6 +372,37 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
                 Debug.LogWarning($"[Character] 패널 없음: {targetPlayer.ActorNumber}");
             }
         }
+    }
+    #endregion
+
+    #region Method
+
+    public void ConnectGameScene()
+    {
+        StartCoroutine(WaitForLoad(PhotonNetwork.LocalPlayer));
+    }
+
+    IEnumerator WaitForLoad(Player player)
+    {
+        //1. FadeIn
+
+        //2. 씬전환시작
+        PhotonNetwork.LoadLevel("GameScenes");
+        
+
+        //3. 로딩후 씬 준비
+
+        //4. 씬 완료시 while문 시작
+        while (!player.CustomProperties.ContainsKey("Team") || !player.CustomProperties.ContainsKey("Character") ||
+            !player.CustomProperties.ContainsKey("Role"))
+            yield return null;
+
+        int playerIndex = (int)player.CustomProperties["Character"];
+
+        SetHeroCustomProperty((TeamSetting)player.CustomProperties["Team"]);
+        //5. ManagerGroup.Instance.GetManager<KMS_InGameNetWorkManager>().SetRole(playerIndex);
+
+        //6. FadeOut
     }
     #endregion
 
