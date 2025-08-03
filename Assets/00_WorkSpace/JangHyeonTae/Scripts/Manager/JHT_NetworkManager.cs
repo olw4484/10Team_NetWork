@@ -249,35 +249,10 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
         PhotonNetwork.LocalPlayer.SetCustomProperties(curState); //전역변수 저장 느낌
     }
 
+
     public void SetHeroCustomProperty(TeamSetting setting)
     {
-        int setRedCount = 0;
-        int setBlueCount = 0;
-        ExitGames.Client.Photon.Hashtable roles = new();
-        int setTeam = (int)setting;
-        string setJob = null;
-
-        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team",out object value))
-        {
-            if ((int)value == 0)
-            {
-                setJob = setRedCount == 0 ? "Hero" : "Command";
-                setRedCount++;
-            }
-            else
-            {
-                setJob = setBlueCount == 0 ? "Hero" : "Command";
-                setBlueCount++;
-            }
-        }
-        else
-        {
-            Debug.LogError("NetworkManager - ConnectGameScene] 게임 시작시 팀정보 없음");
-        }
-
-        roles["Team"] = setTeam;
-        roles["Role"] = setJob;
-        PhotonNetwork.LocalPlayer.SetCustomProperties(roles);
+        
     }
 
     // 프로퍼티 변화가 생겼을때 호출, 호출이 되어야할 로직이 있을 사용
@@ -309,12 +284,12 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
 
         if (changedProps.ContainsKey("GamePlay"))
         {
-            StartCoroutine(GameStartCor(targetPlayer, changedProps));
+            StartCoroutine(GameStartCor(changedProps));
         }
 
     }
 
-    IEnumerator GameStartCor(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    IEnumerator GameStartCor(ExitGames.Client.Photon.Hashtable changedProps)
     {
         yield return null;
         if (changedProps.TryGetValue("GamePlay",out object value))
@@ -327,6 +302,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
                 if(mainLobbyPanel.gameObject.activeSelf)
                     mainLobbyPanel.gameObject.SetActive(!(bool)value);
 
+                //ConnectGameScene((TeamSetting)PhotonNetwork.LocalPlayer.CustomProperties["Team"]);
                 ConnectGameScene();
             }
             else
@@ -377,10 +353,117 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
 
     #region Method
 
+    // 1. 
     public void ConnectGameScene()
     {
-        StartCoroutine(WaitForLoad(PhotonNetwork.LocalPlayer));
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.PlayerList.Length == 4)
+        {
+            int red = 0, blue = 0;
+            foreach (var player in PhotonNetwork.PlayerList)
+            {
+                // Team - 0: Red, 1: Blue
+                // Role - 0: Hero, 1: Command
+                ExitGames.Client.Photon.Hashtable props = new();
+                if (red <= blue)
+                {
+                    props["Team"] = 0;
+                    props["Role"] = red == 0 ? "Hero" : "Command";
+                    red++;
+                }
+                else
+                {
+                    props["Team"] = 1;
+                    props["Role"] = blue == 0 ? "Hero" : "Command";
+                    blue++;
+                }
+                player.SetCustomProperties(props);
+            }
+        }
     }
+
+    // 2. 1번 2번중 뭐가 되는지 확인해야함
+    //public void ConnectGameScene(TeamSetting setting)
+    //{
+    //    // 체크해야 할부분 현재 플레이어의 레드 카운트와 블루 카운트가 동기화 될 부분인가?
+    //    // 아니면 현재 그대로 로컬 플레이어에 대한 플러스만 되면 되는가
+
+    //    int setRedCount = 0;
+    //    int setBlueCount = 0;
+
+    //    if (PhotonNetwork.IsMasterClient && PhotonNetwork.PlayerList.Length == 4)
+    //    {
+    //        foreach (var player in PhotonNetwork.PlayerList)
+    //        {
+    //            ExitGames.Client.Photon.Hashtable roles = new();
+
+    //            int setTeam = (int)setting;
+    //            string setJob = null;
+
+    //            if (player.CustomProperties.TryGetValue("Team", out object value))
+    //            {
+    //                if ((int)value == 0)
+    //                {
+    //                    setJob = setRedCount == 0 ? "Hero" : "Command";
+    //                    setRedCount++;
+    //                }
+    //                else
+    //                {
+    //                    setJob = setBlueCount == 0 ? "Hero" : "Command";
+    //                    setBlueCount++;
+    //                }
+    //            }
+    //            else
+    //            {
+    //                Debug.LogError("NetworkManager - ConnectGameScene] 게임 시작시 팀정보 없음");
+    //            }
+
+    //            roles["Team"] = setTeam;
+    //            roles["Role"] = setJob;
+    //            PhotonNetwork.LocalPlayer.SetCustomProperties(roles);
+    //            StartCoroutine(WaitForLoad(player));
+    //        }
+    //    }
+
+    //}
+
+    // 2. 
+    //public void ConnectGameScene(TeamSetting setting)
+    //{
+    //    // 체크해야 할부분 현재 플레이어의 레드 카운트와 블루 카운트가 동기화 될 부분인가?
+    //    // 아니면 현재 그대로 로컬 플레이어에 대한 플러스만 되면 되는가
+
+    //    int setRedCount = 0;
+    //    int setBlueCount = 0;
+
+
+    //    ExitGames.Client.Photon.Hashtable roles = new();
+
+    //    int setTeam = (int)setting;
+    //    string setJob = null;
+
+    //    if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out object value))
+    //    {
+    //        if ((int)value == 0)
+    //        {
+    //            setJob = setRedCount == 0 ? "Hero" : "Command";
+    //            setRedCount++;
+    //        }
+    //        else
+    //        {
+    //            setJob = setBlueCount == 0 ? "Hero" : "Command";
+    //            setBlueCount++;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("NetworkManager - ConnectGameScene] 게임 시작시 팀정보 없음");
+    //    }
+
+    //    roles["Team"] = setTeam;
+    //    roles["Role"] = setJob;
+    //    PhotonNetwork.LocalPlayer.SetCustomProperties(roles);
+    //    StartCoroutine(WaitForLoad(PhotonNetwork.LocalPlayer));
+    //}
 
     IEnumerator WaitForLoad(Player player)
     {
@@ -400,6 +483,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
         int playerIndex = (int)player.CustomProperties["Character"];
 
         SetHeroCustomProperty((TeamSetting)player.CustomProperties["Team"]);
+        // 네트워크 연결시 이부분 해줘야함
         //5. ManagerGroup.Instance.GetManager<KMS_InGameNetWorkManager>().SetRole(playerIndex);
 
         //6. FadeOut
