@@ -6,7 +6,7 @@ using static ISelectable;
 
 public class PlayerInputHandler : MonoBehaviour
 {
-    [Header("레이어 설정")]
+    [Header("LayerMask")]
     public LayerMask selectionMask;
     public LayerMask commandMask;
     public RectTransform dragBoxVisual;

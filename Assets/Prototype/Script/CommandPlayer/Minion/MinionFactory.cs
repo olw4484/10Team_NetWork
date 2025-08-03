@@ -53,7 +53,7 @@ public class MinionFactory : MonoBehaviour
 
     }
 
-    public MinionController SpawnFreeMinion(MinionType type, Vector3 pos, Transform target, WaypointGroup waypointGroup = null, int teamId = 0)
+    public BaseMinionController SpawnFreeMinion(MinionType type, Vector3 pos, Transform target, WaypointGroup waypointGroup = null, int teamId = 0)
     {
         if (!minionDataDict.TryGetValue(type, out var data) || data == null)
         {
@@ -71,42 +71,23 @@ public class MinionFactory : MonoBehaviour
             minion = Instantiate(prefabDict[type], pos, Quaternion.identity);
         }
 
-        var controller = minion.GetComponent<MinionController>();
+        var controller = minion.GetComponent<BaseMinionController>();
         controller?.Initialize(data, target, waypointGroup, teamId);
+
         return controller;
     }
 
 
     public bool TrySpawnMinion(MinionType type, Vector3 position, Transform target, CommandPlayer player, int teamId)
     {
-
         var minionInfo = hqData.manualSpawnList.FirstOrDefault(x => x.type == type);
-
-        if (target == null)
-        {
-            Debug.LogWarning("[Factory] Target is null - 미니언이 움직이지 않을 수 있음.");
-        }
-
-        if (!player.TrySpendGold(minionInfo.cost))
-            return false;
+        if (!player.TrySpendGold(minionInfo.cost)) return false;
 
         GameObject go;
-
         if (Photon.Pun.PhotonNetwork.InRoom)
-        {
-            var prefabName = minionInfo.prefab.name;
-            go = Photon.Pun.PhotonNetwork.Instantiate(prefabName, position, Quaternion.identity);
-        }
+            go = Photon.Pun.PhotonNetwork.Instantiate(minionInfo.prefab.name, position, Quaternion.identity);
         else
-        {
             go = Instantiate(minionInfo.prefab, position, Quaternion.identity);
-        }
-
-        if (go == null)
-        {
-            Debug.LogError("[Factory] Instantiate 결과가 null입니다.");
-            return false;
-        }
 
         if (!minionDataDict.TryGetValue(type, out var data))
         {
@@ -114,14 +95,17 @@ public class MinionFactory : MonoBehaviour
             return false;
         }
 
-        var controller = go.GetComponent<MinionController>();
+        var controller = go.GetComponent<BaseMinionController>();
         if (controller == null)
         {
-            Debug.LogError("[Factory] MinionController가 프리팹에 존재하지 않습니다.");
+            Debug.LogError("[Factory] BaseMinionController가 프리팹에 존재하지 않습니다.");
             return false;
         }
 
         controller.Initialize(data, target, null, teamId);
+
+        // 수동 소환 미니언으로 설정
+        controller.SetManualControl(true);
 
         return true;
     }

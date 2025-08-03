@@ -19,8 +19,9 @@ public class MinionController : BaseMinionController, ISelectable
         base.Initialize(data, target, waypointGroup, teamId);
     }
 
-    public void SetManualControl(bool isManual)
+    public override void SetManualControl(bool isManual)
     {
+        // if (!canBeManuallyControlled) return; // HQ확장 기능용 코드
         this.isManual = isManual;
     }
 

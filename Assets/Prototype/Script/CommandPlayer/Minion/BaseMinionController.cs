@@ -215,7 +215,10 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
     }
 
     public virtual void SetSelected(bool isSelected) { }
+    public virtual void SetManualControl(bool isManual)
+    {
 
+    }
     public virtual void Initialize(MinionDataSO data, Transform target, WaypointGroup waypointGroup = null, int teamId = 0)
     {
         this.data = data;
