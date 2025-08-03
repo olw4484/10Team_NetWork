@@ -50,7 +50,7 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
     }
 
     // 역할에 따라 오브젝트 스폰
-    private void SetRole(int heroIndex)
+    private void SetRoleInternal(int heroIndex)
     {
         int myTeamId = (int)PhotonNetwork.LocalPlayer.CustomProperties["Team"];
         string myRole = (string)PhotonNetwork.LocalPlayer.CustomProperties["Role"];
@@ -78,6 +78,18 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
             var hq = hqObj.GetComponent<HQCommander>();
             BindCommandPlayer(commandPlayer, hq);
         }
+    }
+
+    public void SetRole(int heroIndex)
+    {
+        if (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Team") ||
+            !PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Role"))
+        {
+            Debug.LogWarning("SetRole: 팀이나 역할 정보가 없습니다. 생성 취소됨.");
+            return;
+        }
+
+        SetRoleInternal(heroIndex);
     }
 
     private void BindCommandPlayer(CommandPlayer commandPlayer, HQCommander hq)
