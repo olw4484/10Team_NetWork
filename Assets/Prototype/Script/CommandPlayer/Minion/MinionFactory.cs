@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -53,27 +54,35 @@ public class MinionFactory : MonoBehaviour
 
     }
 
-    public BaseMinionController SpawnFreeMinion(MinionType type, Vector3 pos, Transform target, WaypointGroup waypointGroup = null, int teamId = 0)
+    public BaseMinionController SpawnAutoMinion(MinionType type, Vector3 spawnPos, Transform rallyTarget, WaypointGroup waypointGroup, int teamId)
     {
-        if (!minionDataDict.TryGetValue(type, out var data) || data == null)
+        if (!minionDataDict.TryGetValue(type, out var data))
         {
-            Debug.LogError($"[Spawner] MinionType({type}) 데이터 오류");
+            Debug.LogError($"[Factory] MinionData for {type} not found.");
             return null;
         }
 
-        GameObject minion;
-        if (Photon.Pun.PhotonNetwork.InRoom)
+        if (!prefabDict.TryGetValue(type, out var prefab))
         {
-            minion = Photon.Pun.PhotonNetwork.Instantiate(prefabDict[type].name, pos, Quaternion.identity);
+            Debug.LogError($"[Factory] Prefab for {type} not found.");
+            return null;
         }
+
+        GameObject go;
+        if (PhotonNetwork.InRoom)
+            go = PhotonNetwork.Instantiate(prefab.name, spawnPos, Quaternion.identity);
         else
+            go = Instantiate(prefab, spawnPos, Quaternion.identity);
+
+        var controller = go.GetComponent<BaseMinionController>();
+        if (controller == null)
         {
-            minion = Instantiate(prefabDict[type], pos, Quaternion.identity);
+            Debug.LogError("[Factory] No BaseMinionController on prefab.");
+            return null;
         }
 
-        var controller = minion.GetComponent<BaseMinionController>();
-        controller?.Initialize(data, target, waypointGroup, teamId);
-
+        controller.Initialize(data, rallyTarget, waypointGroup, teamId);
+        controller.SetManualControl(false); // 자동 소환
         return controller;
     }
 
