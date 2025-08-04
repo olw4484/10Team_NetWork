@@ -1,10 +1,10 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class HeroModel : MonoBehaviour
 {
-    // ±âº» ½ºÅÈ
+    // ê¸°ë³¸ ìŠ¤íƒ¯
     [field: SerializeField] public string Name { get; set; }
     [field: SerializeField] public int MaxHP { get; set; }
     [field: SerializeField] public int MaxMP { get; set; }
@@ -31,7 +31,7 @@ public class HeroModel : MonoBehaviour
     {
         if (heroType < 0 || heroType >= HeroStats.Length) return;
 
-        // heroType¿¡ µû¶ó ¹Ş¾Æ¿À´Â HeroStatÀÌ ´Ş¶óÁü
+        // heroTypeì— ë”°ë¼ ë°›ì•„ì˜¤ëŠ” HeroStatì´ ë‹¬ë¼ì§
         HeroStat stat = HeroStats[heroType];
 
         Name = stat.Name;
@@ -40,11 +40,12 @@ public class HeroModel : MonoBehaviour
         MoveSpd = stat.MoveSpd;
         Atk = stat.Atk;
         AtkRange = stat.AtkRange;
+        AtkSpd = stat.AtkSpd;
         Def = stat.Def;
     }
 }
 
-// HeroStat ±¸Á¶Ã¼
+// HeroStat êµ¬ì¡°ì²´
 public struct HeroStat
 {
     public string Name;

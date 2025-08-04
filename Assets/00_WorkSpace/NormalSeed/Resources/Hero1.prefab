@@ -235,6 +235,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 0}
   isMove: 0
+  atkCooldown: 0
 --- !u!114 &8968311200867899717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,6 +265,10 @@ MonoBehaviour:
   skill_W: {fileID: 11400000, guid: 0b4d5e2142daab94aa9fa9608054d2fb, type: 2}
   skill_E: {fileID: 11400000, guid: 372b67e44db0ba741b1f052c09d1f613, type: 2}
   skill_R: {fileID: 11400000, guid: b5ebe19e23de0ef4ea4ef27c64a4ae77, type: 2}
+  isQExecuted: 0
+  isWExecuted: 0
+  isEExecuted: 0
+  isRExecuted: 0
 --- !u!54 &4832620176509876772
 Rigidbody:
   m_ObjectHideFlags: 0

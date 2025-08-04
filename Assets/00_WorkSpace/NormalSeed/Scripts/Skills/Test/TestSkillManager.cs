@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,25 +28,49 @@ public class TestSkillManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q) && skillQCooldown == skillSet.skill_Q.cooldown)
         {
             skillSet.UseQ();
-            skillQCooldown = 0f;
         }
         if (Input.GetKeyDown(KeyCode.W) && skillWCooldown == skillSet.skill_W.cooldown)
         {
             skillSet.UseW();
-            skillWCooldown = 0f;
         }
         if (Input.GetKeyDown(KeyCode.E) && skillECooldown == skillSet.skill_E.cooldown)
         {
-            Debug.Log("EŰ �Է� ����");
+            Debug.Log("E키 입력 감지");
 
-            controller.mov.isMove = false;
             skillSet.UseE();
-            skillECooldown = 0f;
         }
         if (Input.GetKeyDown(KeyCode.R) && skillRCooldown == skillSet.skill_R.cooldown)
         {
             skillSet.UseR();
+        }
+
+        if (skillSet.isQExecuted)
+        {
+            controller.model.CurMP.Value -= (int)skillSet.skill_Q.mana;
+            Debug.Log($"현재 마나 : {controller.model.CurMP.Value}");
+            skillQCooldown = 0f;
+            skillSet.isQExecuted = false;
+        }
+
+        if (skillSet.isWExecuted)
+        {
+            controller.model.CurMP.Value -= (int)skillSet.skill_W.mana;
+            skillWCooldown = 0f;
+            skillSet.isWExecuted = false;
+        }
+
+        if (skillSet.isEExecuted)
+        {
+            controller.model.CurMP.Value -= (int)skillSet.skill_E.mana;
+            skillECooldown = 0f;
+            skillSet.isEExecuted = false;
+        }
+
+        if (skillSet.isRExecuted)
+        {
+            controller.model.CurMP.Value -= (int)skillSet.skill_R.mana;
             skillRCooldown = 0f;
+            skillSet.isRExecuted = false;
         }
 
         if (hero != null)
