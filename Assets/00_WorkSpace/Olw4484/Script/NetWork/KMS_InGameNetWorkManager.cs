@@ -1,11 +1,10 @@
 using Photon.Pun;
-using Photon.Realtime;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
+public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
 {
 
     public Transform heroRedSpawnPoint;
@@ -58,10 +57,17 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
     }
 
     // GemeStart ÃÊ±âÈ­
+
+    public void StartSpawnProcess()
+    {
+        StartCoroutine(SpawnRoutine());
+    }
+
     private IEnumerator SpawnRoutine()
     {
         while (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Role") ||
-               !PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Team"))
+               !PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Team") ||
+               !PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("HeroIndex"))
             yield return null;
 
         SpawnByRole();
@@ -151,5 +157,5 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
         }
     }
 
-    public GameObject GetGameObject()=> this.gameObject;
+    public GameObject GetGameObject() => this.gameObject;
 }
