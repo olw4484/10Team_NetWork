@@ -12,7 +12,7 @@ using UnityEngine;
         /// <param name="max">랜덤 좌표를 생성할 공간의 우상단 좌표</param>
         /// <param name="IsGround">땅 좌표를 생성할 것인지 아닌지 확인</param>
         /// <returns></returns>
-        public static Vector2 RandomPos(Vector2 min, Vector2 max, bool IsGround = false)
+        public static Vector3 RandomPos(Vector3 min, Vector3 max, bool IsGround = false)
         {
             if (IsGround) return RandomGroundPos(min, max);
             else return RandomAllPos(min, max);
@@ -25,12 +25,12 @@ using UnityEngine;
         /// <param name="min">랜덤 좌표를 생성할 공간의 좌하단 좌표</param>
         /// <param name="max">랜덤 좌표를 생성할 공간의 우상단 좌표</param>
         /// <returns></returns>
-        private static Vector2 RandomAllPos(Vector2 min, Vector2 max)
+        private static Vector2 RandomAllPos(Vector3 min, Vector3 max)
         {
             float xpos = Random.Range(min.x, max.x);
-            float ypos = Random.Range(min.y, max.y);
+            float ypos = Random.Range(min.z, max.z);
 
-            return new Vector2(xpos, ypos);
+            return new Vector3(xpos, ypos);
         }
 
 
