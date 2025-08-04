@@ -113,6 +113,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         networkManager.OnLobbyIn += AddLobby;
         networkManager.OnRoomIn += AddRoom;
         networkManager.OnParent += AddParent;
+
         #region 룸 버튼 이벤트
         GetEvent("CreateLobbyButton").Click += data =>
         {

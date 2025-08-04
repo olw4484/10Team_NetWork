@@ -54,7 +54,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
     private Dictionary<string, GameObject> currentRoomDic;
     [Header("캐릭터")]
     public JHT_Character[] characters;
-    public JHT_NetworkUIPanel mainLobbyPanel;
     #endregion
 
     #region IManager
@@ -66,6 +65,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
     public Action<bool,bool> OnRoomIn;
     public Func<RectTransform> OnParent;
 
+    private JHT_NetworkUIPanel mainLobbyPanel;
     public void Initialize()
     {
         var objs = FindObjectsOfType<JHT_NetworkManager>();
@@ -88,10 +88,15 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
     {
         currentRoomDic = new();
         PhotonNetwork.ConnectUsingSettings();
-        mainLobbyPanel = Instantiate(mainLobbyPanel);
+
+        GameObject inst = Resources.Load<GameObject>("NetworkPrefab/LobbyCanvas");
+        GameObject obj = Instantiate(inst);
+
+        mainLobbyPanel = obj.GetComponent<JHT_NetworkUIPanel>();
         mainLobbyPanel.TeamInit();
         mainLobbyPanel.NetInit();
         mainLobbyPanel.RoomInit();
+
         //PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
     }
 
@@ -250,10 +255,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
     }
 
 
-    public void SetHeroCustomProperty(TeamSetting setting)
-    {
-        
-    }
 
     // 프로퍼티 변화가 생겼을때 호출, 호출이 되어야할 로직이 있을 사용
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
@@ -356,7 +357,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
     // 1. 
     public void ConnectGameScene()
     {
-        if (PhotonNetwork.IsMasterClient && PhotonNetwork.PlayerList.Length == 4)
+        if (PhotonNetwork.IsMasterClient)// && PhotonNetwork.PlayerList.Length == 4)
         {
             int red = 0, blue = 0;
             foreach (var player in PhotonNetwork.PlayerList)
@@ -470,27 +471,27 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
 
     IEnumerator WaitForLoad(Player player)
     {
-        //1. FadeIn
+        // 1. FadeIn
 
-        //2. 씬전환시작
-        PhotonNetwork.LoadLevel("GameScenes");
+        // 2. 씬전환시작
+         PhotonNetwork.LoadLevel("GameScenes");
 
-        // Test 
+        // 2. 씬 전환 시작 로딩 메세지 넣어야함
+        //ManagerGroup.Instance.GetManager<YSJ_SystemManager>().LoadSceneWithPreActions("GameScenes");
 
-        yield return new WaitForSeconds(5f);
-
-        //3. 로딩후 씬 준비
-
-        //4. 씬 완료시 while문 시작
-        while (!player.CustomProperties.ContainsKey("Team") || !player.CustomProperties.ContainsKey("Character") ||
-            !player.CustomProperties.ContainsKey("Role"))
+        // 3. 로딩후 씬 준비
+        while (ManagerGroup.Instance.GetManager<YSJ_SystemManager>().CurrentState != SystemStateType.Playing)
             yield return null;
 
-        int playerIndex = (int)player.CustomProperties["Character"];
+        // SceneBase의 이벤트 구독
+        ManagerGroup.Instance.GetManager<YSJ_SystemManager>().CurrentSceneBase.OnInitializeAction += () =>
+        {
+            int playerIndex = (int)player.CustomProperties["Character"];
 
-        SetHeroCustomProperty((TeamSetting)player.CustomProperties["Team"]);
-        // 네트워크 연결시 이부분 해줘야함
-        ManagerGroup.Instance.GetManager<KMS_InGameNetWorkManager>().SetRole(playerIndex);
+            // 네트워크 연결시 이부분 해줘야함
+            ManagerGroup.Instance.GetManager<KMS_InGameNetWorkManager>().StartSpawnProcess(playerIndex);
+        };
+
 
         // 6.FadeOut();
     }

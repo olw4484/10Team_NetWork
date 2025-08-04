@@ -12,8 +12,7 @@ public class JHT_RoomManager : MonoBehaviour, IManager
 
     [SerializeField] private GameObject playerPanelPrefab;
     public Dictionary<int, JHT_PlayerPanelItem> playerPanelDic = new();
-
-    public Action<bool> OnGameStart;
+    
     public Action<bool> OnStartButtonActive;
     public Func<RectTransform> OnSetRedParent;
     public Func<RectTransform> OnSetBlueParent;
@@ -22,7 +21,7 @@ public class JHT_RoomManager : MonoBehaviour, IManager
 
     #region IManager
 
-    public bool IsDontDestroy => true;
+    public bool IsDontDestroy => false;
 
 
     public void Initialize()
@@ -220,7 +219,6 @@ public class JHT_RoomManager : MonoBehaviour, IManager
         {
             Debug.Log("조건 충족 → GameScenes 로드");
             SetGameCustomProperty(true);
-            PhotonNetwork.LoadLevel("GameScenes");
         }
         else
         {
