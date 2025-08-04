@@ -29,24 +29,24 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
 
     public bool IsDontDestroy => false;
 
+    private void Awake()
+    {
+        ManagerGroup.Instance.RegisterManager(this);
+    }
+
     // GemeStart 초기화
     private void StartSpawnProcess()
     {
-        StartCoroutine(WaitForPlayerAssignmentAndSpawn());
+        StartCoroutine(SpawnRoutine());
     }
 
-    private IEnumerator WaitForPlayerAssignmentAndSpawn()
+    private IEnumerator SpawnRoutine()
     {
-        int heroIndex = 0;
-        // Role이 할당될 때까지 대기
-        while (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Role"))
-            yield return null;
-        // Team이 할당될 때까지 대기
-        while (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Team"))
+        while (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Role") ||
+               !PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Team"))
             yield return null;
 
-        // 배정된 정보로 내 플레이어 오브젝트 스폰
-        SetRole(heroIndex);
+        SetRole(0);
     }
 
     // 역할에 따라 오브젝트 스폰
@@ -118,6 +118,8 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
 
     public void Initialize()
     {
+        Debug.Log("[InGameNetwork] Initialize 호출됨", this);
+
         if (PhotonNetwork.InRoom)
             StartSpawnProcess();
     }
