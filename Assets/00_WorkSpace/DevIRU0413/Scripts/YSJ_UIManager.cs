@@ -147,9 +147,10 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
         if (baseUI.UIType == YSJ_UIType.Popup)
             _popupController.Register(baseUI.gameObject);
 
-        baseUI.transform.parent = typeCanvas.transform;
+        baseUI.transform.SetParent(typeCanvas.transform, false);
         _uiMap[typeCanvas]?.Add(baseUI);
     }
+
 
     public void UnRegisterUI(JHT_BaseUI baseUI)
     {
@@ -164,9 +165,12 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
         if (baseUI.UIType == YSJ_UIType.Popup)
             _popupController.Unregister(baseUI.gameObject);
 
-        Canvas typeCanvas = GetCanvas(baseUI.UIType);
-        _uiMap[typeCanvas]?.Remove(baseUI);
+        if (!_canvasMap.TryGetValue(baseUI.UIType, out Canvas canvas))
+            return;
+
+        _uiMap[canvas]?.Remove(baseUI);
     }
+
 
     #endregion
 
