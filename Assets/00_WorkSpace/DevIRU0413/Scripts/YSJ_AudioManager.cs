@@ -119,9 +119,8 @@ public class YSJ_AudioManager : YSJ_SimpleSingleton<YSJ_AudioManager>, IManager
         GameObject bgm = GameObject.Find(BGM_GAMEOBJECT_NAME);
         if (bgm == null)
             bgm = new GameObject(BGM_GAMEOBJECT_NAME);
-        bgm.transform.SetParent(m_audioManager.transform);
-        DontDestroyOnLoad(bgm);
 
+        bgm.transform.SetParent(m_audioManager.transform);
         m_bgmSource = bgm.AddComponent<AudioSource>();
         m_bgmSource.loop = true;
         m_bgmSource.volume = 0.5f;
@@ -138,9 +137,8 @@ public class YSJ_AudioManager : YSJ_SimpleSingleton<YSJ_AudioManager>, IManager
             GameObject sfx = GameObject.Find($"{SFX_GAMEOBJECT_NAME}_{i}");
             if (sfx == null)
                 sfx = new GameObject($"{SFX_GAMEOBJECT_NAME}_{i}");
-            sfx.transform.SetParent(m_audioManager.transform);
-            DontDestroyOnLoad(sfx);
 
+            sfx.transform.SetParent(m_audioManager.transform);
             AudioSource cmp = sfx.AddComponent<AudioSource>();
             cmp.loop = false;
             cmp.volume = 0.5f;
