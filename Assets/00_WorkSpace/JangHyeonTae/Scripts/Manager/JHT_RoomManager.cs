@@ -87,6 +87,12 @@ public class JHT_RoomManager : MonoBehaviour, IManager
                 JHT_PlayerPanelItem playerPanel = obj.GetComponent<JHT_PlayerPanelItem>();
                 playerPanel.Init(player);
                 playerPanelDic.Add(player.ActorNumber, playerPanel);
+
+                if (player.CustomProperties.ContainsKey("HeroIndex"))
+                    playerPanel.SetChangeCharacter(player);
+
+                if (player.CustomProperties.ContainsKey("IsReady"))
+                    playerPanel.CheckReady(player);
             }
             else
             {
@@ -214,11 +220,13 @@ public class JHT_RoomManager : MonoBehaviour, IManager
         Debug.Log("게임씬 로딩 시도 중");
 
         if (PhotonNetwork.IsMasterClient && AllPlayerReadyCheck()
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] >= 1
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] >= 1)
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] == 2
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] == 2)
         {
             Debug.Log("조건 충족 → GameScenes 로드");
             SetGameCustomProperty(true);
+            PhotonNetwork.LoadLevel("GameScenes");
+            //ManagerGroup.Instance.GetManager<YSJ_SystemManager>().LoadSceneWithPreActions("GameScenes");
         }
         else
         {
