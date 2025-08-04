@@ -67,11 +67,7 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
 
         if (Input.GetMouseButtonDown(1))
         {
-            //if (atkDelay <= 0f)
-            //{
-            //    mov.HeroAttack(model.MoveSpd, (int)model.Atk, model.AtkRange); // 추후 damage 변수는 데미지 공식에 따라 바꿔줄 필요가 있음
-            //    atkDelay = 1 / model.AtkSpd;
-            //}
+            atkDelay = 1f / model.AtkSpd;
             mov.HandleRightClick(model.MoveSpd, (int)model.Atk, model.AtkRange, atkDelay);
         }
 
