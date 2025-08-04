@@ -224,7 +224,7 @@ public class JHT_RoomManager : MonoBehaviour, IManager
         {
             SetGameCustomProperty(true);
 
-            //해당 게임씬 넣기
+            PhotonNetwork.LoadLevel("GameScenes");
         }
     }
 
