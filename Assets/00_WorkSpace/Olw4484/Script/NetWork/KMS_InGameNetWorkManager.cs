@@ -22,7 +22,7 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
     public bool IsDontDestroy => true;
 
     // 모든 흐름을 한 메서드에서 관리
-    public void ConnectGameScene(TeamSetting teamSetting)
+    public void ConnectGameScene()
     {
         // 1. 마스터 클라이언트만 팀/역할 배정 + CustomProperties 세팅
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.PlayerList.Length == 4)
@@ -46,7 +46,6 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
                     blueCount++;
                 }
 
-                props["Team"] = setTeam;
                 props["Role"] = setJob;
                 player.SetCustomProperties(props);
             }
@@ -106,6 +105,7 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
         {
             Debug.LogError($"SpawnByRole] 잘못된 Role: {myRole}");
         }
+
     }
 
     private void BindCommandPlayer(CommandPlayer commandPlayer, HQCommander hq)
@@ -138,15 +138,7 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
 
         Debug.Log("[InGameNetwork] Initialize 호출됨", this);
 
-        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out object team) &&
-            PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Role", out object role))
-        {
-            Debug.Log($"[InGameNetwork] LocalPlayer 정보 확인 → Team: {team}, Role: {role}");
-        }
-        else
-        {
-            Debug.LogWarning("[InGameNetwork] LocalPlayer의 CustomProperties에 Team 또는 Role이 없습니다.");
-        }
+        ConnectGameScene();
     }
 
     public void Cleanup()
