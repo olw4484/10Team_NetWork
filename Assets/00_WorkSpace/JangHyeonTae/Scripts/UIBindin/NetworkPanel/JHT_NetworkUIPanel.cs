@@ -293,6 +293,8 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
     #region NetworkManager Event
     private void AddLoading(bool value)
     {
+        if (this == null || gameObject == null) return;
+
         if (loadingPanel.activeSelf)
             loadingPanel.SetActive(value);
             
@@ -300,11 +302,15 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
 
     private void AddLobby(bool value)
     {
+        if (this == null || gameObject == null) return;
+
         lobbyPanel.SetActive(value);
     }
 
     private void AddRoom(bool value, bool value2 = false)
     {
+        if (this == null || gameObject == null) return;
+
         roomPanel.SetActive(value);
         if (value2)
         {

@@ -377,6 +377,9 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
                     blue++;
                 }
                 player.SetCustomProperties(props);
+
+                if (player == PhotonNetwork.LocalPlayer)
+                    StartCoroutine(WaitForLoad(player));
             }
         }
     }
@@ -471,7 +474,10 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
 
         //2. 씬전환시작
         PhotonNetwork.LoadLevel("GameScenes");
-        
+
+        // Test 
+
+        yield return new WaitForSeconds(5f);
 
         //3. 로딩후 씬 준비
 
@@ -484,9 +490,9 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
 
         SetHeroCustomProperty((TeamSetting)player.CustomProperties["Team"]);
         // 네트워크 연결시 이부분 해줘야함
-        //5. ManagerGroup.Instance.GetManager<KMS_InGameNetWorkManager>().SetRole(playerIndex);
+        ManagerGroup.Instance.GetManager<KMS_InGameNetWorkManager>().SetRole(playerIndex);
 
-        //6. FadeOut
+        // 6.FadeOut();
     }
     #endregion
 

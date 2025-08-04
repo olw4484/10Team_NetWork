@@ -22,7 +22,7 @@ public class JHT_RoomManager : MonoBehaviour, IManager
 
     #region IManager
 
-    public bool IsDontDestroy => false;
+    public bool IsDontDestroy => true;
 
 
     public void Initialize()
@@ -160,15 +160,10 @@ public class JHT_RoomManager : MonoBehaviour, IManager
     }
     private IEnumerator OtherPlayerSetTeamCor(Player player)
     {
-
-        while (!PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("RedCount") ||
-           !PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("BlueCount"))
-        {
+        while (!player.CustomProperties.ContainsKey("Team"))
             yield return null;
-        }
 
-        yield return new WaitForSeconds(0.2f); 
-        
+        yield return new WaitForSeconds(0.1f);
 
         GameObject obj = Instantiate(playerPanelPrefab);
         obj.transform.SetParent(SetPanelParent(player));
@@ -214,17 +209,22 @@ public class JHT_RoomManager : MonoBehaviour, IManager
 
 
     #region 게임시작
-    
+
     public void GameStart()
     {
-        
-        if (PhotonNetwork.IsMasterClient && AllPlayerReadyCheck()
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] >= 1          //여기 2:2로 바꿔야함
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] >= 1)        //여기 2:2로 바꿔야함
-        {
-            SetGameCustomProperty(true);
+        Debug.Log("게임씬 로딩 시도 중");
 
+        if (PhotonNetwork.IsMasterClient && AllPlayerReadyCheck()
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] >= 1
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] >= 1)
+        {
+            Debug.Log("조건 충족 → GameScenes 로드");
+            SetGameCustomProperty(true);
             PhotonNetwork.LoadLevel("GameScenes");
+        }
+        else
+        {
+            Debug.Log("조건 미충족 → 씬 로드 안 함");
         }
     }
 
