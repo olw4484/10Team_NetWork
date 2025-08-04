@@ -5,13 +5,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-
-//public enum TestTeamSetting
-//{
-//    Red,
-//    Blue
-//}
-
 public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
 {
 
@@ -27,40 +20,65 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
 
     public int Priority => (int)ManagerPriority.InGameNetworkManager;
 
-    public bool IsDontDestroy => false;
+    public bool IsDontDestroy => true;
 
-    private void Awake()
+    // 모든 흐름을 한 메서드에서 관리
+    public void ConnectGameScene(TeamSetting teamSetting)
     {
-        ManagerGroup.Instance.RegisterManager(this);
+        // 1. 마스터 클라이언트만 팀/역할 배정 + CustomProperties 세팅
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.PlayerList.Length == 4)
+        {
+            int redCount = 0;
+            int blueCount = 0;
+            foreach (var player in PhotonNetwork.PlayerList)
+            {
+                ExitGames.Client.Photon.Hashtable props = new();
+                int setTeam = (redCount < 2) ? 0 : 1; // 앞 2명 RED, 뒤 2명 BLUE
+                string setJob = null;
+
+                if (setTeam == 0)
+                {
+                    setJob = (redCount == 0) ? "Hero" : "Command";
+                    redCount++;
+                }
+                else
+                {
+                    setJob = (blueCount == 0) ? "Hero" : "Command";
+                    blueCount++;
+                }
+
+                props["Team"] = setTeam;
+                props["Role"] = setJob;
+                player.SetCustomProperties(props);
+            }
+        }
+
+        // 2. 모든 클라이언트에서 자신의 스폰 루틴 실행 (팀/역할 세팅 완료될 때까지 대기)
+        StartCoroutine(SpawnRoutine());
     }
 
     // GemeStart 초기화
-    public void StartSpawnProcess(int heroIndex)
-    {
-        StartCoroutine(SpawnRoutine(heroIndex));
-    }
-
-    private IEnumerator SpawnRoutine(int heroIndex)
+    private IEnumerator SpawnRoutine()
     {
         while (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Role") ||
                !PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Team"))
             yield return null;
 
-        SetRole(heroIndex);
+        SpawnByRole();
     }
 
-    // 역할에 따라 오브젝트 스폰
-    private void SetRoleInternal(int heroIndex)
+    private void SpawnByRole()
     {
         int myTeamId = (int)PhotonNetwork.LocalPlayer.CustomProperties["Team"];
         string myRole = (string)PhotonNetwork.LocalPlayer.CustomProperties["Role"];
+        int myHeroIndex = (int)PhotonNetwork.LocalPlayer.CustomProperties["HeroIndex"];
 
         if (myRole == "Hero")
         {
-            // Hero만 생성
+            string heroPrefabName = $"Hero{myHeroIndex}";
             Vector3 pos = (myTeamId == 0) ? heroRedSpawnPoint.position : heroBlueSpawnPoint.position;
             Quaternion rot = (myTeamId == 0) ? heroRedSpawnPoint.rotation : heroBlueSpawnPoint.rotation;
-            PhotonNetwork.Instantiate($"Hero{heroIndex}", pos, rot);
+            PhotonNetwork.Instantiate(heroPrefabName, pos, rot);
         }
         else if (myRole == "Command")
         {
@@ -78,18 +96,10 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
             var hq = hqObj.GetComponent<HQCommander>();
             BindCommandPlayer(commandPlayer, hq);
         }
-    }
-
-    public void SetRole(int heroIndex)
-    {
-        if (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Team") ||
-            !PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Role"))
+        else
         {
-            Debug.LogWarning("SetRole: 팀이나 역할 정보가 없습니다. 생성 취소됨.");
-            return;
+            Debug.LogError($"SpawnByRole] 잘못된 Role: {myRole}");
         }
-
-        SetRoleInternal(heroIndex);
     }
 
     private void BindCommandPlayer(CommandPlayer commandPlayer, HQCommander hq)
@@ -118,8 +128,19 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
 
     public void Initialize()
     {
+        ManagerGroup.Instance.RegisterManager(this);
+
         Debug.Log("[InGameNetwork] Initialize 호출됨", this);
 
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out object team) &&
+            PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Role", out object role))
+        {
+            Debug.Log($"[InGameNetwork] LocalPlayer 정보 확인 → Team: {team}, Role: {role}");
+        }
+        else
+        {
+            Debug.LogWarning("[InGameNetwork] LocalPlayer의 CustomProperties에 Team 또는 Role이 없습니다.");
+        }
     }
 
     public void Cleanup()
