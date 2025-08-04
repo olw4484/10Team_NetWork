@@ -296,11 +296,15 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
         yield return null;
         if (changedProps.TryGetValue("GamePlay",out object value))
         {
-            if(mainLobbyPanel == null)
-                mainLobbyPanel = FindObjectOfType<JHT_NetworkUIPanel>();
-
             if ((bool)value)
             {
+                if (mainLobbyPanel.gameObject == null)
+                {
+                    GameObject inst = Resources.Load<GameObject>("NetworkPrefab/LobbyCanvas");
+                    GameObject obj = Instantiate(inst);
+                    mainLobbyPanel = obj.GetComponent<JHT_NetworkUIPanel>();
+                }
+
                 if(mainLobbyPanel.gameObject.activeSelf)
                     mainLobbyPanel.gameObject.SetActive(!(bool)value);
             }
