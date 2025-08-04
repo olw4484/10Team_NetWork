@@ -19,6 +19,6 @@ MonoBehaviour:
   skillRange: 0
   buffAmount:
   - 0.2
-  mana: 0
+  mana: 20
   cooldown: 15
   icon: {fileID: 0}

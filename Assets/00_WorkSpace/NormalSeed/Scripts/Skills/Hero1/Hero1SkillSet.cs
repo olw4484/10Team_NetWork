@@ -1,4 +1,4 @@
-using JetBrains.Annotations;
+ï»¿using JetBrains.Annotations;
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,19 +20,20 @@ public class Hero1SkillSet : SkillSet
     #region UseQ
     public override void UseQ()
     {
-        // ¸¶¿ì½º ¹æÇâ¿¡ ºÎÃ¤²Ã·Î °ø°İÇÏ´Â ½ºÅ³
+        isQExecuted = true;
+        // ë§ˆìš°ìŠ¤ ë°©í–¥ì— ë¶€ì±„ê¼´ë¡œ ê³µê²©í•˜ëŠ” ìŠ¤í‚¬
         Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
         Vector3 attackDir;
 
-        // Q½ºÅ³ÀÇ »ç°Å¸®¸¸Å­ÀÇ OverlapSphere·Î Ãæµ¹ °Ë»ö
+        // QìŠ¤í‚¬ì˜ ì‚¬ê±°ë¦¬ë§Œí¼ì˜ OverlapSphereë¡œ ì¶©ëŒ ê²€ìƒ‰
         Collider[] hits = Physics.OverlapSphere(originPos, skill_Q.skillRange);
 
         RaycastHit hit;
         if (Physics.Raycast(mainCam.ScreenPointToRay(Input.mousePosition), out hit))
         {
-            // °ø°İ ¹æÇâÀº ¸¶¿ì½º À§Ä¡·Î ¼³Á¤
+            // ê³µê²© ë°©í–¥ì€ ë§ˆìš°ìŠ¤ ìœ„ì¹˜ë¡œ ì„¤ì •
             attackDir = (hit.point - originPos).normalized;
-            // °ø°İ ¹æÇâÀ» ¹Ù¶óº¸°Ô forward¸¦ ¹Ù²ãÁÜ
+            // ê³µê²© ë°©í–¥ì„ ë°”ë¼ë³´ê²Œ forwardë¥¼ ë°”ê¿”ì¤Œ
             transform.forward = new Vector3(attackDir.x, transform.position.y, attackDir.z);
 
             foreach (Collider collider in hits)
@@ -40,11 +41,11 @@ public class Hero1SkillSet : SkillSet
                 LGH_IDamagable damagable = collider.GetComponent<LGH_IDamagable>();
                 PhotonView view = collider.GetComponent<PhotonView>();
 
-                // OverlapSphere ¾ÈÀÇ ¿ÀºêÁ§Æ®°¡ damagableÀÌ ¾Æ´Ï°Å³ª photonView¸¦ °¡Áö°í ÀÖÁö ¾Ê°Å³ª photonView°¡ ³»°Å¶ó¸é ½ºÅµ
+                // OverlapSphere ì•ˆì˜ ì˜¤ë¸Œì íŠ¸ê°€ damagableì´ ì•„ë‹ˆê±°ë‚˜ photonViewë¥¼ ê°€ì§€ê³  ìˆì§€ ì•Šê±°ë‚˜ photonViewê°€ ë‚´ê±°ë¼ë©´ ìŠ¤í‚µ
                 if (damagable == null || view == null || view.IsMine) continue;
 
                 object targetTeam, myTeam;
-                // CustomProperty·Î ·ÎºñÈ­¸é¿¡¼­ ÆÀÀÌ Á¤ÇØÁöµµ·Ï ÇØ¾ß ÀÛµ¿ÇÔ
+                // CustomPropertyë¡œ ë¡œë¹„í™”ë©´ì—ì„œ íŒ€ì´ ì •í•´ì§€ë„ë¡ í•´ì•¼ ì‘ë™í•¨
                 if (view.Owner.CustomProperties.TryGetValue("Team", out targetTeam) && PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam))
                 {
                     if (targetTeam == myTeam) continue;
@@ -54,10 +55,10 @@ public class Hero1SkillSet : SkillSet
                 Vector3 toTarget = colliderPos - originPos;
 
                 float angle = Vector3.Angle(attackDir, toTarget);
-                // 60µµ ¹üÀ§ÀÇ ºÎÃ¤²Ã ¹üÀ§ ¾ÈÀÇ ÀûÀ» °ø°İÇÒ °ÍÀÌ±â ¶§¹®¿¡ °ø°İ ¹æÇâ ±âÁØ 30µµ ÀÌ³»ÀÇ Àû¸¸ °Ë»ö
+                // 60ë„ ë²”ìœ„ì˜ ë¶€ì±„ê¼´ ë²”ìœ„ ì•ˆì˜ ì ì„ ê³µê²©í•  ê²ƒì´ê¸° ë•Œë¬¸ì— ê³µê²© ë°©í–¥ ê¸°ì¤€ 30ë„ ì´ë‚´ì˜ ì ë§Œ ê²€ìƒ‰
                 if (angle <= 30)
                 {
-                    // ÀÏ´Ü µ¥¹ÌÁö °è»ê½Ä ¾øÀÌ ±ø ½ºÅ³ µ¥¹ÌÁö ºÎ¿©
+                    // ì¼ë‹¨ ë°ë¯¸ì§€ ê³„ì‚°ì‹ ì—†ì´ ê¹¡ ìŠ¤í‚¬ ë°ë¯¸ì§€ ë¶€ì—¬
                     view.RPC(nameof(HeroController.TakeDamage), RpcTarget.All, skill_Q.damage);
                 }
             }
@@ -68,37 +69,40 @@ public class Hero1SkillSet : SkillSet
 
     public override void UseW()
     {
-        // 5ÃÊµ¿¾È ¹æ¾î·ÂÀ» ÃÑ °ø°İ·ÂÀÇ 0.2¹è¸¸Å­ ¿Ã·ÁÁÖ´Â ½ºÅ³
+        isWExecuted = true;
+        // 5ì´ˆë™ì•ˆ ë°©ì–´ë ¥ì„ ì´ ê³µê²©ë ¥ì˜ 0.2ë°°ë§Œí¼ ì˜¬ë ¤ì£¼ëŠ” ìŠ¤í‚¬
         StartCoroutine(HardenRoutine());
     }
 
     private IEnumerator HardenRoutine()
     {
-        
         hero.model.Def = hero.model.Def + hero.model.Atk * 0.2f;
-        Debug.Log($"¹æ¾î·Â ¿Ã¶ó°¨. ¹æ¾î·Â : {hero.model.Def}");
+        Debug.Log($"ë°©ì–´ë ¥ ì˜¬ë¼ê°. ë°©ì–´ë ¥ : {hero.model.Def}");
         yield return new WaitForSeconds(5f);
         hero.model.Def = hero.model.Def - hero.model.Atk * 0.2f;
-        Debug.Log($"¹æ¾î·Â µ¹¾Æ°¨. ¹æ¾î·Â : {hero.model.Def}");
+        Debug.Log($"ë°©ì–´ë ¥ ëŒì•„ê°. ë°©ì–´ë ¥ : {hero.model.Def}");
     }
 
     public override void UseE()
     {
+        isEExecuted = true;
+        hero.mov.isMove = false;
+
         Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
         RaycastHit hit;
         if (Physics.Raycast(mainCam.ScreenPointToRay(Input.mousePosition), out hit))
         {
             Vector3 dashDir = (hit.point - originPos).normalized;
             pv.RPC(nameof(RPC_StartBash), RpcTarget.All, dashDir);
-            Debug.Log("RPC_StartBash È£ÃâµÊ, dashDir: " + dashDir);
+            Debug.Log("RPC_StartBash í˜¸ì¶œë¨, dashDir: " + dashDir);
         }
     }
 
     private IEnumerator BashRoutine(Vector3 dashDir)
     {
-        Debug.Log("BashRoutine ½ÃÀÛ!");
+        Debug.Log("BashRoutine ì‹œì‘!");
 
-        // ¸¶¿ì½º ¹æÇâÀ¸·Î µ¹ÁøÇÏ°í °æ·Î»ó¿¡ ºÎµúÈù Àû¿¡ µ¥¹ÌÁö¸¦ ÁÖ°í Àû Hero³ª Àå¾Ö¹°°ú ºÎµúÈ÷¸é ¸ØÃß´Â ½ºÅ³
+        // ë§ˆìš°ìŠ¤ ë°©í–¥ìœ¼ë¡œ ëŒì§„í•˜ê³  ê²½ë¡œìƒì— ë¶€ë”ªíŒ ì ì— ë°ë¯¸ì§€ë¥¼ ì£¼ê³  ì  Heroë‚˜ ì¥ì• ë¬¼ê³¼ ë¶€ë”ªíˆë©´ ë©ˆì¶”ëŠ” ìŠ¤í‚¬
 
         float dashDuration = 0.5f;
         float dashSpeed = 10f;
@@ -123,10 +127,10 @@ public class Hero1SkillSet : SkillSet
                 PhotonView view = collider.GetComponent<PhotonView>();
                 bool isPlayerOrObstacle = collider.CompareTag("Player") || collider.CompareTag("Obstacle");
 
-                // ÀÚ½ÅÀº collider¿¡¼­ Á¦¿Ü
+                // ìì‹ ì€ colliderì—ì„œ ì œì™¸
                 if (collider.gameObject == gameObject) continue;
 
-                // ¸ÕÀú µ¥¹ÌÁö¸¦ ÁÙ ¼ö ÀÖ´Â Ãæµ¹ÀÎÁö Ã¼Å©
+                // ë¨¼ì € ë°ë¯¸ì§€ë¥¼ ì¤„ ìˆ˜ ìˆëŠ” ì¶©ëŒì¸ì§€ ì²´í¬
                 if (damagable != null && view != null && !view.IsMine)
                 {
                     object targetTeam, myTeam;
@@ -140,10 +144,10 @@ public class Hero1SkillSet : SkillSet
                     Debug.Log("Bash Hit");
                 }
 
-                // ¸¸¾à º® ¶Ç´Â »ó´ë ¿µ¿õ°ú Ãæµ¹Çß´Ù¸é ¸ØÃã
+                // ë§Œì•½ ë²½ ë˜ëŠ” ìƒëŒ€ ì˜ì›…ê³¼ ì¶©ëŒí–ˆë‹¤ë©´ ë©ˆì¶¤
                 if (isPlayerOrObstacle)
                 {
-                    Debug.Log("º® ¶Ç´Â »ó´ë ¿µ¿õ°ú Ãæµ¹ °¨Áö");
+                    Debug.Log("ë²½ ë˜ëŠ” ìƒëŒ€ ì˜ì›…ê³¼ ì¶©ëŒ ê°ì§€");
                     hitDetected = true;
                     break;
                 }
@@ -179,8 +183,9 @@ public class Hero1SkillSet : SkillSet
 
     public override void UseR()
     {
-        // »çÁ¤°Å¸® ¾ÈÀÇ Hero¸¦ ¼±ÅÃÇØ¼­ °ø°İ °¡´É, Àû¿¡°Ô Å« µ¥¹ÌÁö¸¦ ÁÖ°í ÀÌµ¿¼Óµµ¸¦ 1ÃÊµ¿¾È °¨¼Ò½ÃÅ°´Â ½ºÅ³
+        // ì‚¬ì •ê±°ë¦¬ ì•ˆì˜ Heroë¥¼ ì„ íƒí•´ì„œ ê³µê²© ê°€ëŠ¥, ì ì—ê²Œ í° ë°ë¯¸ì§€ë¥¼ ì£¼ê³  ì´ë™ì†ë„ë¥¼ 1ì´ˆë™ì•ˆ ê°ì†Œì‹œí‚¤ëŠ” ìŠ¤í‚¬
         StartCoroutine(BrutalSmiteRoutine());
+        isRExecuted = false;
     }
 
     private IEnumerator BrutalSmiteRoutine()
@@ -193,6 +198,7 @@ public class Hero1SkillSet : SkillSet
             if (IsInSkillRange(target.position))
             {
                 ExecuteSkill(target, damagable, targetHero);
+                isRExecuted = true;
                 break;
             }
             else

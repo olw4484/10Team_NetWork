@@ -18,6 +18,6 @@ MonoBehaviour:
   damage: 50
   skillRange: 2.5
   buffAmount: []
-  mana: 0
+  mana: 40
   cooldown: 3
   icon: {fileID: 0}
