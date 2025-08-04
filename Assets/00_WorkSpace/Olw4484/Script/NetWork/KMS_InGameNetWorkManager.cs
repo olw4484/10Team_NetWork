@@ -23,7 +23,7 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks , IManager
     public bool IsDontDestroy => true;
 
     // 모든 흐름을 한 메서드에서 관리
-    public void StartGameAndSpawnAll(TeamSetting teamSetting)
+    public void ConnectGameScene(TeamSetting teamSetting)
     {
         // 1. 마스터 클라이언트만 팀/역할 배정 + CustomProperties 세팅
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.PlayerList.Length == 4)
