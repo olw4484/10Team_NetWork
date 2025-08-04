@@ -171,10 +171,10 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         
 
         #region Character select
-        for (int i = 0; i < JHT_NetworkManager.NetworkInstance.characters.Length; i++)
+        for (int i = 0; i < ManagerGroup.Instance.GetManager<JHT_NetworkManager>().characters.Length; i++)
         {
             ChangeClick();
-            GetUI<Image>($"CharacterPanel{i + 1}").sprite = JHT_NetworkManager.NetworkInstance.characters[i].icon;
+            GetUI<Image>($"CharacterPanel{i + 1}").sprite = ManagerGroup.Instance.GetManager<JHT_NetworkManager>().characters[i].icon;
         }
 
         GetEvent("CharacterPanel1").Click += data =>
@@ -203,7 +203,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
 
 
         #region ToolTip for Character
-        for (int i = 0; i < JHT_NetworkManager.NetworkInstance.characters.Length; i++)
+        for (int i = 0; i < ManagerGroup.Instance.GetManager<JHT_NetworkManager>().characters.Length; i++)
         {
             GetUI($"DescPopUp{i + 1}").SetActive(false);
         }
@@ -211,7 +211,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         GetEvent("CharacterPanel1").Enter += data =>
         {
             GetUI($"DescPopUp1").SetActive(true);
-            GetUI<JHT_DescPopUp>("DescPopUp1").Init(JHT_NetworkManager.NetworkInstance.characters[0].desc);
+            GetUI<JHT_DescPopUp>("DescPopUp1").Init(ManagerGroup.Instance.GetManager<JHT_NetworkManager>().characters[0].desc);
         };
 
         GetEvent("CharacterPanel1").Exit += data =>
@@ -222,7 +222,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         GetEvent("CharacterPanel2").Enter += data =>
         {
             GetUI($"DescPopUp2").SetActive(true);
-            GetUI<JHT_DescPopUp>("DescPopUp2").Init(JHT_NetworkManager.NetworkInstance.characters[1].desc);
+            GetUI<JHT_DescPopUp>("DescPopUp2").Init(ManagerGroup.Instance.GetManager<JHT_NetworkManager>().characters[1].desc);
         };
 
         GetEvent("CharacterPanel2").Exit += data =>
@@ -233,7 +233,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         GetEvent("CharacterPanel3").Enter += data =>
         {
             GetUI($"DescPopUp3").SetActive(true);
-            GetUI<JHT_DescPopUp>("DescPopUp3").Init(JHT_NetworkManager.NetworkInstance.characters[2].desc);
+            GetUI<JHT_DescPopUp>("DescPopUp3").Init(ManagerGroup.Instance.GetManager<JHT_NetworkManager>().characters[2].desc);
         };
 
         GetEvent("CharacterPanel3").Exit += data =>
@@ -334,7 +334,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
 
     private void ChangeClick()
     {
-        for (int i = 0; i < JHT_NetworkManager.NetworkInstance.characters.Length; i++)
+        for (int i = 0; i < ManagerGroup.Instance.GetManager<JHT_NetworkManager>().characters.Length; i++)
         {
             GetUI<Image>($"CharacterPanel{i + 1}").color = normalColor;
         }

@@ -63,7 +63,7 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
     public void SetCharacterProperty()
     {
         ExitGames.Client.Photon.Hashtable characterChanged = new();
-        characterChanged["Character"] = curCharacterIndex;
+        characterChanged["HeroIndex"] = curCharacterIndex;
         PhotonNetwork.LocalPlayer.SetCustomProperties(characterChanged);
     }
 
@@ -80,9 +80,9 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
             }
         }
 
-        if (player.CustomProperties.TryGetValue("Character", out object value))
+        if (player.CustomProperties.TryGetValue("HeroIndex", out object value))
         {
-            playerCharacterImage.sprite = JHT_NetworkManager.NetworkInstance.characters[(int)value].icon;
+            playerCharacterImage.sprite = ManagerGroup.Instance.GetManager<JHT_NetworkManager>().characters[(int)value].icon;
         }
     }
     #endregion

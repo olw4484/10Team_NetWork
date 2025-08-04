@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Character", menuName = "Character/SelectCharacter")]
+[CreateAssetMenu(fileName = "HeroIndex", menuName = "HeroIndex/SelectHeroIndex")]
 public class JHT_Character : ScriptableObject
 {
     [field : SerializeField] public string name {private set; get;}
