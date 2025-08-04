@@ -69,11 +69,24 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
                !PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("HeroIndex"))
             yield return null;
 
+        var props = PhotonNetwork.LocalPlayer.CustomProperties;
+
+        if (props["Role"] == null || props["Team"] == null || props["HeroIndex"] == null)
+        {
+            Debug.LogError("CustomProperties 중 null값 존재. 오브젝트 생성 중단.");
+            yield break;
+        }
+
         SpawnByRole();
     }
 
     private void SpawnByRole()
     {
+        Debug.Log("SpawnByRole 진입");
+
+        // 커스텀 프로퍼티 체크
+        Debug.Log($"[SpawnByRole] Team: {PhotonNetwork.LocalPlayer.CustomProperties["Team"]}, Role: {PhotonNetwork.LocalPlayer.CustomProperties["Role"]}, HeroIndex: {PhotonNetwork.LocalPlayer.CustomProperties["HeroIndex"]}");
+
         int myTeamId = (int)PhotonNetwork.LocalPlayer.CustomProperties["Team"];
         string myRole = (string)PhotonNetwork.LocalPlayer.CustomProperties["Role"];
         int myHeroIndex = (int)PhotonNetwork.LocalPlayer.CustomProperties["HeroIndex"];
@@ -81,31 +94,37 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
         if (myRole == "Hero")
         {
             string heroPrefabName = $"Hero{myHeroIndex}";
+            Debug.Log($"[SpawnByRole] Hero 스폰 시도: {heroPrefabName}");
+
             Vector3 pos = (myTeamId == 0) ? heroRedSpawnPoint.position : heroBlueSpawnPoint.position;
             Quaternion rot = (myTeamId == 0) ? heroRedSpawnPoint.rotation : heroBlueSpawnPoint.rotation;
-            PhotonNetwork.Instantiate(heroPrefabName, pos, rot);
+            var go = PhotonNetwork.Instantiate(heroPrefabName, pos, rot);
+            Debug.Log($"[SpawnByRole] Hero 프리팹 인스턴스 생성됨: {go}");
         }
         else if (myRole == "Command")
         {
-            // 1. HQ 먼저 생성
             Vector3 hqPos = (myTeamId == 0) ? hqRedSpawnPoint.position : hqBlueSpawnPoint.position;
             Quaternion hqRot = (myTeamId == 0) ? hqRedSpawnPoint.rotation : hqBlueSpawnPoint.rotation;
             var hqObj = PhotonNetwork.Instantiate("HQ", hqPos, hqRot);
+            Debug.Log($"[SpawnByRole] HQ 인스턴스 생성됨: {hqObj}");
 
-            // 2. CommandPlayer 생성 및 Canvas 연결
             Vector3 pos = (myTeamId == 0) ? cmdRedSpawnPoint.position : cmdBlueSpawnPoint.position;
             Quaternion rot = (myTeamId == 0) ? cmdRedSpawnPoint.rotation : cmdBlueSpawnPoint.rotation;
             var cmdObj = PhotonNetwork.Instantiate("CommandPlayer", pos, rot);
+            Debug.Log($"[SpawnByRole] CommandPlayer 인스턴스 생성됨: {cmdObj}");
 
             var commandPlayer = cmdObj.GetComponent<CommandPlayer>();
+            if (commandPlayer == null) Debug.LogError("CommandPlayer 컴포넌트 없음");
             var hq = hqObj.GetComponent<HQCommander>();
+            if (hq == null) Debug.LogError("HQCommander 컴포넌트 없음");
+
+            Debug.Log("[SpawnByRole] BindCommandPlayer 호출");
             BindCommandPlayer(commandPlayer, hq);
         }
         else
         {
             Debug.LogError($"SpawnByRole] 잘못된 Role: {myRole}");
         }
-
     }
 
     private void BindCommandPlayer(CommandPlayer commandPlayer, HQCommander hq)
@@ -115,16 +134,36 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
         if (commandPlayer.photonView.IsMine)
         {
             var canvasObj = Instantiate(canvasPrefab);
+            Debug.Log(canvasObj);
 
             // --- Canvas Text 연결 ---
             commandPlayer.goldText = canvasObj.transform.Find("ResourcePanel/GoldText").GetComponent<TMP_Text>();
+            var goldTextObj = canvasObj.transform.Find("ResourcePanel/GoldText");
+            if (goldTextObj == null) Debug.LogError("GoldText 경로 잘못됨");
+
             commandPlayer.gearText = canvasObj.transform.Find("ResourcePanel/GearText").GetComponent<TMP_Text>();
+            var gearTextObj = canvasObj.transform.Find("ResourcePanel/GearText");
+            if (gearTextObj == null) Debug.LogError("GearText 경로 잘못됨");
+
             commandPlayer.playerInputHandler = canvasObj.GetComponent<PlayerInputHandler>();
+            var inputHandler = canvasObj.GetComponent<PlayerInputHandler>();
+            if (inputHandler == null) Debug.LogError("PlayerInputHandler 없음");
 
             // --- 미니언 생성 버튼 이벤트 연결 ---
-            var meleeBtn = canvasObj.transform.Find("MinionPanel/MeleeButton").GetComponent<Button>();
-            var rangedBtn = canvasObj.transform.Find("MinionPanel/RangedButton").GetComponent<Button>();
-            var eliteBtn = canvasObj.transform.Find("MinionPanel/EliteButton").GetComponent<Button>();
+            var meleeBtnObj = canvasObj.transform.Find("MinionPanel/MeleeButton");
+            if (meleeBtnObj == null) Debug.LogError("MeleeButton 경로 잘못됨");
+            var meleeBtn = meleeBtnObj.GetComponent<Button>();
+            if (meleeBtn == null) Debug.LogError("MeleeButton에 Button 컴포넌트 없음");
+
+            var rangedBtnObj = canvasObj.transform.Find("MinionPanel/RangedButton");
+            if (rangedBtnObj == null) Debug.LogError("RagnedButton 경로 잘못됨");
+            var rangedBtn = rangedBtnObj.GetComponent<Button>();
+            if (rangedBtn == null) Debug.LogError("RagnedButton에 Button 컴포넌트 없음");
+
+            var eliteBtnObj = canvasObj.transform.Find("MinionPanel/EliteButton");
+            if (eliteBtnObj == null) Debug.LogError("EliteButton 경로 잘못됨");
+            var eliteBtn = eliteBtnObj.GetComponent<Button>();
+            if (eliteBtn == null) Debug.LogError("EliteButton에 Button 컴포넌트 없음");
 
             meleeBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Melee));
             rangedBtn.onClick.AddListener(() => hq.OnSpawnMinionButton((int)MinionType.Ranged));

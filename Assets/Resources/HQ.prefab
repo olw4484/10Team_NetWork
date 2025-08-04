@@ -649,6 +649,7 @@ MonoBehaviour:
   minionSequence: 00000000000000000100000001000000
   spawnPoint: {fileID: 2597035859003247320}
   target: {fileID: 0}
+  teamId: 0
   spawnDelay: 0.8
   spawnInterval: 50
   waypointGroup: {fileID: 4290996495337158195}
@@ -1034,6 +1035,7 @@ MonoBehaviour:
   minionSequence: 00000000000000000100000001000000
   spawnPoint: {fileID: 4758797512183435480}
   target: {fileID: 0}
+  teamId: 0
   spawnDelay: 0.8
   spawnInterval: 50
   waypointGroup: {fileID: 2915970657816027065}

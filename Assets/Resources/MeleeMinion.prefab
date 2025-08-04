@@ -234,14 +234,9 @@ MonoBehaviour:
   attackCooldown: 0
   attackPower: 0
   maxHP: 0
-  teamId: 0
-  view: {fileID: -4718769153812556021}
   data: {fileID: 11400000, guid: 717a7aabd646f254d9c6b6d83176784c, type: 2}
-  enemyLayerMask:
-    serializedVersion: 2
-    m_Bits: 6291457
-  waypointGroup: {fileID: 0}
   photonView: {fileID: -1934948245341657593}
+  teamId: 0
 --- !u!114 &-4718769153812556021
 MonoBehaviour:
   m_ObjectHideFlags: 0
