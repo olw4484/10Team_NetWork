@@ -298,7 +298,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
         {
             if ((bool)value)
             {
-                if (mainLobbyPanel.gameObject == null)
+                if (mainLobbyPanel == null)
                 {
                     GameObject inst = Resources.Load<GameObject>("NetworkPrefab/LobbyCanvas");
                     GameObject obj = Instantiate(inst);
