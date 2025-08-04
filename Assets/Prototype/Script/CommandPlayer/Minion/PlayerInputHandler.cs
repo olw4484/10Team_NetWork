@@ -6,7 +6,7 @@ using static ISelectable;
 
 public class PlayerInputHandler : MonoBehaviour
 {
-    [Header("레이어 설정")]
+    [Header("LayerMask")]
     public LayerMask selectionMask;
     public LayerMask commandMask;
     public RectTransform dragBoxVisual;
@@ -17,8 +17,8 @@ public class PlayerInputHandler : MonoBehaviour
     private float dragThreshold = 10f;
 
     private ISelectable currentSelected;
-    private List<MinionController> selectedMinions = new();
- 
+    private List<BaseMinionController> selectedMinions = new();
+
 
     void Update()
     {
@@ -186,10 +186,6 @@ public class PlayerInputHandler : MonoBehaviour
                 }
             }
         }
-        else
-        {
-
-        }
     }
 
     private void IssueCommand(RaycastHit hit)
@@ -208,7 +204,7 @@ public class PlayerInputHandler : MonoBehaviour
                     else // 타겟 (적이 될 수 있음)
                     {
                         PhotonView targetView = hit.transform.GetComponent<PhotonView>();
-                        if (targetView != null)
+                        if (hit.transform.TryGetComponent<IDamageable>(out var dmg))
                             minion.photonView.RPC("RpcSetTarget", RpcTarget.All, targetView.ViewID);
                     }
                 }

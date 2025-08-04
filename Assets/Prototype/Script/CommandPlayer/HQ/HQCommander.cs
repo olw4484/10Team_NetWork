@@ -5,10 +5,10 @@ using static UnityEngine.GraphicsBuffer;
 
 public class HQCommander : MonoBehaviour, ISelectable
 {
-    [Header("연동 대상")]
+    [Header("Linked")]
     public CommandPlayer player;
 
-    [Header("소환 위치 및 타겟")]
+    [Header("SpawnPoint/Target")]
     public Transform defaultSpawnPoint;
     public Transform rallyPointTarget;
     public GameObject rallyPointMarker;

@@ -12,12 +12,12 @@ public class HQDataSO : ScriptableObject
         public int cost;
     }
 
-    [Header("본진 HQ 프리팹 (HQ_Root 기준)")]
+    [Header("HQ(HQ_Root)")]
     public GameObject hqPrefab;
 
-    [Header("최대 체력")]
+    [Header("MaxHP")]
     public int maxHP = 1000;
 
-    [Header("수동 생성 가능한 미니언 목록")]
+    [Header("ManualSpawnMinionList")]
     public List<SpawnableMinionInfo> manualSpawnList;
 }

@@ -9,6 +9,7 @@ public class MinionAutoSpawner : BaseMinionSpawner
     public List<MinionType> minionSequence = new List<MinionType> { MinionType.Melee, MinionType.Melee, MinionType.Ranged, MinionType.Ranged };
     public Transform spawnPoint;
     public Transform target;
+    public int teamId;
     [SerializeField] public float spawnDelay = 0.5f;
     [SerializeField] public float spawnInterval = 50f;
     public WaypointGroup waypointGroup;
@@ -34,7 +35,7 @@ public class MinionAutoSpawner : BaseMinionSpawner
     {
         foreach (var type in minionSequence)
         {
-            SpawnFreeMinion(type, spawnPoint.position, target, waypointGroup);
+            SpawnAutoMinion(type, spawnPoint.position, target, waypointGroup, teamId);
             yield return new WaitForSeconds(spawnDelay);
         }
     }

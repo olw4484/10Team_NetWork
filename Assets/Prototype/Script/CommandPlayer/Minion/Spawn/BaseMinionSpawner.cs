@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class BaseMinionSpawner : MonoBehaviour
 {
-    protected void SpawnFreeMinion(MinionType type, Vector3 pos, Transform target, WaypointGroup waypointGroup = null)
+    protected void SpawnAutoMinion(MinionType type, Vector3 spawnPos, Transform rallyTarget, WaypointGroup waypointGroup, int teamId)
     {
-        MinionFactory.Instance.SpawnFreeMinion(type, pos, target, waypointGroup);
+        MinionFactory.Instance.SpawnAutoMinion(type, spawnPos, rallyTarget, waypointGroup, teamId);
     }
 }
