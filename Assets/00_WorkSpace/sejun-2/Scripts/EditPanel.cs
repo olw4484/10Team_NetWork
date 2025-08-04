@@ -1,4 +1,4 @@
-using Firebase.Auth;
+ï»¿using Firebase.Auth;
 using Firebase.Database;
 using Firebase.Extensions;
 using System.Collections;
@@ -24,7 +24,7 @@ public class EditPanel : MonoBehaviour
     [SerializeField] Button passConfirmButton;
     [SerializeField] Button backButton;
 
-    // Firebase¿¡¼­´Â µñ¼Å³Ê¸® Áö¿ø.
+    // Firebaseì—ì„œëŠ” ë”•ì…”ë„ˆë¦¬ ì§€ì›.
     [SerializeField] Dictionary<string, object> dictionary = new Dictionary<string, object>();
 
     private void Awake()
@@ -39,7 +39,7 @@ public class EditPanel : MonoBehaviour
         FirebaseUser user = FirebaseManager.Auth.CurrentUser;
 
         emailText.text = user.Email;
-        passInput.text = ""; // ºñ¹Ğ¹øÈ£ ÀÔ·Â ÇÊµå´Â ÃÊ±âÈ­
+        passInput.text = ""; // ë¹„ë°€ë²ˆí˜¸ ì…ë ¥ í•„ë“œëŠ” ì´ˆê¸°í™”
         nameInput.text = user.DisplayName;
         userIdText.text = user.UserId;
     }
@@ -56,20 +56,20 @@ public class EditPanel : MonoBehaviour
             {
                 if (task.IsCanceled)
                 {
-                    Debug.LogError("´Ğ³×ÀÓ º¯°æ Ãë¼Ò");
+                    Debug.LogError("ë‹‰ë„¤ì„ ë³€ê²½ ì·¨ì†Œ");
                     return;
                 }
                 if (task.IsFaulted)
                 {
-                    Debug.LogError($"´Ğ³×ÀÓ º¯°æ ½ÇÆĞ. ÀÌÀ¯ : {task.Exception}");
+                    Debug.LogError($"ë‹‰ë„¤ì„ ë³€ê²½ ì‹¤íŒ¨. ì´ìœ  : {task.Exception}");
                     return;
                 }
-                Debug.Log("´Ğ³×ÀÓ º¯°æ ¼º°ø");
+                Debug.Log("ë‹‰ë„¤ì„ ë³€ê²½ ì„±ê³µ");
 
-                FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // ÇöÀç ·Î±×ÀÎµÈ Firebase »ç¿ëÀÚ¸¦ °¡Á®¿É´Ï´Ù.                                                           
-                DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference;    // Firebase µ¥ÀÌÅÍº£ÀÌ½ºÀÇ ·çÆ® ÂüÁ¶¸¦ °¡Á®¿É´Ï´Ù.
+                FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // í˜„ì¬ ë¡œê·¸ì¸ëœ Firebase ì‚¬ìš©ìë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.                                                           
+                DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference;    // Firebase ë°ì´í„°ë² ì´ìŠ¤ì˜ ë£¨íŠ¸ ì°¸ì¡°ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
                 DatabaseReference userInfo = root.Child("UserData").Child(user.UserId);
-                DatabaseReference nameRef = userInfo.Child("name");   // ÇÏ³ª¸¸ ¹Ù²Ù°í ½ÍÀ»¶§
+                DatabaseReference nameRef = userInfo.Child("name");   // í•˜ë‚˜ë§Œ ë°”ê¾¸ê³  ì‹¶ì„ë•Œ
                 nameRef.SetValueAsync(nameInput.text);
             });
     }
@@ -78,7 +78,7 @@ public class EditPanel : MonoBehaviour
     {
         if (passInput.text != passConfirmInput.text)
         {
-            Debug.LogError("ºñ¹Ğ¹øÈ£°¡ ÀÏÄ¡ÇÏÁö ¾ÊÀ½");
+            Debug.LogError("ë¹„ë°€ë²ˆí˜¸ê°€ ì¼ì¹˜í•˜ì§€ ì•ŠìŒ");
             return;
         }
 
@@ -88,16 +88,16 @@ public class EditPanel : MonoBehaviour
             {
                 if (task.IsCanceled)
                 {
-                    Debug.LogError("ºñ¹Ğ¹øÈ£ º¯°æ Ãë¼Ò");
+                    Debug.LogError("ë¹„ë°€ë²ˆí˜¸ ë³€ê²½ ì·¨ì†Œ");
                     return;
                 }
                 if (task.IsFaulted)
                 {
-                    Debug.LogError($"ºñ¹Ğ¹øÈ£ º¯°æ ½ÇÆĞ. ÀÌÀ¯ : {task.Exception}");
+                    Debug.LogError($"ë¹„ë°€ë²ˆí˜¸ ë³€ê²½ ì‹¤íŒ¨. ì´ìœ  : {task.Exception}");
                     return;
                 }
 
-                Debug.Log("ºñ¹Ğ¹øÈ£ º¯°æ ¼º°ø");
+                Debug.Log("ë¹„ë°€ë²ˆí˜¸ ë³€ê²½ ì„±ê³µ");
             });
     }
 

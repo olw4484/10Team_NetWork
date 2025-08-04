@@ -1,4 +1,4 @@
-using Firebase.Auth;
+ï»¿using Firebase.Auth;
 using Firebase.Extensions;
 using Firebase.Database;
 using System.Collections;
@@ -21,7 +21,7 @@ public class SignUpPanel : MonoBehaviour
     [SerializeField] Button cancelButton;
     [SerializeField] Button IDCheckButton;
 
-    // Firebase¿¡¼­´Â µñ¼Å³Ê¸® Áö¿ø.
+    // Firebaseì—ì„œëŠ” ë”•ì…”ë„ˆë¦¬ ì§€ì›.
     [SerializeField] Dictionary<string, object> dictionary = new Dictionary<string, object>();
 
     private void Awake()
@@ -35,12 +35,12 @@ public class SignUpPanel : MonoBehaviour
     {
         if (passInput.text != passConfirmInput.text)
         {
-            Debug.LogError("ÆĞ½º¿öµå°¡ ÀÏÄ¡ÇÏÁö ¾Ê½À´Ï´Ù");
+            Debug.LogError("íŒ¨ìŠ¤ì›Œë“œê°€ ì¼ì¹˜í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤");
             return;
         }
         if (nicknameInput.text == "")
         {
-            Debug.LogError("´Ğ³×ÀÓÀ» ¼³Á¤ÇØÁÖ¼¼¿ä");
+            Debug.LogError("ë‹‰ë„¤ì„ì„ ì„¤ì •í•´ì£¼ì„¸ìš”");
             return;
         }
 
@@ -58,31 +58,31 @@ public class SignUpPanel : MonoBehaviour
                         {
                             if (task.IsCanceled)
                             {
-                                Debug.LogError("À¯Àú ´Ğ³×ÀÓ ¼³Á¤ Ãë¼ÒµÊ");
+                                Debug.LogError("ìœ ì € ë‹‰ë„¤ì„ ì„¤ì • ì·¨ì†Œë¨");
                                 return;
                             }
                             if (task.IsFaulted)
                             {
-                                Debug.LogError($"À¯Àú ´Ğ³×ÀÓ ¼³Á¤ ½ÇÆĞ. ÀÌÀ¯ : {task.Exception}");
+                                Debug.LogError($"ìœ ì € ë‹‰ë„¤ì„ ì„¤ì • ì‹¤íŒ¨. ì´ìœ  : {task.Exception}");
                                 return;
                             }
-                            Debug.Log("À¯Àú ´Ğ³×ÀÓ ¼³Á¤ ¼º°ø");
+                            Debug.Log("ìœ ì € ë‹‰ë„¤ì„ ì„¤ì • ì„±ê³µ");
                         });
                 }
 
                 if (task.IsCanceled)
                 {
-                    Debug.LogError("ÀÌ¸ŞÀÏ °¡ÀÔÀÌ Ãë¼ÒµÊ");
+                    Debug.LogError("ì´ë©”ì¼ ê°€ì…ì´ ì·¨ì†Œë¨");
                     return;
                 }
                 if (task.IsFaulted)
                 {
-                    Debug.LogError($"ÀÌ¸ŞÀÏ °¡ÀÔ ½ÇÆĞÇÔ. ÀÌÀ¯ : {task.Exception}");
+                    Debug.LogError($"ì´ë©”ì¼ ê°€ì… ì‹¤íŒ¨í•¨. ì´ìœ  : {task.Exception}");
                     return;
                 }
-                Debug.Log("ÀÌ¸ŞÀÏ °¡ÀÔ ¼º°ø!");
+                Debug.Log("ì´ë©”ì¼ ê°€ì… ì„±ê³µ!");
 
-                SetData(); // Firebase¿¡ »ç¿ëÀÚ µ¥ÀÌÅÍ ÀúÀå
+                SetData(); // Firebaseì— ì‚¬ìš©ì ë°ì´í„° ì €ì¥
 
                 loginPanel.SetActive(true);
                 gameObject.SetActive(false);
@@ -95,7 +95,7 @@ public class SignUpPanel : MonoBehaviour
 
         if (string.IsNullOrEmpty(email))
         {
-            Debug.LogError("ÀÌ¸ŞÀÏÀÌ ÀÔ·ÂµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogError("ì´ë©”ì¼ì´ ì…ë ¥ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -103,20 +103,20 @@ public class SignUpPanel : MonoBehaviour
         {
             if (task.IsCanceled)
             {
-                Debug.LogError("ÀÌ¸ŞÀÏ ID Ã¼Å©°¡ Ãë¼ÒµÊ");
+                Debug.LogError("ì´ë©”ì¼ ID ì²´í¬ê°€ ì·¨ì†Œë¨");
                 return;
             }
             if (task.IsFaulted)
             {
-                Debug.LogError($"ÀÌ¸ŞÀÏ ID Ã¼Å© ½ÇÆĞÇÔ. ÀÌÀ¯ : {task.Exception}");
+                Debug.LogError($"ì´ë©”ì¼ ID ì²´í¬ ì‹¤íŒ¨í•¨. ì´ìœ  : {task.Exception}");
                 return;
             }
 
-            // IEnumerable<string> À¸·Î ¹ŞÀº ÈÄ List·Î º¯È¯
+            // IEnumerable<string> ìœ¼ë¡œ ë°›ì€ í›„ Listë¡œ ë³€í™˜
             List<string> providers = new List<string>(task.Result);
 
-            // [µğ¹ö±×] providers ·Î±× Âï±â
-            Debug.Log($"ÀÌ¸ŞÀÏ {email}ÀÇ providers.Count: {providers.Count}");
+            // [ë””ë²„ê·¸] providers ë¡œê·¸ ì°ê¸°
+            Debug.Log($"ì´ë©”ì¼ {email}ì˜ providers.Count: {providers.Count}");
             foreach (var provider in providers)
             {
                 Debug.Log($"Provider: {provider}");
@@ -124,17 +124,17 @@ public class SignUpPanel : MonoBehaviour
 
             if (providers.Count > 0)
             {
-                Debug.LogError("ÀÌ¹Ì »ç¿ë ÁßÀÎ ÀÌ¸ŞÀÏÀÔ´Ï´Ù.");
+                Debug.LogError("ì´ë¯¸ ì‚¬ìš© ì¤‘ì¸ ì´ë©”ì¼ì…ë‹ˆë‹¤.");
                 iDCheckPanel.SetActive(true);
-                iDCheckPanel.GetComponentInChildren<TMP_Text>().text = "ÀÌ¹Ì »ç¿ë ÁßÀÎ ÀÌ¸ŞÀÏÀÔ´Ï´Ù.";
+                iDCheckPanel.GetComponentInChildren<TMP_Text>().text = "ì´ë¯¸ ì‚¬ìš© ì¤‘ì¸ ì´ë©”ì¼ì…ë‹ˆë‹¤.";
                 gameObject.SetActive(false);
                 return;
             }
             else
             {
-                Debug.Log("»ç¿ë °¡´ÉÇÑ ÀÌ¸ŞÀÏÀÔ´Ï´Ù.");
+                Debug.Log("ì‚¬ìš© ê°€ëŠ¥í•œ ì´ë©”ì¼ì…ë‹ˆë‹¤.");
                 iDCheckPanel.SetActive(true);
-                iDCheckPanel.GetComponentInChildren<TMP_Text>().text = "»ç¿ë °¡´ÉÇÑ ÀÌ¸ŞÀÏÀÔ´Ï´Ù.";
+                iDCheckPanel.GetComponentInChildren<TMP_Text>().text = "ì‚¬ìš© ê°€ëŠ¥í•œ ì´ë©”ì¼ì…ë‹ˆë‹¤.";
                 gameObject.SetActive(false);
                 return;
             }
@@ -147,19 +147,19 @@ public class SignUpPanel : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private void SetData() // dictionary »ç¿ëÇÏ¿© Firebase¿¡ µ¥ÀÌÅÍ¸¦ ÀúÀåÇÏ´Â ÇÔ¼ö
+    private void SetData() // dictionary ì‚¬ìš©í•˜ì—¬ Firebaseì— ë°ì´í„°ë¥¼ ì €ì¥í•˜ëŠ” í•¨ìˆ˜
     {
-        // Firebase µ¥ÀÌÅÍº£ÀÌ½ºÀÇ ·çÆ® ÂüÁ¶¸¦ °¡Á®¿É´Ï´Ù.
+        // Firebase ë°ì´í„°ë² ì´ìŠ¤ì˜ ë£¨íŠ¸ ì°¸ì¡°ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
         FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser;
-        // Firebase µ¥ÀÌÅÍº£ÀÌ½ºÀÇ ·çÆ® ÂüÁ¶¸¦ °¡Á®¿É´Ï´Ù.
+        // Firebase ë°ì´í„°ë² ì´ìŠ¤ì˜ ë£¨íŠ¸ ì°¸ì¡°ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
         DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference;
         DatabaseReference userInfo = root.Child("UserData").Child(user.UserId);
-        // µñ¼Å³Ê¸®¿¡ µ¥ÀÌÅÍ¸¦ Ãß°¡ÇÕ´Ï´Ù.
+        // ë”•ì…”ë„ˆë¦¬ì— ë°ì´í„°ë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
         dictionary["name"] = nicknameInput.text;
         dictionary["level"] = 1;
         dictionary["gameCount"] = 0;
         dictionary["winsCount"] = 0;
-        userInfo.SetValueAsync(dictionary);// Firebase µ¥ÀÌÅÍº£ÀÌ½º¿¡ text º¯¼ö¸¦ ÀúÀåÇÕ´Ï´Ù.
+        userInfo.SetValueAsync(dictionary);// Firebase ë°ì´í„°ë² ì´ìŠ¤ì— text ë³€ìˆ˜ë¥¼ ì €ì¥í•©ë‹ˆë‹¤.
     }
 
 
