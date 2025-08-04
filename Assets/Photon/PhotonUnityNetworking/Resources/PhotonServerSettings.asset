@@ -55,6 +55,7 @@ MonoBehaviour:
   - RPC_StopAndFace
   - TakeDamage
   - RpcSetAttackMoveTarget
+  - ConnectGameScene
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

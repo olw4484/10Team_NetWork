@@ -18,6 +18,7 @@ public class JHT_RoomManager : MonoBehaviour, IManager
     public Func<RectTransform> OnSetRedParent;
     public Func<RectTransform> OnSetBlueParent;
     public Action OnLeaveRoom;
+    public Action<int> OnChangeScene;
 
     #region IManager
 
@@ -224,29 +225,7 @@ public class JHT_RoomManager : MonoBehaviour, IManager
             SetGameCustomProperty(true);
 
             //해당 게임씬 넣기
-            StartCoroutine(WaitForLoad(PhotonNetwork.LocalPlayer));
         }
-    }
-
-    IEnumerator WaitForLoad(Player player)
-    {
-        while (!player.CustomProperties.ContainsKey("Team") || !player.CustomProperties.ContainsKey("Character") ||
-            !player.CustomProperties.ContainsKey("Role"))
-            yield return null;
-
-        int playerIndex = (int)player.CustomProperties["Character"];
-
-        SetHeroCustomProperty((TeamSetting)player.CustomProperties["Team"]);
-
-        //ManagerGroup.Instance.GetManager<KMS_InGameNetWorkManager>().SetRole(playerIndex);
-    }
-
-    public void SetHeroCustomProperty(TeamSetting setting)
-    {
-        ExitGames.Client.Photon.Hashtable roles = new();
-        string setJob = setting == 0 ? "Hero" : "command";
-        roles["Role"] = setJob;
-        PhotonNetwork.LocalPlayer.SetCustomProperties(roles);
     }
 
     public void SetGameCustomProperty(bool _value)
@@ -256,11 +235,6 @@ public class JHT_RoomManager : MonoBehaviour, IManager
         gameStart["GamePlay"] = isStart;
         PhotonNetwork.LocalPlayer.SetCustomProperties(gameStart);
 
-
-        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("GamePlay", out object value))
-        {
-            OnGameStart?.Invoke((bool)value);
-        }
     }
 
 
