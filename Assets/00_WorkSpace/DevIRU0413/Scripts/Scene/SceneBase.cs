@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Text;
 using UnityEngine;
 
 public abstract class SceneBase : MonoBehaviour
@@ -8,6 +9,9 @@ public abstract class SceneBase : MonoBehaviour
     
     [Header("Manager")]
     [SerializeField] private GameObject[] _managersInOrder;
+
+    [Header("UI")]
+    [SerializeField] private GameObject[] _uiPrefabs;
 
     [Header("Audio")]
     [SerializeField] private AudioClip _bgm;
@@ -70,7 +74,21 @@ public abstract class SceneBase : MonoBehaviour
         Debug.Log($"[SceneBase-Initialize]: Scene {SceneID} Initialize.");
 #endif
         ManagerGroup.Instance.GetManager<YSJ_AudioManager>().PlayBgm(_bgm);
+        CreateRegisterUI();
 
         OnInitializeAction?.Invoke();
+    }
+
+    private void CreateRegisterUI()
+    {
+        if (_uiPrefabs == null || _uiPrefabs.Length <= 0) return;
+
+        var uiManager = ManagerGroup.Instance.GetManager<YSJ_UIManager>();
+        foreach (var go in _uiPrefabs)
+        {
+            var baseUIGo = YSJ_UISpawnFactory.SpawnUI(go);
+            var baseUICmp = baseUIGo.GetComponent<JHT_BaseUI>();
+            uiManager.RegisterUI(baseUICmp);
+        }
     }
 }
