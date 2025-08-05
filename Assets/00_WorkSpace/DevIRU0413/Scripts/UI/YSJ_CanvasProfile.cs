@@ -1,16 +1,18 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [System.Serializable]
 public class YSJ_CanvasProfile
 {
-    public string canvasName;
-    public RenderMode renderMode = RenderMode.ScreenSpaceOverlay;
-    public int sortingOrder = 0;
+    [field: SerializeField] public GameObject canvasCameraPrefab { get; private set; } = null;
 
-    public YSJ_CanvasProfile(string name, RenderMode mode, int order)
+    public YSJ_UIType canvasType;
+    public RenderMode renderMode = RenderMode.ScreenSpaceOverlay;
+    public int customSortingOrder = -1;
+
+    public YSJ_CanvasProfile(YSJ_UIType uiType, RenderMode mode, int order = -1)
     {
-        canvasName = name;
+        canvasType = uiType;
         renderMode = mode;
-        sortingOrder = order;
+        customSortingOrder = order;
     }
 }
