@@ -15,19 +15,26 @@ public class MeleeMinionController : BaseMinionController
 
     protected override void TryAttack()
     {
-        if (!photonView.IsMine || isDead || target == null) return;
+        if (!photonView.IsMine || attackTimer < attackCooldown || target == null || isDead) return;
 
-        if (attackTimer >= attackCooldown)
+        Debug.Log($"[Minion] TryAttack 대상: {target?.name} / Tag: {target?.tag}");
+
+        var targetPV = target.GetComponent<PhotonView>();
+        if (targetPV == null)
         {
-            attackTimer = 0f;
-
-            // 애니메이션 실행
-            view?.PlayMinionAttackAnimation();
-
-            // 대상에게 데미지 적용
-            var targetDamageable = target.GetComponent<IDamageable>();
-            if (targetDamageable != null)
-                targetDamageable.TakeDamage(attackPower, gameObject);
+            Debug.LogError($"[Minion] TryAttack: target에 PhotonView 없음! target: {target?.name}");
+            return;
         }
+
+        attackTimer = 0f;
+        int targetViewID = targetPV.ViewID;
+        photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID);
+    }
+
+    [PunRPC]
+    private void RPC_TryAttack(int targetViewID)
+    {
+        view?.PlayMinionAttackAnimation();
+        // 추상화된 처리거나, Ranged/Melee에서 오버라이드할 부분
     }
 }

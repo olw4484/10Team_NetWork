@@ -20,9 +20,15 @@ public class RangedMinionController : BaseMinionController
     {
         if (!photonView.IsMine || attackTimer < attackCooldown || target == null || isDead) return;
 
-        attackTimer = 0f;
-        int targetViewID = target.GetComponent<PhotonView>().ViewID;
+        var targetPV = target.GetComponent<PhotonView>();
+        if (targetPV == null)
+        {
+            Debug.LogError("[Minion] TryAttack: target¿¡ PhotonView ¾øÀ½! " + target.name);
+            return;
+        }
 
+        attackTimer = 0f;
+        int targetViewID = targetPV.ViewID;
         photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID);
     }
 

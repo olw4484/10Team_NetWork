@@ -65,14 +65,20 @@ public class MinionController : BaseMinionController, ISelectable
     // ----- 공격 로직 -----
     protected override void TryAttack()
     {
-        if (!photonView.IsMine) return;
+        if (!photonView.IsMine || attackTimer < attackCooldown || target == null || isDead) return;
 
-        if (attackTimer >= attackCooldown && target != null)
+        Debug.Log($"[Minion] TryAttack 대상: {target?.name} / Tag: {target?.tag}");
+
+        var targetPV = target.GetComponent<PhotonView>();
+        if (targetPV == null)
         {
-            attackTimer = 0f;
-            int targetViewID = target.GetComponent<PhotonView>().ViewID;
-            photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID);
+            Debug.LogError($"[Minion] TryAttack: target에 PhotonView 없음! target: {target?.name}");
+            return;
         }
+
+        attackTimer = 0f;
+        int targetViewID = targetPV.ViewID;
+        photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID);
     }
 
     [PunRPC]

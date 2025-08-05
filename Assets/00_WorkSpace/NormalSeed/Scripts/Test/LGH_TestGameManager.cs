@@ -65,6 +65,11 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks, IManager
             Debug.Log(playerList.Count + "명 로딩 완료");
         }
 
+        if (pv == null)
+        {
+            Debug.Log($"{pv.name}포톤뷰가 없습니다.");
+        }
+
         if (playerList.Count == GAME_START_PLAYER_COUNT)
         {
             ActivateAllPlayers();

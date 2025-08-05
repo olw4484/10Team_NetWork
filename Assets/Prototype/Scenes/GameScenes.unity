@@ -617,6 +617,7 @@ MonoBehaviour:
   - {fileID: 1787535503}
   - {fileID: 261274001}
   - {fileID: 45185816}
+  - {fileID: 798115581}
   _bgm: {fileID: 0}
   inventoryView: {fileID: 0}
 --- !u!4 &822326316

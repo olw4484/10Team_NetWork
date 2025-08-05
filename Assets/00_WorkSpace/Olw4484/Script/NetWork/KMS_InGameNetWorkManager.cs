@@ -17,8 +17,6 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
 
     public GameObject canvasPrefab;
 
-    public int Priority => (int)ManagerPriority.InGameNetworkManager;
-
     public bool IsDontDestroy => true;
 
     // 모든 흐름을 한 메서드에서 관리
@@ -32,10 +30,9 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
             foreach (var player in PhotonNetwork.PlayerList)
             {
                 ExitGames.Client.Photon.Hashtable props = new();
-                int setTeam = (redCount < 2) ? 0 : 1; // 앞 2명 RED, 뒤 2명 BLUE
                 string setJob = null;
 
-                if (setTeam == 0)
+                if ((TeamSetting)player.CustomProperties["Team"] == TeamSetting.Red)
                 {
                     setJob = (redCount == 0) ? "Hero" : "Command";
                     redCount++;
@@ -150,17 +147,17 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
             if (inputHandler == null) Debug.LogError("PlayerInputHandler 없음");
 
             // --- 미니언 생성 버튼 이벤트 연결 ---
-            var meleeBtnObj = canvasObj.transform.Find("MinionPanel/MeleeButton");
+            var meleeBtnObj = canvasObj.transform.Find("UnitButtonPanel/MeleeButton");
             if (meleeBtnObj == null) Debug.LogError("MeleeButton 경로 잘못됨");
             var meleeBtn = meleeBtnObj.GetComponent<Button>();
             if (meleeBtn == null) Debug.LogError("MeleeButton에 Button 컴포넌트 없음");
 
-            var rangedBtnObj = canvasObj.transform.Find("MinionPanel/RangedButton");
+            var rangedBtnObj = canvasObj.transform.Find("UnitButtonPanel/RangedButton");
             if (rangedBtnObj == null) Debug.LogError("RagnedButton 경로 잘못됨");
             var rangedBtn = rangedBtnObj.GetComponent<Button>();
             if (rangedBtn == null) Debug.LogError("RagnedButton에 Button 컴포넌트 없음");
 
-            var eliteBtnObj = canvasObj.transform.Find("MinionPanel/EliteButton");
+            var eliteBtnObj = canvasObj.transform.Find("UnitButtonPanel/EliteButton");
             if (eliteBtnObj == null) Debug.LogError("EliteButton 경로 잘못됨");
             var eliteBtn = eliteBtnObj.GetComponent<Button>();
             if (eliteBtn == null) Debug.LogError("EliteButton에 Button 컴포넌트 없음");
