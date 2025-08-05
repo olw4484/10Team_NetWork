@@ -847,6 +847,7 @@ MonoBehaviour:
   defaultSpawnPoint: {fileID: 52061777251493334}
   rallyPointTarget: {fileID: 5537802708903624571}
   rallyPointMarker: {fileID: 1136964881208348331}
+  waypointGroup: {fileID: 0}
 --- !u!114 &8327920191462848677
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -75,13 +75,14 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
     /// <summary>
     /// Minion 기본 세팅
     /// </summary>
-    public virtual void Initialize(
+    public virtual void LocalInitialize(
         MinionDataSO data,
         Transform moveTarget = null,
         Transform attackTarget = null,
         WaypointGroup waypointGroup = null,
         int teamId = 0)
     {
+        Debug.Log("[DEBUG] Initialize() 진입");
         this.data = data;
         this.moveSpeed = data.moveSpeed;
         this.attackRange = data.attackRange;
@@ -94,11 +95,19 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
         this.attackTarget = attackTarget;
         this.teamId = teamId;
         this.waypointGroup = waypointGroup;
+        Debug.Log($"[DEBUG] waypointGroup is {(waypointGroup != null ? "NOT NULL" : "NULL")}");
+        Debug.Log($"[Minion] WaypointGroup injected? {(waypointGroup != null)} / MoveTarget: {moveTarget} / AttackTarget: {attackTarget}");
         this.currentWaypointIndex = 0;
 
         // 팀별 색상
         if (redBody != null) redBody.SetActive(teamId == 0);
         if (blueBody != null) blueBody.SetActive(teamId == 1);
+
+        if (waypointGroup != null && IsManualControl == false)
+        {
+            isFollowingWaypoint = true;
+            MoveToNextWaypoint();
+        }
     }
 
     protected virtual void Update()
@@ -209,6 +218,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
     }
     protected void MoveToNextWaypoint()
     {
+        Debug.Log($"[DEBUG] MoveToNextWaypoint 진입. isFollowingWaypoint={isFollowingWaypoint}, currentWaypointIndex={currentWaypointIndex}");
         if (waypointGroup == null) return;
         if (currentWaypointIndex >= waypointGroup.GetWaypointCount()) return;
         Transform next = waypointGroup.GetWaypoint(currentWaypointIndex);
@@ -272,6 +282,38 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
 
     // RPC 처리
     #region RPC_CODE
+    [PunRPC]
+    public virtual void RpcInitialize(int minionType, int teamId, int waypointIndex)
+    {
+        // 타입별 데이터 할당
+        MinionDataSO data = MinionFactory.Instance.GetMinionData((MinionType)minionType);
+        this.data = data;
+        this.moveSpeed = data.moveSpeed;
+        this.attackRange = data.attackRange;
+        this.attackCooldown = data.attackCooldown;
+        this.attackPower = data.attackPower;
+        this.maxHP = data.maxHP;
+        this.currentHP = maxHP;
+
+        this.teamId = teamId;
+
+        // 웨이포인트는 WaypointManager에서 가져오기 (싱글턴 관리)
+        WaypointGroup wp = WaypointManager.Instance.GetGroupByIndex(waypointIndex);
+        this.waypointGroup = wp;
+
+        this.currentWaypointIndex = 0;
+
+        // 팀별 색상
+        if (redBody != null) redBody.SetActive(teamId == 0);
+        if (blueBody != null) blueBody.SetActive(teamId == 1);
+
+        if (waypointGroup != null && !IsManualControl)
+        {
+            isFollowingWaypoint = true;
+            MoveToNextWaypoint();
+        }
+    }
+
     [PunRPC]
     public void RPC_TakeDamage(int damage, int attackerViewID)
     {

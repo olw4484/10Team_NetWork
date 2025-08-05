@@ -29,6 +29,10 @@ public class MinionAutoSpawner : BaseMinionSpawner
             timer = 0f;
             StartCoroutine(SpawnSequence());
         }
+
+        var spawner = FindObjectOfType<MinionAutoSpawner>();
+        if (spawner != null && waypointGroup != null)
+            spawner.waypointGroup = waypointGroup;
     }
 
     private IEnumerator SpawnSequence()

@@ -5,15 +5,25 @@ using UnityEngine;
 
 public class MeleeMinionController : BaseMinionController
 {
-    public override void Initialize(
+    protected override void Awake()
+    {
+        Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - MeleeMinionController.Awake");
+        base.Awake();
+    }
+    protected override void Start()
+    {
+        Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - MeleeMinionController.Start");
+        base.Start();
+    }
+    public override void LocalInitialize(
         MinionDataSO data,
         Transform moveTarget = null,
         Transform attackTarget = null,
         WaypointGroup waypointGroup = null,
         int teamId = 0)
     {
-        base.Initialize(data, moveTarget, attackTarget, waypointGroup, teamId);
-        // 필요하면 여기서만 추가 세팅
+        Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - MeleeMinionController.Initialize");
+        base.LocalInitialize(data, moveTarget, attackTarget, waypointGroup, teamId);
     }
 
     protected override void TryAttack()

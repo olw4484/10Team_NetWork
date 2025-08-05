@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 5767846891989355255}
   - component: {fileID: 8084535483858672487}
   - component: {fileID: 9183317073510988394}
-  - component: {fileID: 7125745019167799832}
   - component: {fileID: 1631527219362683224}
+  - component: {fileID: 149937578270707554}
   m_Layer: 22
   m_Name: EliteMinion
   m_TagString: Player
@@ -80,28 +80,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &7125745019167799832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7632942533367234319}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9657bc4dc780a13499161c237521571e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 0
-  attackRange: 0
-  attackCooldown: 0
-  attackPower: 0
-  maxHP: 0
-  data: {fileID: 11400000, guid: 2eec27dedff06084c975a8bc5745ddd1, type: 2}
-  photonView: {fileID: 8084535483858672487}
-  teamId: 0
-  redBody: {fileID: 2291505245420282860}
-  blueBody: {fileID: 8094093431737471104}
 --- !u!114 &1631527219362683224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,6 +100,28 @@ MonoBehaviour:
   attackSound: {fileID: 0}
   hitSound: {fileID: 0}
   deathSound: {fileID: 0}
+--- !u!114 &149937578270707554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7632942533367234319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa879553a7ba6344da7fc7d6dc4ebb8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 0
+  attackRange: 0
+  attackCooldown: 0
+  attackPower: 0
+  maxHP: 0
+  data: {fileID: 11400000, guid: 2eec27dedff06084c975a8bc5745ddd1, type: 2}
+  photonView: {fileID: 8084535483858672487}
+  teamId: 0
+  redBody: {fileID: 2291505245420282860}
+  blueBody: {fileID: 8094093431737471104}
 --- !u!1001 &8094093431737571214
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -140,7 +140,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 165646, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 167468, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
       propertyPath: m_IsActive
