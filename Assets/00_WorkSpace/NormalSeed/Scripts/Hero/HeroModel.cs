@@ -17,6 +17,7 @@ public class HeroModel : MonoBehaviour
     // Observable Properties
     public ObservableProperty<int> CurHP { get; private set; } = new();
     public ObservableProperty<int> CurMP { get; private set; } = new();
+    public ObservableProperty<int> Level { get; private set; } = new();
 
     // HeroStats
     [field: SerializeField]

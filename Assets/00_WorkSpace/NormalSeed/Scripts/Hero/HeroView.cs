@@ -34,4 +34,9 @@ public class HeroView : MonoBehaviour
     {
         hpBarUI.hpImage.fillAmount = Mathf.Clamp01((float)curHp / (float)maxHp);
     }
+
+    public void SetMpBar(int maxMp, int curMp)
+    {
+        hpBarUI.mpImage.fillAmount = Mathf.Clamp01((float)curMp / (float)maxMp);
+    }
 }

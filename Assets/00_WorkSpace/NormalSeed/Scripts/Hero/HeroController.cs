@@ -50,6 +50,7 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
     {
         StartCoroutine(RegisterRoutine());
         model.CurHP.Subscribe(OnHPChanged);
+        model.CurMP.Subscribe(OnMPChanged);
     }
 
     private IEnumerator RegisterRoutine()
@@ -96,10 +97,21 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         pv.RPC(nameof(UpdateHeroHP), RpcTarget.All, model.MaxHP, newHP);
     }
 
+    void OnMPChanged(int newMP)
+    {
+        pv.RPC(nameof(UpdateHeroMP), RpcTarget.All, model.MaxMP, newMP);
+    }
+
     [PunRPC]
     public void UpdateHeroHP(int maxHP, int curHP)
     {
         view.SetHpBar(maxHP, curHP);
+    }
+
+    [PunRPC]
+    public void UpdateHeroMP(int maxMP, int curMP)
+    {
+        view.SetMpBar(maxMP, curMP);
     }
 
     [PunRPC]
