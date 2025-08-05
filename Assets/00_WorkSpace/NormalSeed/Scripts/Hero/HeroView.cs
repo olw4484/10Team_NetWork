@@ -1,17 +1,20 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class HeroView : MonoBehaviour
 {
     public Animator animator;
+    [SerializeField] public HeroHPBarUI hpBarUI;
+
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        hpBarUI = GetComponentInChildren<HeroHPBarUI>();
     }
 
-    // HeroController¿¡¼­ ¼³Á¤ÇÑ ¾Ö´Ï¸ŞÀÌ¼Ç hash°ªÀ» °¡Á®¿È
+    // HeroControllerì—ì„œ ì„¤ì •í•œ ì• ë‹ˆë©”ì´ì…˜ hashê°’ì„ ê°€ì ¸ì˜´
     public void PlayAnimation(int hash)
     {
         if (animator != null)
@@ -20,5 +23,15 @@ public class HeroView : MonoBehaviour
             animator.Update(0f);
             animator.Play(hash, 0, 0f);
         }
+    }
+
+    /// <summary>
+    /// HP ë°” UI ìµœì‹ í™” ë©”ì„œë“œ
+    /// </summary>
+    /// <param name="maxHp"></param>
+    /// <param name="curHp"></param>
+    public void SetHpBar(int maxHp, int curHp)
+    {
+        hpBarUI.hpImage.fillAmount = Mathf.Clamp01((float)curHp / (float)maxHp);
     }
 }

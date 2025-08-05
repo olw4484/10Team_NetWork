@@ -75,6 +75,12 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         {
             agent.ResetPath();
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            model.CurHP.Value -= 10;
+            Debug.Log("현재 HP : " + model.CurHP.Value);
+        }
     }
 
     private void FixedUpdate()
@@ -82,6 +88,11 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         if (!pv.IsMine) return;
 
         mov.LookMoveDir();
+    }
+
+    private void LateUpdate()
+    {
+        view.SetHpBar(model.MaxHP, model.CurHP.Value);
     }
 
     [PunRPC]
