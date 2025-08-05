@@ -53,9 +53,6 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
 
     public void SetCharacter()
     {
-        if (networkUICanvas.curIndex < 0)
-            return;
-
         curCharacterIndex = networkUICanvas.curIndex;
         SetCharacterProperty();
     }
