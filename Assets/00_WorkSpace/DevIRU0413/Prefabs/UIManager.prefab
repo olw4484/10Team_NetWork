@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 6366503094467370585}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 960, y: 540, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -45,3 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDontDestroyOnLoad: 1
+  customCanvasProfiles:
+  - <canvasCameraPrefab>k__BackingField: {fileID: 3552382670106230575, guid: 90eeac4007e8aa241a2190e6231d659f, type: 3}
+    canvasType: 500
+    renderMode: 1
+    customSortingOrder: -1
