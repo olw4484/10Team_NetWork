@@ -29,6 +29,10 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
     protected bool isDead = false;
     public int teamId;
 
+    [Header("TeamColor")]
+    [SerializeField] private GameObject redBody;
+    [SerializeField] private GameObject blueBody;
+
     // -------- WayPoint --------
     protected WaypointGroup waypointGroup;
     protected int currentWaypointIndex = 0;
@@ -81,6 +85,10 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
         this.currentHP = maxHP;
         this.target = target;
         this.teamId = teamId;
+
+        // ----- 팀별 외형 -----
+        if (redBody != null) redBody.SetActive(teamId == 0);
+        if (blueBody != null) blueBody.SetActive(teamId == 1);
     }
 
     // -------- Update는 필요 시 오버라이드 --------
