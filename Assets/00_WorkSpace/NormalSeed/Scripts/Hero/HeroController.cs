@@ -49,6 +49,7 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
     private void Start()
     {
         StartCoroutine(RegisterRoutine());
+        model.CurHP.Subscribe(OnHPChanged);
     }
 
     private IEnumerator RegisterRoutine()
@@ -90,9 +91,15 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         mov.LookMoveDir();
     }
 
-    private void LateUpdate()
+    void OnHPChanged(int newHP)
     {
-        view.SetHpBar(model.MaxHP, model.CurHP.Value);
+        pv.RPC(nameof(UpdateHeroHP), RpcTarget.All, model.MaxHP, newHP);
+    }
+
+    [PunRPC]
+    public void UpdateHeroHP(int maxHP, int curHP)
+    {
+        view.SetHpBar(maxHP, curHP);
     }
 
     [PunRPC]
