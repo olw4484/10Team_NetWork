@@ -6,34 +6,38 @@ using UnityEngine;
 public class RangedMinionController : BaseMinionController
 {
     [Header("Projectile Settings")]
-    [SerializeField] private GameObject projectilePrefab; // 추후 풀링으로 교체 가능
+    [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
 
-    public override void Initialize(MinionDataSO data, Transform target, WaypointGroup waypointGroup = null, int teamId = 0)
+    public override void Initialize(
+        MinionDataSO data,
+        Transform moveTarget = null,
+        Transform attackTarget = null,
+        WaypointGroup waypointGroup = null,
+        int teamId = 0)
     {
-        base.Initialize(data, target, waypointGroup, teamId);
-
-        IsManual = false;
-        isFollowingWaypoint = false;
+        base.Initialize(data, moveTarget, attackTarget, waypointGroup, teamId);
+        // 필요하면 여기서만 추가 세팅
     }
+
     protected override void TryAttack()
     {
-        if (!photonView.IsMine || attackTimer < attackCooldown || target == null || isDead) return;
+        if (!photonView.IsMine || attackTimer < attackCooldown || attackTarget == null || isDead) return;
 
-        var targetPV = target.GetComponent<PhotonView>();
+        var targetPV = attackTarget.GetComponent<PhotonView>();
         if (targetPV == null)
         {
-            Debug.LogError("[Minion] TryAttack: target에 PhotonView 없음! " + target.name);
+            Debug.LogError("[Minion] TryAttack: attackTarget에 PhotonView 없음! " + attackTarget.name);
             return;
         }
 
         attackTimer = 0f;
         int targetViewID = targetPV.ViewID;
-        photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID);
+        photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID, attackPower);
     }
 
     [PunRPC]
-    private void RPC_TryAttack(int targetViewID)
+    private void RPC_TryAttack(int targetViewID, int dmg)
     {
         var targetPV = PhotonView.Find(targetViewID);
         if (targetPV == null || isDead) return;
@@ -50,14 +54,13 @@ public class RangedMinionController : BaseMinionController
         if (projectile != null)
         {
             projectile.Initialize(
-                damage: attackPower,
+                damage: dmg,
                 target: targetPV.transform,
                 owner: gameObject,
                 teamId: this.teamId
             );
         }
-
-        // TODO: 풀링 사용할 경우 Instantiate → PoolManager.Spawn 으로 교체
+        // 풀링은 추후 교체
     }
 }
 

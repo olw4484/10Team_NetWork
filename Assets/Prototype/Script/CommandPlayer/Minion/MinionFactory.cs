@@ -54,7 +54,7 @@ public class MinionFactory : MonoBehaviour
 
     }
 
-    public BaseMinionController SpawnAutoMinion(MinionType type, Vector3 spawnPos, Transform rallyTarget, WaypointGroup waypointGroup, int teamId)
+    public BaseMinionController SpawnAutoMinion(MinionType type, Vector3 spawnPos, WaypointGroup waypointGroup, int teamId)
     {
         if (!minionDataDict.TryGetValue(type, out var data))
         {
@@ -81,8 +81,9 @@ public class MinionFactory : MonoBehaviour
             return null;
         }
 
-        controller.Initialize(data, rallyTarget, waypointGroup, teamId);
+        controller.Initialize(data, moveTarget: null, attackTarget: null, waypointGroup, teamId);
         controller.SetManualControl(false); // 자동 소환
+        controller.SetWaypointGroup(waypointGroup);
         return controller;
     }
 
@@ -111,7 +112,7 @@ public class MinionFactory : MonoBehaviour
             return false;
         }
 
-        controller.Initialize(data, target, null, teamId);
+        controller.Initialize(data, moveTarget: null, attackTarget: null, waypointGroup: null, teamId);
 
         // 수동 소환 미니언으로 설정
         controller.SetManualControl(true);

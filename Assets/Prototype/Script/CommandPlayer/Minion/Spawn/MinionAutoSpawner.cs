@@ -35,7 +35,7 @@ public class MinionAutoSpawner : BaseMinionSpawner
     {
         foreach (var type in minionSequence)
         {
-            SpawnAutoMinion(type, spawnPoint.position, target, waypointGroup, teamId);
+            SpawnAutoMinion(type, spawnPoint.position, waypointGroup, teamId);
             yield return new WaitForSeconds(spawnDelay);
         }
     }

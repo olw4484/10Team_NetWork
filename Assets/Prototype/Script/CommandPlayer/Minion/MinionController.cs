@@ -6,17 +6,20 @@ using static ISelectable;
 
 public class MinionController : BaseMinionController, ISelectable
 {
-
-    private bool isManual = false;
-    public override bool IsManualControlled => isManual;
+    public override bool IsManualControl => isManual;
 
     protected override void Awake() => base.Awake();
     protected override void Start() => base.Start();
     protected override void Update() => base.Update();
 
-    public override void Initialize(MinionDataSO data, Transform target, WaypointGroup waypointGroup = null, int teamId = 0)
+    public override void Initialize(
+        MinionDataSO data,
+        Transform moveTarget = null,
+        Transform attackTarget = null,
+        WaypointGroup waypointGroup = null,
+        int teamId = 0)
     {
-        base.Initialize(data, target, waypointGroup, teamId);
+        base.Initialize(data, moveTarget, attackTarget, waypointGroup, teamId);
     }
 
     public override void SetManualControl(bool isManual)
@@ -59,20 +62,20 @@ public class MinionController : BaseMinionController, ISelectable
 
         var targetObj = PhotonView.Find(targetViewID);
         if (targetObj != null)
-            SetTarget(targetObj.transform);
+            SetAttackTarget(targetObj.transform);
     }
 
     // ----- 공격 로직 -----
     protected override void TryAttack()
     {
-        if (!photonView.IsMine || attackTimer < attackCooldown || target == null || isDead) return;
+        if (!photonView.IsMine || attackTimer < attackCooldown || attackTarget == null || isDead) return;
 
-        Debug.Log($"[Minion] TryAttack 대상: {target?.name} / Tag: {target?.tag}");
+        Debug.Log($"[Minion] TryAttack 대상: {attackTarget?.name} / Tag: {attackTarget?.tag}");
 
-        var targetPV = target.GetComponent<PhotonView>();
+        var targetPV = attackTarget.GetComponent<PhotonView>();
         if (targetPV == null)
         {
-            Debug.LogError($"[Minion] TryAttack: target에 PhotonView 없음! target: {target?.name}");
+            Debug.LogError($"[Minion] TryAttack: attackTarget에 PhotonView 없음! attackTarget: {attackTarget?.name}");
             return;
         }
 

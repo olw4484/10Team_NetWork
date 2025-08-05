@@ -5,36 +5,40 @@ using UnityEngine;
 
 public class MeleeMinionController : BaseMinionController
 {
-    public override void Initialize(MinionDataSO data, Transform target, WaypointGroup waypointGroup = null, int teamId = 0)
+    public override void Initialize(
+        MinionDataSO data,
+        Transform moveTarget = null,
+        Transform attackTarget = null,
+        WaypointGroup waypointGroup = null,
+        int teamId = 0)
     {
-        base.Initialize(data, target, waypointGroup, teamId);
-
-        IsManual = false;
-        isFollowingWaypoint = false;
+        base.Initialize(data, moveTarget, attackTarget, waypointGroup, teamId);
+        // 필요하면 여기서만 추가 세팅
     }
 
     protected override void TryAttack()
     {
-        if (!photonView.IsMine || attackTimer < attackCooldown || target == null || isDead) return;
+        if (!photonView.IsMine || attackTimer < attackCooldown || attackTarget == null || isDead) return;
 
-        Debug.Log($"[Minion] TryAttack 대상: {target?.name} / Tag: {target?.tag}");
-
-        var targetPV = target.GetComponent<PhotonView>();
-        if (targetPV == null)
+        // 여기서 어택 이펙트 or 애니메이션 or 데미지 처리
+        var targetPV = attackTarget.GetComponent<PhotonView>();
+        if (targetPV != null)
         {
-            Debug.LogError($"[Minion] TryAttack: target에 PhotonView 없음! target: {target?.name}");
-            return;
+            attackTimer = 0f;
+            photonView.RPC(nameof(RPC_Attack), RpcTarget.All, targetPV.ViewID, attackPower);
         }
-
-        attackTimer = 0f;
-        int targetViewID = targetPV.ViewID;
-        photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID);
     }
 
     [PunRPC]
-    private void RPC_TryAttack(int targetViewID)
+    public void RPC_Attack(int targetViewID, int dmg)
     {
-        view?.PlayMinionAttackAnimation();
-        // 추상화된 처리거나, Ranged/Melee에서 오버라이드할 부분
+        var targetPV = PhotonView.Find(targetViewID);
+        if (targetPV != null)
+        {
+            var damageable = targetPV.GetComponent<IDamageable>();
+            damageable?.TakeDamage(dmg, this.gameObject);
+            view?.PlayMinionAttackAnimation();
+        }
     }
 }
+

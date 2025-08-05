@@ -47,7 +47,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
 
     // 수동제어
     protected bool isManual = false;
-    public virtual bool IsManualControlled => isManual;
+    public virtual bool IsManualControl => isManual;
 
     // --- 초기화 ---
     protected virtual void Awake()
@@ -238,7 +238,10 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
 
     // 외부제어
     public virtual void SetSelected(bool isSelected) { }
-    public virtual void SetManualControl(bool isManual) { isManual = isManual; }
+    public virtual void SetManualControl(bool isManual)
+    {
+        this.isManual = isManual;
+    }
 
     // -------- 공격 처리 --------
     protected abstract void TryAttack();
