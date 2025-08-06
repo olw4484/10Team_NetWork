@@ -12,8 +12,7 @@ public class JHT_RoomManager : MonoBehaviour, IManager
 
     [SerializeField] private GameObject playerPanelPrefab;
     public Dictionary<int, JHT_PlayerPanelItem> playerPanelDic = new();
-
-    public Action<bool> OnGameStart;
+    
     public Action<bool> OnStartButtonActive;
     public Func<RectTransform> OnSetRedParent;
     public Func<RectTransform> OnSetBlueParent;
@@ -88,6 +87,12 @@ public class JHT_RoomManager : MonoBehaviour, IManager
                 JHT_PlayerPanelItem playerPanel = obj.GetComponent<JHT_PlayerPanelItem>();
                 playerPanel.Init(player);
                 playerPanelDic.Add(player.ActorNumber, playerPanel);
+
+                if (player.CustomProperties.ContainsKey("HeroIndex"))
+                    playerPanel.SetChangeCharacter(player);
+
+                if (player.CustomProperties.ContainsKey("IsReady"))
+                    playerPanel.CheckReady(player);
             }
             else
             {
@@ -160,15 +165,10 @@ public class JHT_RoomManager : MonoBehaviour, IManager
     }
     private IEnumerator OtherPlayerSetTeamCor(Player player)
     {
-
-        while (!PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("RedCount") ||
-           !PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("BlueCount"))
-        {
+        while (!player.CustomProperties.ContainsKey("Team"))
             yield return null;
-        }
 
-        yield return new WaitForSeconds(0.2f); 
-        
+        yield return new WaitForSeconds(0.1f);
 
         GameObject obj = Instantiate(playerPanelPrefab);
         obj.transform.SetParent(SetPanelParent(player));
@@ -214,17 +214,24 @@ public class JHT_RoomManager : MonoBehaviour, IManager
 
 
     #region 게임시작
-    
+
     public void GameStart()
     {
-        
-        if (PhotonNetwork.IsMasterClient && AllPlayerReadyCheck()
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] >= 1          //여기 2:2로 바꿔야함
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] >= 1)        //여기 2:2로 바꿔야함
-        {
-            SetGameCustomProperty(true);
+        Debug.Log("게임씬 로딩 시도 중");
 
+        if (PhotonNetwork.IsMasterClient && AllPlayerReadyCheck()
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] == 2
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] == 2
+            && AllPlayerSelectCharacterCheck())
+        {
+            Debug.Log("조건 충족 → GameScenes 로드");
+            SetGameCustomProperty(true);
             PhotonNetwork.LoadLevel("GameScenes");
+            //ManagerGroup.Instance.GetManager<YSJ_SystemManager>().LoadSceneWithPreActions("GameScenes");
+        }
+        else
+        {
+            Debug.Log("조건 미충족 → 씬 로드 안 함");
         }
     }
 
@@ -251,11 +258,35 @@ public class JHT_RoomManager : MonoBehaviour, IManager
         return true;
     }
 
+    //확인해봐야함
+    public bool AllPlayerSelectCharacterCheck()
+    {
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (!player.CustomProperties.TryGetValue("HeroIndex", out object value) || (int)value == -1)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     #endregion
 
     #region 내가 방을 나갔을경우
     public void LeaveRoom()
     {
+
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("HeroIndex", out object obj))
+        {
+            if ((int)obj >= 0)
+            {
+                playerPanelDic[PhotonNetwork.LocalPlayer.ActorNumber].SetLeaveCharacter();
+                playerPanelDic[PhotonNetwork.LocalPlayer.ActorNumber].SetLeaveReady();
+            }
+        }
+
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             if (playerPanelDic.ContainsKey(player.ActorNumber))
@@ -300,7 +331,6 @@ public class JHT_RoomManager : MonoBehaviour, IManager
             }
         }
 
-        
 
         PhotonNetwork.LeaveRoom();
     }

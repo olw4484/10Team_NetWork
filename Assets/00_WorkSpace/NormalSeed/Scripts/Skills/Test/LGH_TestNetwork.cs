@@ -1,4 +1,4 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,7 +46,7 @@ public class LGH_TestNetwork : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log($"{PhotonNetwork.NickName} JoinRoom");
-        // MasterClient°¡ ÆÀ ÀÎ¿ø ¼ö¸¦ ÃÊ±âÈ­
+        // MasterClientê°€ íŒ€ ì¸ì› ìˆ˜ë¥¼ ì´ˆê¸°í™”
         if (PhotonNetwork.IsMasterClient)
         {
             ExitGames.Client.Photon.Hashtable init = new();
@@ -60,7 +60,7 @@ public class LGH_TestNetwork : MonoBehaviourPunCallbacks
 
     private IEnumerator WaitForRoomPropertiesAndJoin()
     {
-        // ¹æ ÇÁ·ÎÆÛÆ¼°¡ ¼³Á¤µÉ ¶§±îÁö ´ë±â
+        // ë°© í”„ë¡œí¼í‹°ê°€ ì„¤ì •ë  ë•Œê¹Œì§€ ëŒ€ê¸°
         while (!PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("RedCount"))
             yield return null;
 
@@ -90,22 +90,22 @@ public class LGH_TestNetwork : MonoBehaviourPunCallbacks
             countKey = "RedCount";
         }
 
-        // ³» ÆÀ Custom Property ¼³Á¤
+        // ë‚´ íŒ€ Custom Property ì„¤ì •
         ExitGames.Client.Photon.Hashtable teamProp = new();
         teamProp["Team"] = testTeam;
         PhotonNetwork.LocalPlayer.SetCustomProperties(teamProp);
 
-        // ¹æ¿¡ ¹İ¿µ
+        // ë°©ì— ë°˜ì˜
         ExitGames.Client.Photon.Hashtable roomProps = new();
         roomProps[countKey] = testTeam == TestTeamSetting.Red ? redCount : blueCount;
         PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
 
-        //ÆÀ¿¡ µû¶ó ½ºÆù À§Ä¡ °áÁ¤
+        //íŒ€ì— ë”°ë¼ ìŠ¤í° ìœ„ì¹˜ ê²°ì •
         Vector3 spawnPos = testTeam == TestTeamSetting.Red ? redSpawnPoint.position : blueSpawnPoint.position;
         Quaternion spawnRot = testTeam == TestTeamSetting.Red ? redSpawnPoint.rotation : blueSpawnPoint.rotation;
 
-        // »ı¼º
+        // ìƒì„±
         PhotonNetwork.Instantiate("Hero1", spawnPos, spawnRot);
-        Debug.Log($"JHT_TestNetwork : ÇÃ·¹ÀÌ¾î {PhotonNetwork.NickName} ÆÀ : {testTeam}, À§Ä¡ : {spawnPos}");
+        Debug.Log($"JHT_TestNetwork : í”Œë ˆì´ì–´ {PhotonNetwork.NickName} íŒ€ : {testTeam}, ìœ„ì¹˜ : {spawnPos}");
     }
 }

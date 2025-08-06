@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
 {
     #region Fields
+    [SerializeField] private YSJ_CanvasProfile[] customCanvasProfiles = new YSJ_CanvasProfile[5];
+
     private readonly Dictionary<YSJ_UIType, Canvas> _canvasMap = new();
     private Dictionary<Canvas, List<JHT_BaseUI>> _uiMap = new();
     private YSJ_PopupController _popupController = new();
@@ -19,7 +22,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
         _popupController.Init();
     }
 
-    public void Cleanup() { AllClear(); }
+    public void Cleanup() { AllClear(YSJ_UIType.System); }
     public GameObject GetGameObject() => this.gameObject;
     #endregion
 
@@ -40,27 +43,61 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
     {
         if (_canvasMap.ContainsKey(layer)) return;
 
-        string name = $"{layer}_Canvas";
-        Canvas canvas = CreateCanvas(new YSJ_CanvasProfile(name, RenderMode.ScreenSpaceOverlay, (int)layer));
+        Canvas canvas = null;
+        // 커스텀 컴버스가 있다면
+        if (customCanvasProfiles.Length > 0)
+        {
+            foreach (var profile in customCanvasProfiles)
+            {
+                if (profile == null) continue;
+                if (profile.canvasType == layer)
+                {
+                    canvas = CreateCanvas(profile);
+                    break;
+                }
+            }
+        }
+
+        if (canvas == null)
+            canvas = CreateCanvas(new YSJ_CanvasProfile(layer, RenderMode.ScreenSpaceOverlay, (int)layer));
+
         _canvasMap.Add(layer, canvas);
     }
 
     private Canvas CreateCanvas(YSJ_CanvasProfile profile)
     {
-        GameObject go = new GameObject(profile.canvasName);
-        go.transform.SetParent(this.transform); // UIManager 자식으로 등록
+        // 캔버스용 GameObject 생성 및 UIManager 자식으로 설정
+        string nameGo = $"{profile.canvasType}_Canvas";
+        GameObject go = new GameObject(nameGo);
+        go.transform.SetParent(this.transform);
 
+        // 카메라 프리팹이 있을 경우, 인스턴스 생성 및 Camera 컴포넌트 획득
+        Camera camera = null;
+        if (profile.canvasCameraPrefab != null)
+        {
+            GameObject goCamera = Instantiate(profile.canvasCameraPrefab, this.transform);
+            camera = goCamera.GetComponent<Camera>();
+        }
+
+        // Canvas 설정
         Canvas canvas = go.AddComponent<Canvas>();
         canvas.renderMode = profile.renderMode;
-        canvas.sortingOrder = profile.sortingOrder;
+        canvas.sortingOrder = (profile.customSortingOrder == -1) ? (int)profile.canvasType : profile.customSortingOrder;
+        canvas.vertexColorAlwaysGammaSpace = true;
 
+        // ScreenSpaceCamera 모드일 경우 worldCamera 설정
         if (profile.renderMode == RenderMode.ScreenSpaceCamera)
-            canvas.worldCamera = Camera.main;
+        {
+            canvas.worldCamera = camera ?? Camera.main;
+        }
 
-        go.AddComponent<CanvasScaler>();
-        go.AddComponent<GraphicRaycaster>();
+        // Canvas에 필요한 컴포넌트들 추가
+        go.GetOrAddComponent<CanvasScaler>();
+        go.GetOrAddComponent<GraphicRaycaster>();
 
+        // 내부 UI 매핑 리스트 초기화
         _uiMap.Add(canvas, new List<JHT_BaseUI>());
+
         return canvas;
     }
 
@@ -110,10 +147,12 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
 #endif
     }
 
-    public void AllClear()
+    public void AllClear(params YSJ_UIType[] excludedLayers)
     {
         foreach (var kvp in _canvasMap)
         {
+            if (excludedLayers.Length > 0 && !System.Array.Exists(excludedLayers, l => l != kvp.Key))
+                continue;
             TypeClear(kvp.Key);
         }
 #if UNITY_EDITOR

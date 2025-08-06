@@ -13,15 +13,17 @@ namespace Scripts.Scene
         protected override void Initialize()
         {
             base.Initialize();
-            InventoryUI();
+            // InventoryUI();
         }
 
         private void InventoryUI()
         {
             LGH_TestGameManager gm = ManagerGroup.Instance.GetManager<LGH_TestGameManager>();
+            Debug.Log($"{gm.gameObject} is Null. {gm != null}");
             if (gm != null)
             {
                 InventoryHUDModel model = new(gm.localPlayer);
+                Debug.Log($"{gm.gameObject} is Null. {gm != null}");
                 inventoryHUDPresenter = new(inventoryView, model);
                 inventoryView.InitBaseUI();
             }

@@ -3,14 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-/// <summary>
-/// 미니언 스폰 함수 (오프라인/네트워크 모두 사용)
-/// - 오프라인: Instantiate()
-/// - 네트워크: PhotonNetwork.Instantiate()
-///     ※ 주의: PhotonNetwork.Instantiate()는 프리팹이 반드시 Resources 폴더 하위에 있어야 하며,
-///     프리팹 이름이 Resources 폴더 경로와 일치해야 함 (예: "Minion_Melee").
-/// </summary>
-
 public class MinionFactory : MonoBehaviour
 {
     public static MinionFactory Instance { get; private set; }
@@ -23,6 +15,9 @@ public class MinionFactory : MonoBehaviour
     public GameObject meleeMinionPrefab;
     public GameObject rangedMinionPrefab;
     public GameObject eliteMinionPrefab;
+    public GameObject m_MeleeMinionPrefab;
+    public GameObject m_RangedMinionPrefab;
+    public GameObject m_EliteMinionPrefab;
     private Dictionary<MinionType, GameObject> prefabDict;
 
     private void Awake()
@@ -37,13 +32,7 @@ public class MinionFactory : MonoBehaviour
         foreach (var data in minionDataList)
         {
             if (!minionDataDict.ContainsKey(data.minionType))
-            {
                 minionDataDict.Add(data.minionType, data);
-            }
-            else
-            {
-                Debug.LogWarning($"Duplicate MinionType: {data.minionType}");
-            }
         }
         prefabDict = new Dictionary<MinionType, GameObject>
         {
@@ -51,72 +40,56 @@ public class MinionFactory : MonoBehaviour
             { MinionType.Ranged, rangedMinionPrefab },
             { MinionType.Elite, eliteMinionPrefab }
         };
-
     }
 
-    public BaseMinionController SpawnAutoMinion(MinionType type, Vector3 spawnPos, Transform rallyTarget, WaypointGroup waypointGroup, int teamId)
+    /// <summary>
+    /// 자동 미니언을 스폰하는 함수 (웨이포인트 따라 이동)
+    /// </summary>
+    public void SpawnAutoMinion(MinionType type, Vector3 spawnPos, string groupId, int teamId)
     {
-        if (!minionDataDict.TryGetValue(type, out var data))
+        if (!minionDataDict.TryGetValue(type, out var data) || !prefabDict.TryGetValue(type, out var prefab))
         {
-            Debug.LogError($"[Factory] MinionData for {type} not found.");
-            return null;
+            Debug.LogError($"[Factory] 미니언 데이터 또는 프리팹 없음: {type}");
+            return;
         }
 
-        if (!prefabDict.TryGetValue(type, out var prefab))
-        {
-            Debug.LogError($"[Factory] Prefab for {type} not found.");
-            return null;
-        }
-
-        GameObject go;
-        if (PhotonNetwork.InRoom)
-            go = PhotonNetwork.Instantiate(prefab.name, spawnPos, Quaternion.identity);
-        else
-            go = Instantiate(prefab, spawnPos, Quaternion.identity);
-
-        var controller = go.GetComponent<BaseMinionController>();
-        if (controller == null)
-        {
-            Debug.LogError("[Factory] No BaseMinionController on prefab.");
-            return null;
-        }
-
-        controller.Initialize(data, rallyTarget, waypointGroup, teamId);
-        controller.SetManualControl(false); // 자동 소환
-        return controller;
+        object[] instantiationData = new object[] { (int)type, teamId, groupId , teamId};
+        PhotonNetwork.Instantiate(prefab.name, spawnPos, Quaternion.identity, 0, instantiationData);
     }
 
-
+    /// <summary>
+    /// 수동 제어용 미니언을 스폰하는 함수
+    /// </summary>
     public bool TrySpawnMinion(MinionType type, Vector3 position, Transform target, CommandPlayer player, int teamId)
     {
         var minionInfo = hqData.manualSpawnList.FirstOrDefault(x => x.type == type);
-        if (!player.TrySpendGold(minionInfo.cost)) return false;
-
-        GameObject go;
-        if (Photon.Pun.PhotonNetwork.InRoom)
-            go = Photon.Pun.PhotonNetwork.Instantiate(minionInfo.prefab.name, position, Quaternion.identity);
-        else
-            go = Instantiate(minionInfo.prefab, position, Quaternion.identity);
-
-        if (!minionDataDict.TryGetValue(type, out var data))
+        if (minionInfo == null)
         {
-            Debug.LogError($"[Factory] MinionDataDict에서 {type} 데이터를 찾을 수 없습니다.");
+            Debug.LogError($"[Factory] manualSpawnList에 {type}이 없음");
             return false;
         }
-
-        var controller = go.GetComponent<BaseMinionController>();
-        if (controller == null)
-        {
-            Debug.LogError("[Factory] BaseMinionController가 프리팹에 존재하지 않습니다.");
+        if (!player.TrySpendGold(minionInfo.cost))
             return false;
-        }
 
-        controller.Initialize(data, target, null, teamId);
+        // 수동 미니언 프리팹에서 MinionController가 반드시 붙어있어야 함
+        object[] instantiationData = new object[] { (int)type, teamId, "Manual" };
+        var go = PhotonNetwork.Instantiate(minionInfo.prefab.name, position, Quaternion.identity, 0, instantiationData);
 
-        // 수동 소환 미니언으로 설정
-        controller.SetManualControl(true);
+        // 추가적으로 로컬에서만 필요한 세팅이 있다면
+        var ctrl = go.GetComponent<MinionController>();
+        ctrl?.SetManualControl(true);
+        if (target != null)
+            ctrl?.SetMoveTarget(target);
 
         return true;
+    }
+
+    public MinionDataSO GetMinionData(MinionType type)
+    {
+        if (minionDataDict.TryGetValue(type, out var data))
+            return data;
+        Debug.LogError($"[Factory] MinionDataSO를 찾을 수 없음: {type}");
+        return null;
     }
 
     public GameObject GetMinionPrefab(MinionType type)
@@ -130,6 +103,4 @@ public class MinionFactory : MonoBehaviour
         };
     }
 }
-public enum MinionType { Melee = 0, Ranged = 1, Elite =2 , Reinforced_Melee = 3, Reinforced_Ranged = 4 }
-
-
+public enum MinionType { Melee = 0, Ranged = 1, Elite = 2, Reinforced_Melee = 3, Reinforced_Ranged = 4 }

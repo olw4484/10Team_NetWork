@@ -29,7 +29,7 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
         playerNameText.text = player.NickName;
         hostImage.enabled = player.IsMasterClient;
         readyButton.interactable = player.IsLocal;
-
+        curCharacterIndex = -1;
 
         if (!player.IsLocal)
             return;
@@ -53,17 +53,25 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
 
     public void SetCharacter()
     {
-        if (networkUICanvas.curIndex < 0)
+        if (networkUICanvas.curIndex == -1)
+        {
             return;
+        }
 
         curCharacterIndex = networkUICanvas.curIndex;
+        SetCharacterProperty();
+    }
+
+    public void SetLeaveCharacter()
+    {
+        curCharacterIndex = -1;
         SetCharacterProperty();
     }
 
     public void SetCharacterProperty()
     {
         ExitGames.Client.Photon.Hashtable characterChanged = new();
-        characterChanged["Character"] = curCharacterIndex;
+        characterChanged["HeroIndex"] = curCharacterIndex;
         PhotonNetwork.LocalPlayer.SetCustomProperties(characterChanged);
     }
 
@@ -80,9 +88,12 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
             }
         }
 
-        if (player.CustomProperties.TryGetValue("Character", out object value))
+        if (player.CustomProperties.TryGetValue("HeroIndex", out object value))
         {
-            playerCharacterImage.sprite = JHT_NetworkManager.NetworkInstance.characters[(int)value].icon;
+            if ((int)value < 0)
+                return;
+
+            playerCharacterImage.sprite = ManagerGroup.Instance.GetManager<JHT_NetworkManager>().characters[(int)value].icon;
         }
     }
     #endregion
@@ -113,7 +124,15 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
         }
     }
 
+    public void SetLeaveReady()
+    {
+        if (isReady)
+        {
+            ReadyButtonClick();
+        }
+    }
+
     #endregion
 
-    
+
 }

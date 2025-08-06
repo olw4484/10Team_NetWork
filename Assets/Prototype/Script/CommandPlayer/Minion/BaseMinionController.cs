@@ -1,11 +1,10 @@
-using Photon.Pun;
+﻿using Photon.Pun;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent), typeof(PhotonView))]
-public abstract class BaseMinionController : MonoBehaviour, IDamageable
+public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunInstantiateMagicCallback
 {
     [Header("Stats")]
     public float moveSpeed;
@@ -24,39 +23,61 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
     protected MinionView view;
 
     [Header("State")]
-    protected Transform target;
+    protected Transform moveTarget;
+    protected Transform attackTarget;
     protected float attackTimer = 0f;
     protected bool isDead = false;
     public int teamId;
 
-    // -------- WayPoint --------
-    protected WaypointGroup waypointGroup;
+    [Header("TeamColor")]
+    [SerializeField] private GameObject redBody;
+    [SerializeField] private GameObject blueBody;
+
+    // Waypoint & FSM
+    protected WaypointGroup waypointGroup;
     protected int currentWaypointIndex = 0;
     protected bool isFollowingWaypoint = false;
     protected bool waitingForNextWaypoint = false;
 
-    // 
-    protected bool IsManual = false;
-    public virtual bool IsManualControlled => IsManual;
-
-    private bool isAttackMove = false;
+    // 이동명령 관련
+    private bool isAttackMove = false;
     private bool isMovingToPosition = false;
-
     private Vector3 attackMoveTarget;
     private Vector3 targetPosition;
 
-    // -------- �ʱ�ȭ --------
-    protected virtual void Awake()
+    // 수동제어
+    protected bool isManual = false;
+    public virtual bool IsManualControl => isManual;
+
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - OnPhotonInstantiate");
+
+        object[] instantiationData = info.photonView.InstantiationData;
+        if (instantiationData != null && instantiationData.Length > 2)
+        {
+            int minionType = (int)instantiationData[0];
+            int teamId = (int)instantiationData[1];
+            string groupId = (string)instantiationData[2];
+
+            RpcInitialize(minionType, teamId, groupId);
+        }
+    }
+
+
+    // --- 초기화 ---
+    protected virtual void Awake()
     {
         photonView = GetComponent<PhotonView>();
         agent = GetComponent<NavMeshAgent>();
         view = GetComponentInChildren<MinionView>();
+
+        Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - BaseMinionController.Awake");
     }
 
     protected virtual void Start()
     {
         currentHP = maxHP;
-
         if (agent != null)
         {
             agent.speed = moveSpeed;
@@ -65,33 +86,30 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
             agent.acceleration = 99f;
             agent.updateRotation = false;
         }
-
         currentWaypointIndex = 0;
         isFollowingWaypoint = false;
+
+        Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - BaseMinionController.Start");
     }
 
-    public virtual void Initialize(MinionDataSO data, Transform target = null, int teamId = 0)
-    {
-        this.data = data;
-        this.moveSpeed = data.moveSpeed;
-        this.attackRange = data.attackRange;
-        this.attackCooldown = data.attackCooldown;
-        this.attackPower = data.attackPower;
-        this.maxHP = data.maxHP;
-        this.currentHP = maxHP;
-        this.target = target;
-        this.teamId = teamId;
-    }
-
-    // -------- Update�� �ʿ� �� �������̵� --------
     protected virtual void Update()
     {
-        if (isDead) return;
+        if (isDead || !photonView.IsMine) return;
         attackTimer += Time.deltaTime;
-        if (!photonView.IsMine) return;
 
-        // ���� ���� ����
-        if (isAttackMove && target == null)
+        // 공격 우선, 없으면 이동
+        if (attackTarget != null)
+        {
+            HandleAttackTarget();
+        }
+        else if (moveTarget != null && !isAttackMove && !isMovingToPosition)
+        {
+            if (!agent.pathPending && agent.remainingDistance > agent.stoppingDistance)
+                agent.SetDestination(moveTarget.position);
+        }
+
+        // 공격-이동 모드
+        if (isAttackMove && attackTarget == null)
         {
             agent.SetDestination(attackMoveTarget);
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
@@ -109,29 +127,59 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
                 agent.isStopped = true;
             }
         }
-        HandleTarget(); // Ÿ�� ���� �� ���� ����
     }
 
-    protected virtual void HandleTarget()
+    /// <summary>
+    /// 공격 대상 처리
+    /// </summary>
+    protected virtual void HandleAttackTarget()
     {
-        if (target == null) return;
-
-        float distance = Vector3.Distance(transform.position, target.position);
-        if (distance > attackRange)
-        {
-            agent.isStopped = false;
-            agent.SetDestination(target.position);
-        }
-        else
+        float distance = Vector3.Distance(transform.position, attackTarget.position);
+        if (distance <= attackRange)
         {
             agent.isStopped = true;
             TryAttack();
         }
-
-        isFollowingWaypoint = false;
+        else
+        {
+            agent.isStopped = false;
+            agent.SetDestination(attackTarget.position);
+        }
     }
 
-    protected IEnumerator WaitAndMoveToNextWaypoint()
+    // 타겟 setter들
+    public void SetMoveTarget(Transform target) => moveTarget = target;
+    public void SetAttackTarget(Transform target) => attackTarget = target;
+    public void ClearTargets()
+    {
+        moveTarget = null;
+        attackTarget = null;
+    }
+
+    // 공격이동/단일이동
+    public void SetAttackMoveTarget(Vector3 point)
+    {
+        isAttackMove = true;
+        isMovingToPosition = false;
+        ClearTargets();
+        isFollowingWaypoint = false;
+        attackMoveTarget = point;
+        agent.isStopped = false;
+        agent.SetDestination(point);
+    }
+    public void MoveToPosition(Vector3 position)
+    {
+        isAttackMove = false;
+        isMovingToPosition = true;
+        ClearTargets();
+        isFollowingWaypoint = false;
+        targetPosition = position;
+        agent.isStopped = false;
+        agent.SetDestination(position);
+    }
+
+    // 웨이포인트 이동
+    protected IEnumerator WaitAndMoveToNextWaypoint()
     {
         waitingForNextWaypoint = true;
         yield return new WaitForSeconds(0.01f);
@@ -139,26 +187,22 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
         MoveToNextWaypoint();
         waitingForNextWaypoint = false;
     }
-
     protected void ResumeWaypointMove()
     {
         int nearest = FindNearestWaypointIndex();
         float threshold = agent.stoppingDistance;
         var point = waypointGroup.GetWaypoint(nearest);
-
         if (point != null && Vector3.Distance(transform.position, point.position) < threshold)
             nearest++;
-
         currentWaypointIndex = nearest;
         isFollowingWaypoint = true;
         MoveToNextWaypoint();
     }
-
     protected void MoveToNextWaypoint()
     {
+        Debug.Log($"[DEBUG] MoveToNextWaypoint 진입. isFollowingWaypoint={isFollowingWaypoint}, currentWaypointIndex={currentWaypointIndex}");
         if (waypointGroup == null) return;
         if (currentWaypointIndex >= waypointGroup.GetWaypointCount()) return;
-
         Transform next = waypointGroup.GetWaypoint(currentWaypointIndex);
         if (next != null)
         {
@@ -166,37 +210,11 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
             agent.SetDestination(next.position);
         }
     }
-
-    public void SetAttackMoveTarget(Vector3 point)
-    {
-        isAttackMove = true;
-        isMovingToPosition = false;
-        target = null;
-        isFollowingWaypoint = false;
-
-        attackMoveTarget = point;
-        agent.isStopped = false;
-        agent.SetDestination(point);
-    }
-
-    public void MoveToPosition(Vector3 position)
-    {
-        isAttackMove = false;
-        isMovingToPosition = true;
-        target = null;
-        isFollowingWaypoint = false;
-
-        targetPosition = position;
-        agent.isStopped = false;
-        agent.SetDestination(position);
-    }
-
     protected int FindNearestWaypointIndex()
     {
         if (waypointGroup == null) return 0;
         int nearest = 0;
         float minDist = float.MaxValue;
-
         for (int i = 0; i < waypointGroup.GetWaypointCount(); i++)
         {
             float dist = Vector3.Distance(transform.position, waypointGroup.GetWaypoint(i).position);
@@ -206,21 +224,51 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
                 nearest = i;
             }
         }
-
         return nearest;
     }
-    public virtual void SetWaypointGroup(WaypointGroup group)
-    {
-        waypointGroup = group;
-    }
+    public virtual void SetWaypointGroup(WaypointGroup group) => waypointGroup = group;
 
-    public virtual void SetSelected(bool isSelected) { }
+    // 외부제어
+    public virtual void SetSelected(bool isSelected) { }
     public virtual void SetManualControl(bool isManual)
     {
-
+        this.isManual = isManual;
     }
-    public virtual void Initialize(MinionDataSO data, Transform target, WaypointGroup waypointGroup = null, int teamId = 0)
+
+    // -------- 공격 처리 --------
+    protected abstract void TryAttack();
+
+    // 데미지 처리
+    public virtual void TakeDamage(int damage, GameObject attacker = null)
     {
+        if (isDead) return;
+        currentHP -= damage;
+        if (currentHP <= 0)
+            Die(attacker);
+    }
+    protected virtual void Die(GameObject killer)
+    {
+        if (isDead) return;
+        isDead = true;
+        view?.PlayMinionDeathAnimation();
+        if (EventManager.Instance != null)
+        {
+            EventManager.Instance.MinionDead(this as MinionController, killer);
+            EventManager.Instance.MinionKillConfirmed(killer, this as MinionController);
+        }
+        if (PhotonNetwork.InRoom)
+            PhotonNetwork.Destroy(gameObject);
+        else
+            Destroy(gameObject, 1f);
+    }
+
+    // RPC 처리
+    #region RPC_CODE
+    [PunRPC]
+    public virtual void RpcInitialize(int minionType, int teamId, string groupId)
+    {
+        // 타입별 데이터 할당
+        MinionDataSO data = MinionFactory.Instance.GetMinionData((MinionType)minionType);
         this.data = data;
         this.moveSpeed = data.moveSpeed;
         this.attackRange = data.attackRange;
@@ -229,67 +277,36 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
         this.maxHP = data.maxHP;
         this.currentHP = maxHP;
 
-        this.target = target;
         this.teamId = teamId;
-        this.waypointGroup = waypointGroup;
+
+        // 웨이포인트는 WaypointManager에서 가져오기 (싱글턴 관리)
+        WaypointGroup wp = WaypointManager.Instance.GetWaypointGroup(groupId);
+        this.waypointGroup = wp;
+
         this.currentWaypointIndex = 0;
-    }
 
-    // -------- ���� ó�� --------
-    protected abstract void TryAttack();
+        // 팀별 색상
+        if (redBody != null) redBody.SetActive(teamId == 0);
+        if (blueBody != null) blueBody.SetActive(teamId == 1);
 
-    public virtual void SetTarget(Transform newTarget)
-    {
-        target = newTarget;
-        isFollowingWaypoint = false;
-
-        if (target != null)
+        if (waypointGroup != null && !IsManualControl)
         {
-            agent.isStopped = false;
-            agent.SetDestination(target.position);
+            isFollowingWaypoint = true;
+            MoveToNextWaypoint();
         }
     }
 
-    public virtual void TakeDamage(int damage, GameObject attacker = null)
-    {
-        if (isDead) return;
-
-        currentHP -= damage;
-        if (currentHP <= 0)
-            Die(attacker);
-    }
-
-    protected virtual void Die(GameObject killer)
-    {
-        if (isDead) return;
-        isDead = true;
-        view?.PlayMinionDeathAnimation();
-
-        if (EventManager.Instance != null)
-        {
-            EventManager.Instance.MinionDead(this as MinionController, killer);
-            EventManager.Instance.MinionKillConfirmed(killer, this as MinionController);
-        }
-
-        if (PhotonNetwork.InRoom)
-            PhotonNetwork.Destroy(gameObject);
-        else
-            Destroy(gameObject, 1f);
-    }
-    #region RPC_CODE
     [PunRPC]
     public void RPC_TakeDamage(int damage, int attackerViewID)
     {
         if (isDead) return;
         currentHP -= damage;
-
         if (currentHP <= 0)
         {
             GameObject killer = null;
             var attackerPV = PhotonView.Find(attackerViewID);
             if (attackerPV != null)
                 killer = attackerPV.gameObject;
-
             Die(killer);
         }
     }

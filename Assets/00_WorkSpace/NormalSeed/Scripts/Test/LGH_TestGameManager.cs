@@ -37,9 +37,10 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks, IManager
 
     private void Update()
     {
-        //테스트용: 플레이어 활성화 키를 ESC로 설정
+        //테스트용: 플레이어 활성화 키를 ESC로 설정, ESC 입력시 Initialize()를 실행한 후 플레이어를 활성화시켜줌. 테스트용이니 다른 씬에서는 ESC 누르지 말아주세요
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            Initialize();
             foreach (GameObject player in playerList)
             {
                 player.gameObject.SetActive(true);
@@ -62,6 +63,11 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks, IManager
             player.SetActive(false);
             playerList.Add(player);
             Debug.Log(playerList.Count + "명 로딩 완료");
+        }
+
+        if (pv == null)
+        {
+            Debug.Log($"{pv.name}포톤뷰가 없습니다.");
         }
 
         if (playerList.Count == GAME_START_PLAYER_COUNT)

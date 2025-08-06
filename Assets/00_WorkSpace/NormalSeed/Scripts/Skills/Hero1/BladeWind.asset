@@ -13,11 +13,26 @@ MonoBehaviour:
   m_Name: BladeWind
   m_EditorClassIdentifier: 
   skillName: BladeWind
-  skillLevel: 1
   isPassive: 0
-  damage: 20
+  damage: 00000000320000005a00000082000000aa000000d2000000
+  curDamage: 50
   skillRange: 3
   buffAmount: []
-  mana: 0
-  cooldown: 5
+  mana:
+  - 0
+  - 30
+  - 40
+  - 50
+  - 60
+  - 70
+  curMana: 30
+  cooldown:
+  - 0
+  - 9
+  - 8
+  - 7
+  - 6
+  - 5
+  curCooldown: 9
+  maxLevel: 5
   icon: {fileID: 0}

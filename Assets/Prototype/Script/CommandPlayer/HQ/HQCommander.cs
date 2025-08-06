@@ -12,6 +12,7 @@ public class HQCommander : MonoBehaviour, ISelectable
     public Transform defaultSpawnPoint;
     public Transform rallyPointTarget;
     public GameObject rallyPointMarker;
+    public WaypointGroup waypointGroup;
 
     bool IsSelected = false;
 
@@ -36,7 +37,6 @@ public class HQCommander : MonoBehaviour, ISelectable
         var minionType = (MinionType)type;
         var spawnPos = defaultSpawnPoint.position;
 
-
         // NavMesh 위로 위치 보정
         NavMeshHit hit;
         if (NavMesh.SamplePosition(spawnPos, out hit, 3f, NavMesh.AllAreas))
@@ -47,12 +47,41 @@ public class HQCommander : MonoBehaviour, ISelectable
         else
         {
             Debug.LogError("[HQCommander] NavMesh 위에서 미니언을 스폰할 수 없습니다! 스폰 포인트 위치 재확인 필요");
-            return; // NavMesh 위가 아닐 경우 스폰 중단
+            return;
         }
 
         var target = rallyPointTarget != null ? rallyPointTarget : null;
+
+        if (player == null)
+        {
+            Debug.LogError("[HQCommander] player가 null임");
+            return;
+        }
+        if (MinionFactory.Instance == null)
+        {
+            Debug.LogError("[HQCommander] MinionFactory.Instance가 null임");
+            return;
+        }
+        if (MinionFactory.Instance.hqData == null)
+        {
+            Debug.LogError("[HQCommander] MinionFactory.Instance.hqData가 null임");
+            return;
+        }
+        if (MinionFactory.Instance.hqData.manualSpawnList == null)
+        {
+            Debug.LogError("[HQCommander] manualSpawnList가 null임");
+            return;
+        }
+
         int teamId = player.teamId;
-        MinionFactory.Instance.TrySpawnMinion(minionType, spawnPos, target, player, teamId);
+
+        Debug.Log($"[HQCommander] TrySpawnMinion 호출: minionType={minionType}, teamId={teamId}");
+        bool result = MinionFactory.Instance.TrySpawnMinion(minionType, spawnPos, target, player, teamId);
+
+        if (!result)
+            Debug.LogError("[HQCommander] TrySpawnMinion 실패");
+        else
+            Debug.Log("[HQCommander] TrySpawnMinion 성공");
     }
 
     public void SetRallyPoint(Vector3 point)

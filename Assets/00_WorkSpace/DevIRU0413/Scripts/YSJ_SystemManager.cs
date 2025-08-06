@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Photon.Pun;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,14 +19,14 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
     private bool _isInitialized = false;
 
     #region Field
-    public ILoadingUI LoadingUI;
+    [SerializeField] public GameObject _loadingUIPrefab;
+    private ILoadingUI _iLoadingUI;
 
     public SceneBase CurrentSceneBase { get; private set; }
     public SceneID CurrentSceneID { get; private set; }
 
     public SystemStateType CurrentState { get; private set; }
 
-    public int Priority => (int)ManagerPriority.SystemManager;
     public bool IsDontDestroy => isDontDestroyOnLoad;
     #endregion
 
@@ -34,20 +35,17 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
     {
         if (_isInitialized) return;
 
-        GameObject sceneBaseGO = GameObject.FindGameObjectWithTag("SceneBase");
-        SceneBase sceneBaseCmp = sceneBaseGO.GetComponent<SceneBase>();
+        SceneLoaded();
 
-        if (sceneBaseCmp == null)
-        {
-            Debug.LogError("SceneBase 컴포넌트가 존재하지 않습니다. 시스템 매니저 초기화 실패.");
-            return;
-        }
+        CurrentSceneBase.OnInitializeAction -= InitLoadingUI;
+        CurrentSceneBase.OnInitializeAction += InitLoadingUI;
 
-        CurrentSceneBase = sceneBaseCmp;
-        CurrentSceneID = sceneBaseCmp.SceneID;
+        CurrentSceneBase.OnInitializeAction -= TestSceneLoad;
+        CurrentSceneBase.OnInitializeAction += TestSceneLoad;
+
         ChangeState(SystemStateType.Init);
 
-        _isInitialized = false;
+        _isInitialized = true;
     }
     public void Cleanup() { }
     public GameObject GetGameObject() => this.gameObject;
@@ -65,15 +63,21 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
     #region 씬 로딩
     // 씬 매니저 이전 예상
 
-    public void LoadSceneWithPreActions(string sceneName, List<(string message, Func<IEnumerator> action)> preActions = null, string finalMessage = "씬 로딩 중...")
+    public void LoadSceneWithPreActions(string sceneName, List<(string message, Func<IEnumerator> action)> preActions = null, string finalMessage = "Scene Loading...")
     {
         StartCoroutine(TransitionScene(sceneName, preActions, finalMessage));
     }
+    public void LoadPhotonSceneWithPreActions(string sceneName, List<(string message, Func<IEnumerator> action)> preActions = null, string finalMessage = "Scene Loading...")
+    {
+        StartCoroutine(TransitionPhotonScene(sceneName, preActions, finalMessage));
+    }
 
-    private IEnumerator TransitionScene(string sceneName, List<(string message, Func<IEnumerator> action)> preActions = null, string finalMessage = "씬 로딩 중...")
+    private IEnumerator TransitionScene(string sceneName, List<(string message, Func<IEnumerator> action)> preActions = null, string finalMessage = null)
     {
         ChangeState(SystemStateType.SceneChange);
-        LoadingUI?.Show("초기화 중..."); // 나중에 따로 빼도 됨
+        _iLoadingUI?.SetProgress(0.0f);
+        _iLoadingUI?.Show("Wait Init...");
+        yield return new WaitForSeconds(1.0f);
 
         // 전처리 액션 실행
         if (preActions != null)
@@ -81,14 +85,16 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
             foreach (var (message, action) in preActions)
             {
                 if (!string.IsNullOrEmpty(message))
-                    LoadingUI?.UpdateMessage(message);
+                    _iLoadingUI?.UpdateMessage(message);
 
                 if (action != null)
                     yield return StartCoroutine(action());
             }
         }
 
-        LoadingUI?.UpdateMessage(finalMessage);
+        _iLoadingUI?.SetProgress(0.5f);
+        _iLoadingUI?.UpdateMessage(finalMessage);
+        yield return new WaitForSeconds(1.0f);
 
         // 씬 로딩
         AsyncOperation async = SceneManager.LoadSceneAsync(sceneName);
@@ -97,8 +103,88 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
             yield return null;
         }
 
-        LoadingUI?.Hide(); // 나중에 따로 빼도 됨
-        ChangeState(SystemStateType.Playing);
+        _iLoadingUI?.SetProgress(1.0f);
+        _iLoadingUI?.UpdateMessage("Loaded!!");
+        yield return new WaitForSeconds(1.0f);
+
+        _iLoadingUI?.Hide(); // 나중에 따로 빼도 됨
+        SceneLoaded();
+    }
+    private IEnumerator TransitionPhotonScene(string sceneName, List<(string message, Func<IEnumerator> action)> preActions = null, string finalMessage = null)
+    {
+        if (!PhotonNetwork.IsConnected)
+        {
+            Debug.LogError("Photon에 연결되어 있지 않습니다.");
+            yield break;
+        }
+
+        ChangeState(SystemStateType.SceneChange);
+        _iLoadingUI?.SetProgress(0.0f);
+        _iLoadingUI?.Show("Wait Init...");
+        yield return new WaitForSeconds(1.0f);
+
+        // 전처리 액션
+        if (preActions != null)
+        {
+            foreach (var (message, action) in preActions)
+            {
+                if (!string.IsNullOrEmpty(message))
+                    _iLoadingUI?.UpdateMessage(message);
+
+                if (action != null)
+                    yield return StartCoroutine(action());
+            }
+        }
+
+        _iLoadingUI?.SetProgress(0.5f);
+        _iLoadingUI?.UpdateMessage(finalMessage);
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel(sceneName); // 모든 플레이어에게 전파됨
+        }
+        else
+        {
+            // 비마스터는 수동으로 로딩 메시지만 보여줌
+            _iLoadingUI?.UpdateMessage("마스터 클라이언트가 씬을 전환 중입니다...");
+        }
+
+        _iLoadingUI?.SetProgress(1.0f);
+        _iLoadingUI?.UpdateMessage("Loaded!!");
+        yield return new WaitForSeconds(1.0f);
+
+        _iLoadingUI?.Hide();
+        SceneLoaded();
+    }
+
+    private void SceneLoaded()
+    {
+        GameObject sceneBaseGO = GameObject.FindGameObjectWithTag("SceneBase");
+        SceneBase sceneBaseCmp = sceneBaseGO?.GetComponent<SceneBase>();
+        if (sceneBaseCmp == null)
+        {
+            Debug.LogError("SceneBase 컴포넌트가 존재하지 않습니다.");
+            return;
+        }
+
+        CurrentSceneBase = sceneBaseCmp;
+        CurrentSceneID = sceneBaseCmp.SceneID;
+    }
+
+    private void InitLoadingUI()
+    {
+        if (_loadingUIPrefab == null || _iLoadingUI != null) return;
+
+        var loadingUIGO = YSJ_UISpawnFactory.SpawnUI(_loadingUIPrefab);
+        _iLoadingUI = loadingUIGO.GetComponent<ILoadingUI>();
+        if (_iLoadingUI == null) return;
+        _iLoadingUI.Init();
+        // _iLoadingUI.Hide();
+    }
+
+    private void TestSceneLoad()
+    {
+        LoadSceneWithPreActions("YSJ_TestScene 1");
     }
 
     #endregion
@@ -133,7 +219,6 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
     {
         return PlayerPrefs.GetFloat("Volume", 0.5f);
     }
-
 
 
     #endregion
