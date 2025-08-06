@@ -94,6 +94,8 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
 
     protected virtual void Update()
     {
+        Debug.Log($"[UpdateCheck] {name} isFollowingWaypoint: {isFollowingWaypoint}, agent.remainingDistance: {agent.remainingDistance}, agent.pathPending: {agent.pathPending}");
+
         if (isDead || !photonView.IsMine) return;
         attackTimer += Time.deltaTime;
 
@@ -194,6 +196,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     // 웨이포인트 이동
     protected IEnumerator WaitAndMoveToNextWaypoint()
     {
+        Debug.Log("[Waypoint] 코루틴 실행됨");
         waitingForNextWaypoint = true;
         Debug.Log($"[WaypointCheck] 코루틴 진입, 인덱스: {currentWaypointIndex}");
         yield return new WaitForSeconds(0.01f);
@@ -201,6 +204,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         Debug.Log($"[WaypointCheck] 인덱스 증가: {currentWaypointIndex}");
         MoveToNextWaypoint();
         waitingForNextWaypoint = false;
+        Debug.Log($"[WP] isFollowingWaypoint: {isFollowingWaypoint}, idx: {currentWaypointIndex}");
     }
     protected void MoveToNextWaypoint()
     {
@@ -222,6 +226,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         {
             Debug.LogWarning("[Minion] next Waypoint가 null임");
         }
+        Debug.Log($"[WP] isFollowingWaypoint: {isFollowingWaypoint}, idx: {currentWaypointIndex}");
     }
     private void HandleManualMove()
     {
@@ -230,6 +235,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
             agent.SetDestination(attackMoveTarget);
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
             {
+                Debug.Log("[Update] 도착 조건 통과 - 코루틴 호출");
                 isAttackMove = false;
                 agent.isStopped = true;
             }
@@ -257,6 +263,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
                 else
                 {
                     isFollowingWaypoint = false;
+                    Debug.Log($"[Set FALSE] {name} isFollowingWaypoint FALSE at ... (method/line)");
                     agent.isStopped = true;
                 }
             }
@@ -367,6 +374,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
             isFollowingWaypoint = true;
             MoveToNextWaypoint();
         }
+        Debug.Log($"[Init] isFollowingWaypoint after init: {isFollowingWaypoint}");
     }
 
     [PunRPC]
