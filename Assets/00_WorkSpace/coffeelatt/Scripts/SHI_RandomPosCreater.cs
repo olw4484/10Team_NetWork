@@ -1,103 +1,70 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+
 
 
     public static class SHI_RandomPosCreater
     {
-
-        /// <summary>
-        /// 특정한 공간 내에 랜덤한 좌표 생성
-        /// </summary>
-        /// <param name="min">랜덤 좌표를 생성할 공간의 좌하단 좌표</param>
-        /// <param name="max">랜덤 좌표를 생성할 공간의 우상단 좌표</param>
-        /// <param name="IsGround">땅 좌표를 생성할 것인지 아닌지 확인</param>
-        /// <returns></returns>
-        public static Vector3 RandomPos(Vector3 min, Vector3 max, bool IsGround = false)
+    
+    public static Vector3 RandomPos(Vector3 min, Vector3 max, bool IsGround = false)
         {
             if (IsGround) return RandomGroundPos(min, max);
             else return RandomAllPos(min, max);
         }
 
-
-        /// <summary>
-        /// 특정한 공간 내에 랜덤한 좌표 생성(외부에서 사용 x)
-        /// </summary>
-        /// <param name="min">랜덤 좌표를 생성할 공간의 좌하단 좌표</param>
-        /// <param name="max">랜덤 좌표를 생성할 공간의 우상단 좌표</param>
-        /// <returns></returns>
-        private static Vector2 RandomAllPos(Vector3 min, Vector3 max)
+        private static Vector3 RandomAllPos(Vector3 min, Vector3 max)
         {
-            float xpos = Random.Range(min.x, max.x);
-            float ypos = Random.Range(min.z, max.z);
+            float x = Random.Range(min.x, max.x);
+            float z = Random.Range(min.z, max.z);
+            float y = 50; // y는 하늘 위에서 시작
+            
 
-            return new Vector3(xpos, ypos);
+        return new Vector3(x, y, z);
         }
 
-
-        /// <summary>
-        /// 특정한 공간 내에 랜덤한 땅의 좌표 생성(외부에서 사용 x)
-        /// </summary>
-        /// <param name="min">랜덤 좌표를 생성할 공간의 좌하단 좌표</param>
-        /// <param name="max">랜덤 좌표를 생성할 공간의 우상단 좌표</param>
-        /// <param name="yLength">랜던 좌표를 생성할 공간의 Y축 길이</param>
-        /// <returns></returns>
-        private static Vector2 RandomGroundPos(Vector2 min, Vector2 max)
+        private static Vector3 RandomGroundPos(Vector3 min, Vector3 max)
         {
-            Vector2 groundPos;
-            float yLength = max.y - min.y;
+            Vector3 groundPos;
+            float maxHeight = 50;
             bool hitGround = false;
-            LayerMask _allGroundLayers = (1 << 9) | (1 << 10); // 모든 바닥
-            int layerMask = _allGroundLayers;
             int time = 0;
-            do
+        LayerMask groundLayer = (1 << 23);
+                                    // 무한 루프 방지용 카운트
+        
+        do
             {
                 groundPos = RandomAllPos(min, max);
-                RaycastHit2D hit = Physics2D.Raycast(groundPos, Vector2.down, yLength, layerMask);
-                time++;
-                if (hit.collider != null)
+            // Raycast로 바닥을 찾기
+            Ray ray = new Ray(groundPos, Vector3.down);
+                if (Physics.Raycast(ray, out RaycastHit hit, maxHeight, groundLayer))
                 {
-                    groundPos.y = hit.point.y + 0.5f;
-                    RaycastHit2D hitdouble = Physics2D.Raycast(groundPos, Vector2.down, 1f, layerMask);
-                    if (hitdouble.collider != null)
-                    {
-                        groundPos.y = hit.point.y + 0.25f;
-                        hitGround = true;
-                    }
+                    groundPos.y = maxHeight;
+                    hitGround = true;
+                    Debug.Log(hitGround);
                 }
+
+                time++;
                 if (time > 10)
                     break;
+
             } while (!hitGround);
+
             return groundPos;
         }
 
-        /// <summary>
-        /// 특정한 공간을 나누어 나눈 수만큼 랜덤한 땅 좌표들 생성
-        /// </summary>
-        /// <param name="min">랜덤 좌표를 생성할 공간의 좌하단 좌표</param>
-        /// <param name="max">랜덤 좌표를 생성할 공간의 우상단 좌표</param>
-        /// <param name="num">공간을 나눌 수</param>
-        /// <returns></returns>
-        public static List<Vector2> RandomPosList(Vector2 min, Vector2 max, int num)
+        public static List<Vector3> RandomPosList(Vector3 min, Vector3 max, int num)
         {
-            List<Vector2> randomPosList = new();
+            List<Vector3> result = new();
             float divideX = (max.x - min.x) / num;
 
             for (int i = 0; i < num; i++)
-                randomPosList.Add(RandomGroundPos(
-                    new Vector2(min.x + (divideX * i), min.y),
-                    new Vector2(min.x + (divideX * i + 1), max.y)
-                    ));
             {
-                return randomPosList;
+                Vector3 dividedMin = new Vector3(min.x + divideX * i, 30, min.z);
+                Vector3 dividedMax = new Vector3(min.x + divideX * (i + 1), 30, max.z);
+                result.Add(RandomGroundPos(dividedMin, dividedMax));
             }
+
+            return result;
         }
-
-
     }
-
-
-
-
-
-
-

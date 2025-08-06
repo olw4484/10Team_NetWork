@@ -8,14 +8,13 @@ public class MinionAutoSpawner : BaseMinionSpawner
     [Header("Auto Spawn Settings")]
     public List<MinionType> minionSequence = new List<MinionType> { MinionType.Melee, MinionType.Melee, MinionType.Ranged, MinionType.Ranged };
     public Transform spawnPoint;
-    public Transform target;
     public int teamId;
     [SerializeField] public float spawnDelay = 0.5f;
     [SerializeField] public float spawnInterval = 50f;
     public WaypointGroup waypointGroup;
 
-    private int currentIndex = 0;
     private float timer = 0f;
+    private bool isSpawning = false;
 
     private void Update()
     {
@@ -24,7 +23,7 @@ public class MinionAutoSpawner : BaseMinionSpawner
 
         timer += Time.deltaTime;
 
-        if (timer >= spawnInterval)
+        if (timer >= spawnInterval && !isSpawning)
         {
             timer = 0f;
             StartCoroutine(SpawnSequence());
@@ -33,10 +32,12 @@ public class MinionAutoSpawner : BaseMinionSpawner
 
     private IEnumerator SpawnSequence()
     {
+        isSpawning = true;
         foreach (var type in minionSequence)
         {
-            SpawnAutoMinion(type, spawnPoint.position, target, waypointGroup, teamId);
+            MinionFactory.Instance.SpawnAutoMinion(type, spawnPoint.position, waypointGroup, teamId);
             yield return new WaitForSeconds(spawnDelay);
         }
+        isSpawning = false;
     }
 }
