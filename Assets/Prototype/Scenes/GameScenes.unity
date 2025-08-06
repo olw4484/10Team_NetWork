@@ -1504,6 +1504,57 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 8c11ae7c589e3f34d966c6d1fd721bea, type: 3}
   m_PrefabInstance: {fileID: 319781082}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &322685429
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 322685431}
+  - component: {fileID: 322685430}
+  m_Layer: 0
+  m_Name: RedUpLineMinionSpawnPiont
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &322685430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 322685429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd4c5e72b28f12c449002499bb204267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minionSequence: 00000000000000000100000001000000
+  spawnPoint: {fileID: 322685431}
+  teamId: 0
+  groupId: RedUpLine
+  spawnDelay: 0.5
+  spawnInterval: 50
+  waypointGroup: {fileID: 1598429658}
+--- !u!4 &322685431
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 322685429}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
+  m_LocalPosition: {x: 59.1, y: 0, z: -115.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
 --- !u!1001 &333601409
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1597,6 +1648,57 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &342952766
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 342952768}
+  - component: {fileID: 342952767}
+  m_Layer: 0
+  m_Name: BlueDownLineMinionSpawnPiont
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &342952767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342952766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd4c5e72b28f12c449002499bb204267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minionSequence: 00000000000000000100000001000000
+  spawnPoint: {fileID: 342952768}
+  teamId: 0
+  groupId: BlueDown
+  spawnDelay: 0.5
+  spawnInterval: 50
+  waypointGroup: {fileID: 1400671247}
+--- !u!4 &342952768
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342952766}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -12, y: 0, z: 72}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &393018065
 GameObject:
   m_ObjectHideFlags: 0
@@ -2134,6 +2236,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 8c11ae7c589e3f34d966c6d1fd721bea, type: 3}
   m_PrefabInstance: {fileID: 466312312}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &484380418
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 484380419}
+  m_Layer: 0
+  m_Name: ------MinionSpawnPoint-------
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &484380419
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 484380418}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 44.7, y: 3, z: -89}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &523566353
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3296,11 +3429,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   heroRedSpawnPoint: {fileID: 1205745413}
-  heroBlueSpawnPoint: {fileID: 991993679}
-  hqRedSpawnPoint: {fileID: 2109354021}
-  hqBlueSpawnPoint: {fileID: 233892154}
   cmdRedSpawnPoint: {fileID: 393018066}
+  hqRedSpawnPoint: {fileID: 2109354021}
+  heroBlueSpawnPoint: {fileID: 991993679}
   cmdBlueSpawnPoint: {fileID: 1342231616}
+  hqBlueSpawnPoint: {fileID: 233892154}
   canvasPrefab: {fileID: 2638628943763181257, guid: 8da6d376118e2734ba1f7dd4ef0a241e, type: 3}
 --- !u!4 &784222471
 Transform:
@@ -5577,6 +5710,57 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 6dc5d495c37d65043b022964d98631b9, type: 3}
   m_PrefabInstance: {fileID: 1230006758}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1277770947
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1277770949}
+  - component: {fileID: 1277770948}
+  m_Layer: 0
+  m_Name: BlueUpLineMinionSpawnPiont
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1277770948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277770947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd4c5e72b28f12c449002499bb204267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minionSequence: 00000000000000000100000001000000
+  spawnPoint: {fileID: 1277770949}
+  teamId: 0
+  groupId: BlueUpLine
+  spawnDelay: 0.5
+  spawnInterval: 50
+  waypointGroup: {fileID: 235737469}
+--- !u!4 &1277770949
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277770947}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: -35, y: 0, z: 60}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &1285178428
 GameObject:
   m_ObjectHideFlags: 0
@@ -8414,7 +8598,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1820465411}
   m_Layer: 0
-  m_Name: -------WayPint-------
+  m_Name: -------WayPoint-------
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9185,6 +9369,57 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 610202263357044901, guid: 147fe68df44677a4c825999f9fcc6c5d, type: 3}
   m_PrefabInstance: {fileID: 1903787564}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1917078600
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1917078602}
+  - component: {fileID: 1917078601}
+  m_Layer: 0
+  m_Name: RedDonwLineMinionSpawnPiont
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1917078601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1917078600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd4c5e72b28f12c449002499bb204267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minionSequence: 00000000000000000100000001000000
+  spawnPoint: {fileID: 1917078602}
+  teamId: 0
+  groupId: RedDownLine
+  spawnDelay: 0.5
+  spawnInterval: 50
+  waypointGroup: {fileID: 1776220110}
+--- !u!4 &1917078602
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1917078600}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.5, z: 0, w: 0.8660254}
+  m_LocalPosition: {x: 80, y: 0, z: -100}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 60, z: 0}
 --- !u!1001 &1918360693
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10355,3 +10590,8 @@ SceneRoots:
   - {fileID: 1400671248}
   - {fileID: 1598429659}
   - {fileID: 1776220111}
+  - {fileID: 484380419}
+  - {fileID: 1277770949}
+  - {fileID: 342952768}
+  - {fileID: 322685431}
+  - {fileID: 1917078602}

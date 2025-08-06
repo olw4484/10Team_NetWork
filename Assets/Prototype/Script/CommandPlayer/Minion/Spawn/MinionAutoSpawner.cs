@@ -9,12 +9,20 @@ public class MinionAutoSpawner : BaseMinionSpawner
     public List<MinionType> minionSequence = new List<MinionType> { MinionType.Melee, MinionType.Melee, MinionType.Ranged, MinionType.Ranged };
     public Transform spawnPoint;
     public int teamId;
+    public string groupId; 
     [SerializeField] public float spawnDelay = 0.5f;
     [SerializeField] public float spawnInterval = 50f;
-    public WaypointGroup waypointGroup;
 
     private float timer = 0f;
     private bool isSpawning = false;
+    private WaypointGroup waypointGroup;
+
+    private void Start()
+    {
+        waypointGroup = WaypointManager.Instance.GetWaypointGroup(groupId);
+        if (waypointGroup == null)
+            Debug.LogError($"[AutoSpawner] WaypointGroup not found for groupId: {groupId}");
+    }
 
     private void Update()
     {
@@ -35,7 +43,7 @@ public class MinionAutoSpawner : BaseMinionSpawner
         isSpawning = true;
         foreach (var type in minionSequence)
         {
-            MinionFactory.Instance.SpawnAutoMinion(type, spawnPoint.position, waypointGroup, teamId);
+            MinionFactory.Instance.SpawnAutoMinion(type, spawnPoint.position, groupId, teamId);
             yield return new WaitForSeconds(spawnDelay);
         }
         isSpawning = false;
