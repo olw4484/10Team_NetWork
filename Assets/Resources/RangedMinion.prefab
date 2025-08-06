@@ -120,6 +120,7 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 4e22bca9680632b45b1d1738de75cd75, type: 2}
   photonView: {fileID: 2797760396086015769}
   teamId: 0
+  waypointStoppingDistance: 0.5
   redBody: {fileID: 5432122235488980362}
   blueBody: {fileID: 5432122235488987996}
   projectilePrefab: {fileID: 0}

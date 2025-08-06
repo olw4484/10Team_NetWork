@@ -4229,7 +4229,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a570e5c0d28932b47817373ef3596ef3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camController: {fileID: 0}
+  camController: {fileID: 1285178432}
   skillManager: {fileID: 7994051}
   playerList: []
   localPlayer: {fileID: 0}
