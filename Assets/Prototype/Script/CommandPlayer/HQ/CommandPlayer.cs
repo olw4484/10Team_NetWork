@@ -18,7 +18,7 @@ public class CommandPlayer : MonoBehaviour
 
     private void Start()
     {
-            StartCoroutine(RegisterRoutine());
+        StartCoroutine(RegisterRoutine());
     }
 
     private IEnumerator RegisterRoutine()

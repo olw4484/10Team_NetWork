@@ -45,7 +45,7 @@ public class MinionFactory : MonoBehaviour
     /// <summary>
     /// 자동 미니언을 스폰하는 함수 (웨이포인트 따라 이동)
     /// </summary>
-    public void SpawnAutoMinion(MinionType type, Vector3 spawnPos, WaypointGroup group, int teamId)
+    public void SpawnAutoMinion(MinionType type, Vector3 spawnPos, string groupId, int teamId)
     {
         if (!minionDataDict.TryGetValue(type, out var data) || !prefabDict.TryGetValue(type, out var prefab))
         {
@@ -53,7 +53,7 @@ public class MinionFactory : MonoBehaviour
             return;
         }
 
-        object[] instantiationData = new object[] { (int)type, teamId, group.groupId };
+        object[] instantiationData = new object[] { (int)type, teamId, groupId , teamId};
         PhotonNetwork.Instantiate(prefab.name, spawnPos, Quaternion.identity, 0, instantiationData);
     }
 

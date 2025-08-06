@@ -151,7 +151,7 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
     {
         foreach (var kvp in _canvasMap)
         {
-            if (excludedLayers.Length > 0 && !System.Array.Exists(excludedLayers, l => l == kvp.Key))
+            if (excludedLayers.Length > 0 && !System.Array.Exists(excludedLayers, l => l != kvp.Key))
                 continue;
             TypeClear(kvp.Key);
         }
