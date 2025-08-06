@@ -6,15 +6,17 @@ using UnityEngine.UI;
 
 public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
 {
-
+    [Header("RedSpawn")]
     public Transform heroRedSpawnPoint;
-    public Transform heroBlueSpawnPoint;
-
-    public Transform hqRedSpawnPoint;
-    public Transform hqBlueSpawnPoint;
     public Transform cmdRedSpawnPoint;
-    public Transform cmdBlueSpawnPoint;
+    public Transform hqRedSpawnPoint;
 
+    [Header("BlueSpawn")]
+    public Transform heroBlueSpawnPoint;
+    public Transform cmdBlueSpawnPoint;
+    public Transform hqBlueSpawnPoint;
+
+    [Header("CommandCanvas")]
     public GameObject canvasPrefab;
 
     public bool IsDontDestroy => true;
