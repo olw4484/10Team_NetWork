@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class HeroController : MonoBehaviour, LGH_IDamagable
+public class HeroController : MonoBehaviour, IDamageable
 {
     public HeroModel model;
     public HeroView view;
@@ -214,13 +214,13 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
     }
 
     [PunRPC]
-    public void GetHeal(float amount)
+    public void GetHeal(int amount)
     {
         
     }
 
     [PunRPC]
-    public void TakeDamage(float amount)
+    public void TakeDamage(int amount, GameObject attacker = null)
     {
         model.CurHP.Value -= amount;
         Debug.Log($"{amount}의 데미지를 입음. 현재 HP : {model.CurHP.Value}");
