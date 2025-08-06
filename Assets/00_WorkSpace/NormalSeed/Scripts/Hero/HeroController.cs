@@ -15,10 +15,8 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
 
     [SerializeField] private int heroType;
     private bool isInCombat;
-
-    private Vector3 cameraOffset = new Vector3(5f, 19f, -5f);
-
     private float atkDelay;
+    private float genTime = 1f;
 
     public readonly int IDLE_HASH = Animator.StringToHash("Idle");
     public readonly int MOVE_HASH = Animator.StringToHash("Move");
@@ -51,6 +49,7 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         StartCoroutine(RegisterRoutine());
         model.CurHP.Subscribe(OnHPChanged);
         model.CurMP.Subscribe(OnMPChanged);
+        model.Level.Subscribe(OnLevelChanged);
     }
 
     private IEnumerator RegisterRoutine()
@@ -78,10 +77,25 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
             agent.ResetPath();
         }
 
+        if (genTime <= 0f)
+        {
+            HandleAutoGen();
+        }
+        else
+        {
+            genTime -= Time.deltaTime;
+        }
+
+        // Test용 코드들
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             model.CurHP.Value -= 10;
             Debug.Log("현재 HP : " + model.CurHP.Value);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            model.Level.Value++;
+            Debug.Log("현재 레벨 : " + model.Level.Value);
         }
     }
 
@@ -92,36 +106,121 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         mov.LookMoveDir();
     }
 
-    void OnHPChanged(int newHP)
+    /// <summary>
+    /// HP와 MP 젠을 관리하는 메서드
+    /// </summary>
+    void HandleAutoGen()
     {
-        pv.RPC(nameof(UpdateHeroHP), RpcTarget.All, model.MaxHP, newHP);
+        AutoHpGen();
+        AutoMpGen();
     }
 
-    void OnMPChanged(int newMP)
+    void AutoHpGen()
+    {   
+        if (model.CurHP.Value + model.HPGen > model.MaxHP)
+        {
+            model.CurHP.Value = model.MaxHP;
+        }
+        else
+        {
+            model.CurHP.Value += model.HPGen;
+            genTime = 1f;
+        }
+    }
+
+    void AutoMpGen()
+    {
+        if (model.CurMP.Value + model.MPGen > model.MaxMP)
+        {
+            model.CurMP.Value = model.MaxMP;
+        }
+        else
+        {
+            model.CurMP.Value += model.MPGen;
+            genTime = 1f;
+        }
+    }
+
+    void OnHPChanged(float newHP)
+    {
+        pv.RPC(nameof(UpdateHeroHP), RpcTarget.All, model.MaxHP, newHP);
+        Debug.Log("현재 체력 : " + model.CurHP.Value);
+    }
+
+    void OnMPChanged(float newMP)
     {
         pv.RPC(nameof(UpdateHeroMP), RpcTarget.All, model.MaxMP, newMP);
+        Debug.Log("현재 마나 : " + model.CurMP.Value);
+    }
+
+    void OnLevelChanged(int newLevel)
+    {
+        float hp = model.MaxHP;
+        float mp = model.MaxMP;
+
+        pv.RPC(nameof(UpdateHeroLevel), RpcTarget.All, newLevel);
+
+        float levelUpHp = model.MaxHP - hp;
+        float levelUpMp = model.MaxMP - mp;
+
+        model.CurHP.Value += levelUpHp;
+        model.CurMP.Value += levelUpMp;
     }
 
     [PunRPC]
-    public void UpdateHeroHP(int maxHP, int curHP)
+    public void UpdateHeroHP(float maxHP, float curHP)
     {
         view.SetHpBar(maxHP, curHP);
     }
 
     [PunRPC]
-    public void UpdateHeroMP(int maxMP, int curMP)
+    public void UpdateHeroMP(float maxMP, float curMP)
     {
         view.SetMpBar(maxMP, curMP);
     }
 
     [PunRPC]
-    public void GetHeal(int amount)
+    public void UpdateHeroLevel(int nextLevel)
+    {
+        // 최대 레벨 제한
+        if (nextLevel > 18)
+        {
+            model.Level.Value = 18;
+            Debug.Log("최대 레벨임.");
+            return;
+        }
+
+        HeroStat nextStat = model.GetStatByLevel(heroType, nextLevel);
+
+        if (nextStat.Equals(default(HeroStat)))
+        {
+            Debug.LogWarning($"레벨 {nextLevel} 데이터 없음.");
+            return;
+        }
+
+        // 스탯 갱신
+        model.Name = nextStat.Name;
+        model.MaxHP = nextStat.MaxHP;
+        model.MaxMP = nextStat.MaxMP;
+        model.MoveSpd = nextStat.MoveSpd;
+        model.Atk = nextStat.Atk;
+        model.AtkRange = nextStat.AtkRange;
+        model.AtkSpd = nextStat.AtkSpd;
+        model.Def = nextStat.Def;
+        model.HPGen = nextStat.HPGen;
+        model.MPGen = nextStat.MPGen;
+
+        Debug.Log($"{model.Name} 현재 레벨 : {nextLevel}레벨");
+    }
+
+    [PunRPC]
+    public void GetHeal(float amount)
     {
         
     }
 
     [PunRPC]
-    public void TakeDamage(int amount)
+    public void TakeDamage(float amount)
     {
         model.CurHP.Value -= amount;
         Debug.Log($"{amount}의 데미지를 입음. 현재 HP : {model.CurHP.Value}");

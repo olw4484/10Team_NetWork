@@ -25,6 +25,8 @@ public class TestSkillManager : MonoBehaviour
 
     private void Update()
     {
+        if (hero == null) return;
+
         if (Input.GetKeyDown(KeyCode.Q) && skillQCooldown == skillSet.skill_Q.cooldown)
         {
             skillSet.UseQ();
@@ -55,6 +57,7 @@ public class TestSkillManager : MonoBehaviour
         if (skillSet.isWExecuted)
         {
             controller.model.CurMP.Value -= (int)skillSet.skill_W.mana;
+            Debug.Log($"현재 마나 : {controller.model.CurMP.Value}");
             skillWCooldown = 0f;
             skillSet.isWExecuted = false;
         }
@@ -62,6 +65,7 @@ public class TestSkillManager : MonoBehaviour
         if (skillSet.isEExecuted)
         {
             controller.model.CurMP.Value -= (int)skillSet.skill_E.mana;
+            Debug.Log($"현재 마나 : {controller.model.CurMP.Value}");
             skillECooldown = 0f;
             skillSet.isEExecuted = false;
         }
@@ -69,6 +73,7 @@ public class TestSkillManager : MonoBehaviour
         if (skillSet.isRExecuted)
         {
             controller.model.CurMP.Value -= (int)skillSet.skill_R.mana;
+            Debug.Log($"현재 마나 : {controller.model.CurMP.Value}");
             skillRCooldown = 0f;
             skillSet.isRExecuted = false;
         }

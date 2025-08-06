@@ -222,6 +222,8 @@ MonoBehaviour:
   <AtkRange>k__BackingField: 0
   <AtkSpd>k__BackingField: 0
   <Def>k__BackingField: 0
+  <HPGen>k__BackingField: 0
+  <MPGen>k__BackingField: 0
 --- !u!114 &6337473590400749443
 MonoBehaviour:
   m_ObjectHideFlags: 0

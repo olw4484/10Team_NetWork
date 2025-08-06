@@ -30,13 +30,13 @@ public class HeroView : MonoBehaviour
     /// </summary>
     /// <param name="maxHp"></param>
     /// <param name="curHp"></param>
-    public void SetHpBar(int maxHp, int curHp)
+    public void SetHpBar(float maxHp, float curHp)
     {
-        hpBarUI.hpImage.fillAmount = Mathf.Clamp01((float)curHp / (float)maxHp);
+        hpBarUI.hpImage.fillAmount = Mathf.Clamp01(curHp / maxHp);
     }
 
-    public void SetMpBar(int maxMp, int curMp)
+    public void SetMpBar(float maxMp, float curMp)
     {
-        hpBarUI.mpImage.fillAmount = Mathf.Clamp01((float)curMp / (float)maxMp);
+        hpBarUI.mpImage.fillAmount = Mathf.Clamp01(curMp / maxMp);
     }
 }
