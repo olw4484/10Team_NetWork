@@ -1,7 +1,7 @@
 using Photon.Pun;
 using UnityEngine;
 
-public class HQ : MonoBehaviour, IDamageable
+public class HQ : MonoBehaviour, IDamageable, IPunInstantiateMagicCallback
 {
     [Header("HQ 설정 데이터")]
     public KMS_HQDataSO data;
@@ -54,6 +54,16 @@ public class HQ : MonoBehaviour, IDamageable
             // 로컬 오프라인
             EventManager.Instance.HQDestroyed(teamId);
             Destroy(gameObject);
+        }
+    }
+
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        object[] data = info.photonView.InstantiationData;
+        if (data != null && data.Length > 0)
+        {
+            teamId = (int)data[0];
+            Debug.Log($"[HQ] teamId 동기화: {teamId}");
         }
     }
 

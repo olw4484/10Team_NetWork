@@ -158,6 +158,8 @@ MonoBehaviour:
   skillWCooldown: 0
   skillECooldown: 0
   skillRCooldown: 0
+  skillPoint: 0
+  skillWeight: 0
 --- !u!4 &7994052
 Transform:
   m_ObjectHideFlags: 0
@@ -1675,7 +1677,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minionSequence: 00000000000000000100000001000000
   spawnPoint: {fileID: 342952768}
-  teamId: 0
+  teamId: 1
   groupId: BlueDownLine
   spawnDelay: 0.5
   spawnInterval: 50
@@ -5736,7 +5738,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minionSequence: 00000000000000000100000001000000
   spawnPoint: {fileID: 1277770949}
-  teamId: 0
+  teamId: 1
   groupId: BlueUpLine
   spawnDelay: 0.5
   spawnInterval: 50

@@ -120,6 +120,7 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 717a7aabd646f254d9c6b6d83176784c, type: 2}
   photonView: {fileID: 7609844220020206891}
   teamId: 0
+  waypointStoppingDistance: 0.8
   redBody: {fileID: 2843375634349503244}
   blueBody: {fileID: 2843375634349323414}
 --- !u!1001 &2843375634349407310
