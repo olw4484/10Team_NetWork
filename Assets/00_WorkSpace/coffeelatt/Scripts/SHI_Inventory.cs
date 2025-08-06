@@ -23,7 +23,10 @@ public class SHI_Inventory : MonoBehaviour
         Debug.Log($"{newItem.itemNameEnum} 인벤토리에 추가됨.");
         return true;
     }
-
+    public bool IsFull()
+    {
+        return items.Count >= maxSlots;
+    }
     public void RemoveItem(SHI_ItemBase item)
     {
         if (items.Contains(item)&&item.type<=0)

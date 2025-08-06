@@ -15,9 +15,6 @@ public class MinionFactory : MonoBehaviour
     public GameObject meleeMinionPrefab;
     public GameObject rangedMinionPrefab;
     public GameObject eliteMinionPrefab;
-    public GameObject m_MeleeMinionPrefab;
-    public GameObject m_RangedMinionPrefab;
-    public GameObject m_EliteMinionPrefab;
     private Dictionary<MinionType, GameObject> prefabDict;
 
     private void Awake()

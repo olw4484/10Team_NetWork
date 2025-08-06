@@ -1,7 +1,7 @@
 using Photon.Pun;
 using UnityEngine;
 
-public class HQ : MonoBehaviour
+public class HQ : MonoBehaviour, IDamageable
 {
     [Header("HQ 설정 데이터")]
     public KMS_HQDataSO data;
@@ -10,6 +10,11 @@ public class HQ : MonoBehaviour
     private int currentHP;
     private float spawnTimer;
     private PhotonView photonView;
+    private void Awake()
+    {
+        photonView = GetComponent<PhotonView>();
+    }
+
 
     private void Start()
     {
@@ -17,13 +22,21 @@ public class HQ : MonoBehaviour
     }
 
     // 데미지 처리 (공격받을 경우)
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, GameObject attacker = null)
     {
         currentHP -= damage;
+        Debug.Log($"[HQ] 피격! 현재 HP: {currentHP}");
+
         if (currentHP <= 0)
         {
-            OnDestroyed();
+            Die(attacker);
         }
+    }
+
+    private void Die(GameObject killer)
+    {
+        Debug.Log("[HQ] 파괴됨!");
+        OnDestroyed();
     }
 
     private void OnDestroyed()
