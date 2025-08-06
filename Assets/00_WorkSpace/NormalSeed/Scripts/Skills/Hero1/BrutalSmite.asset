@@ -13,11 +13,22 @@ MonoBehaviour:
   m_Name: BrutalSmite
   m_EditorClassIdentifier: 
   skillName: BrutalSmite
-  skillLevel: 1
   isPassive: 0
-  damage: 0
-  skillRange: 0
+  damage: 000000002c0100005802000084030000
+  curDamage: 0
+  skillRange: 2.5
   buffAmount: []
-  mana: 0
-  cooldown: 0
+  mana:
+  - 0
+  - 200
+  - 250
+  - 300
+  curMana: 0
+  cooldown:
+  - 0
+  - 60
+  - 55
+  - 50
+  curCooldown: 0
+  maxLevel: 3
   icon: {fileID: 0}

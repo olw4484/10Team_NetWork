@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MinionView : MonoBehaviour
+public class KMS_MinionView : MonoBehaviour
 {
     [Header("Components")]
     public Transform avatar;

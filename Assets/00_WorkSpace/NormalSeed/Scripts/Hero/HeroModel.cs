@@ -1,38 +1,67 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class HeroModel : MonoBehaviour
 {
-    // ±âº» ½ºÅÈ
+    // ê¸°ë³¸ ìŠ¤íƒ¯
     [field: SerializeField] public string Name { get; set; }
-    [field: SerializeField] public int MaxHP { get; set; }
-    [field: SerializeField] public int MaxMP { get; set; }
+    [field: SerializeField] public float MaxHP { get; set; }
+    [field: SerializeField] public float MaxMP { get; set; }
     [field: SerializeField] public float MoveSpd { get; set; }
     [field: SerializeField] public float Atk { get; set; }
     [field: SerializeField] public float AtkRange { get; set; }
     [field: SerializeField] public float AtkSpd { get; set; }
     [field: SerializeField] public float Def { get; set; }
+    [field: SerializeField] public float HPGen { get; set; }
+    [field: SerializeField] public float MPGen { get; set; }
 
     // Observable Properties
-    public ObservableProperty<int> CurHP { get; private set; } = new();
-    public ObservableProperty<int> CurMP { get; private set; } = new();
+    public ObservableProperty<float> CurHP { get; private set; } = new();
+    public ObservableProperty<float> CurMP { get; private set; } = new();
+    public ObservableProperty<int> Level { get; private set; } = new();
+    public ObservableProperty<float> Exp { get; private set; } = new();
 
-    // HeroStats
-    [field: SerializeField]
-    private HeroStat[] HeroStats = new HeroStat[]
+    private Dictionary<int, HeroStat> levelStats = new();
+
+    public Dictionary<int, float> levelExpTable = new()
     {
-        new("Hero1", 200, 150, 2.5f, 10f, 5f, 1f, 10f),
-        new("Hero2", 250, 100, 2f, 8f, 4f, 0.8f, 15f),
-        new("Hero3", 150, 200, 1.5f, 8f, 10f, 0.8f, 8f)
+        {2, 15},
+        {3, 30},
+        {4, 76},
+        {5, 122},
+        {6, 196},
+        {7, 314},
+        {8, 503},
+        {9, 805},
+        {10, 1288},
+        {11, 2061},
+        {12, 3298},
+        {13, 5277},
+        {14, 8444},
+        {15, 13510},
+        {16, 21617},
+        {17, 34587},
+        {18, 55340},
     };
 
     public void GetInitStats(int heroType)
     {
-        if (heroType < 0 || heroType >= HeroStats.Length) return;
+        string csvName = heroType switch
+        {
+            0 => "Hero1Stats",
+            1 => "Hero2Stats",
+            2 => "Hero3Stats",
+            _ => null
+        };
 
-        // heroType¿¡ µû¶ó ¹Ş¾Æ¿À´Â HeroStatÀÌ ´Ş¶óÁü
-        HeroStat stat = HeroStats[heroType];
+        if (csvName == null) return;
+
+        LoadStatsFromCSV(csvName);
+
+        if (!levelStats.ContainsKey(1)) return;
+
+        HeroStat stat = levelStats[1]; // 1ë ˆë²¨ ì •ë³´
 
         Name = stat.Name;
         MaxHP = stat.MaxHP;
@@ -40,23 +69,84 @@ public class HeroModel : MonoBehaviour
         MoveSpd = stat.MoveSpd;
         Atk = stat.Atk;
         AtkRange = stat.AtkRange;
+        AtkSpd = stat.AtkSpd;
         Def = stat.Def;
+        HPGen = stat.HPGen;
+        MPGen = stat.MPGen;
+
+        Level.Value = 1;
+    }
+
+    /// <summary>
+    /// CSV íŒŒì¼ë¡œ ì €ì¥ë˜ì–´ ìˆëŠ” Heroì˜ Statsë¥¼ ë¶ˆëŸ¬ì˜¤ëŠ” ë©”ì„œë“œ
+    /// </summary>
+    /// <param name="fileName"></param>
+    private void LoadStatsFromCSV(string fileName)
+    {
+        TextAsset csvFile = Resources.Load<TextAsset>($"HeroStats/{fileName}");
+        // Stat ì´ˆê¸°í™”
+        levelStats.Clear();
+
+        string[] lines = csvFile.text.Split('\n');
+
+        for (int i = 1; i < lines.Length; i++)
+        {
+            string[] tokens = lines[i].Split(',');
+
+            if (tokens.Length < 11) continue;
+
+            int level = int.Parse(tokens[0]);
+            HeroStat stat = new(
+                tokens[1],
+                int.Parse(tokens[2]),
+                int.Parse(tokens[3]),
+                float.Parse(tokens[4]),
+                float.Parse(tokens[5]),
+                float.Parse(tokens[6]),
+                float.Parse(tokens[7]),
+                float.Parse(tokens[8]),
+                float.Parse(tokens[9]),
+                float.Parse(tokens[10])
+            );
+
+            levelStats[level] = stat;
+        }
+    }
+    /// <summary>
+    /// ë ˆë²¨ì— ë”°ë¼ Statì„ ë¶ˆëŸ¬ì˜¤ëŠ” ë©”ì„œë“œ
+    /// </summary>
+    /// <param name="heroType"></param>
+    /// <param name="level"></param>
+    /// <returns></returns>
+    public HeroStat GetStatByLevel(int heroType, int level)
+    {
+        string csvName = heroType switch
+        {
+            0 => "Hero1Stats",
+            1 => "Hero2Stats",
+            2 => "Hero3Stats",
+            _ => null
+        };
+
+        if (csvName == null) return default;
+
+        if (levelStats.Count == 0 || !levelStats.ContainsKey(level))
+        {
+            LoadStatsFromCSV(csvName);
+        }
+
+        levelStats.TryGetValue(level, out HeroStat stat);
+        return stat;
     }
 }
 
-// HeroStat ±¸Á¶Ã¼
 public struct HeroStat
 {
     public string Name;
-    public int MaxHP;
-    public int MaxMP;
-    public float MoveSpd;
-    public float Atk;
-    public float AtkRange;
-    public float AtkSpd;
-    public float Def;
+    public int MaxHP, MaxMP;
+    public float MoveSpd, Atk, AtkRange, AtkSpd, Def, HPGen, MPGen;
 
-    public HeroStat(string name, int maxHP, int maxMP, float moveSpd, float atk, float atkRange, float atkSpd, float def)
+    public HeroStat(string name, int maxHP, int maxMP, float moveSpd, float atk, float atkRange, float atkSpd, float def, float hpGen, float mpGen)
     {
         Name = name;
         MaxHP = maxHP;
@@ -66,5 +156,7 @@ public struct HeroStat
         AtkRange = atkRange;
         AtkSpd = atkSpd;
         Def = def;
+        HPGen = hpGen;
+        MPGen = mpGen;
     }
 }

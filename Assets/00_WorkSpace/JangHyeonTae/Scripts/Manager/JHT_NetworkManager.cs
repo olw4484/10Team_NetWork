@@ -1,11 +1,14 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public enum CurrentState
 {
@@ -15,123 +18,208 @@ public enum CurrentState
     InGame
 }
 
-public class JHT_NetworkManager : MonoBehaviourPunCallbacks
+public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
 {
+
     #region singleton
-    //private static JHT_NetworkManager networkInstance;
-    //public static JHT_NetworkManager NetworkInstance
-    //{
-    //    get { return networkInstance;}
-    //}
-    //
-    //private void Awake()
-    //{
-    //    if (networkInstance == null)
-    //    {
-    //        networkInstance = this;
-    //        DontDestroyOnLoad(gameObject);
-    //    }
-    //    else
-    //    {
-    //        Destroy(gameObject);
-    //    }
-    //}
+    private static JHT_NetworkManager networkInstance;
+    public static JHT_NetworkManager NetworkInstance
+    {
+        get
+        {
+            if (networkInstance == null)
+            {
+                var obj = FindObjectOfType<JHT_NetworkManager>();
+                if (obj != null)
+                {
+                    networkInstance = obj;
+                }
+                else
+                {
+                    var newObj = new GameObject().AddComponent<JHT_NetworkManager>();
+                    networkInstance = newObj;
+                }
+            }
+            return networkInstance;
+        }
+    }
+
     #endregion
 
-    [SerializeField] private GameObject loadingPanel;
-    [SerializeField] private GameObject lobbyPanel;
-    [SerializeField] private GameObject roomPanel;
-    [SerializeField] private Transform roomListParent;
+    #region Î≥ÄÏàò
+
     [SerializeField] private GameObject roomPanelPrefab;
 
-    private CurrentState curPlayerState;
+    public CurrentState curPlayerState;
     private Dictionary<string, GameObject> currentRoomDic;
+    [Header("Ï∫êÎ¶≠ÌÑ∞")]
+    public JHT_Character[] characters;
+    #endregion
 
-    public JHT_RoomManager roomManager;
-    public JHT_TeamManager teamManager;
+    #region IManager
 
-    void Start()
+    public bool IsDontDestroy => true;
+
+    public Action<bool> OnLoading;
+    public Action<bool> OnLobbyIn;
+    public Action<bool, bool> OnRoomIn;
+    public Func<RectTransform> OnParent;
+
+    private JHT_NetworkUIPanel mainLobbyPanel;
+    public void Initialize()
+    {
+        var objs = FindObjectsOfType<JHT_NetworkManager>();
+        if (objs.Length != 1)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(gameObject);
+
+        Init();
+    }
+
+    public void Cleanup()
+    {
+        
+    }
+
+    public GameObject GetGameObject() => this.gameObject;
+    #endregion
+
+    public void Init()
     {
         currentRoomDic = new();
         PhotonNetwork.ConnectUsingSettings();
+
+        GameObject inst = Resources.Load<GameObject>("NetworkPrefab/LobbyCanvas");
+        GameObject obj = Instantiate(inst);
+
+        mainLobbyPanel = obj.GetComponent<JHT_NetworkUIPanel>();
+        mainLobbyPanel.TeamInit();
+        mainLobbyPanel.NetInit();
+        mainLobbyPanel.RoomInit();
+
+        AudioClip bgmObj = Resources.Load<AudioClip>("LobbySound/LobbyBGM");
+
+        ManagerGroup.Instance.GetManager<YSJ_AudioManager>().StopBgm();
+        ManagerGroup.Instance.GetManager<YSJ_AudioManager>().PlayBgm(bgmObj);
+        //PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
     }
 
-    #region ConnectNetwork & Lobby
+    #region Photon Callbacks
     public override void OnConnectedToMaster()
     {
-        if (loadingPanel.activeSelf)
-        {
-            loadingPanel.SetActive(false);
-        }
+        OnLoading?.Invoke(false);
         PhotonNetwork.JoinLobby();
+        Debug.Log("ÎßàÏä§ÌÑ∞ÏÑúÎ≤Ñ Ï†ëÏÜç");
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
-        PhotonNetwork.ConnectUsingSettings();
+        StateCustomProperty(CurrentState.NotConnect);
+        if ((CurrentState)PhotonNetwork.LocalPlayer.CustomProperties["CurState"] == CurrentState.NotConnect)
+            PhotonNetwork.ConnectUsingSettings();
     }
 
     public override void OnJoinedLobby()
     {
-        lobbyPanel.SetActive(true);
+        OnLobbyIn?.Invoke(true);
         StateCustomProperty(CurrentState.Lobby);
     }
 
     public override void OnCreatedRoom()
     {
-        StateCustomProperty(CurrentState.InRoom);
-        
+        ExitGames.Client.Photon.Hashtable roomInit = new();
+        roomInit["RedCount"] = 0;
+        roomInit["BlueCount"] = 0;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(roomInit);
+        //ManagerGroup.Instance.GetManager<JHT_TeamManager>().SetTeamCount(0, 0);
     }
+
 
     public override void OnJoinedRoom()
     {
-        //πÊ √ ±‚ ƒøΩ∫≈“ «¡∑Œ∆€∆º
-        if (PhotonNetwork.IsMasterClient)
-        {
-            ExitGames.Client.Photon.Hashtable roomInit = new();
-            roomInit["RedCount"] = 0;
-            roomInit["BlueCount"] = 0;
-            PhotonNetwork.CurrentRoom.SetCustomProperties(roomInit);
-        }
-        
-        lobbyPanel.SetActive(false);
-        roomPanel.SetActive(true);
-
-        CallPlayer();
+        StartCoroutine(CallPlayer());
     }
 
-    private void CallPlayer()
+    private IEnumerator CallPlayer()
     {
-        roomManager.PlayerPanelSpawn();
+        while (!PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("RedCount") ||
+           !PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("BlueCount"))
+        {
+            yield return null;
+        }
+
+
+        if (PhotonNetwork.IsMasterClient)
+            ManagerGroup.Instance.GetManager<JHT_TeamManager>().SetPlayerTeam(PhotonNetwork.LocalPlayer);
+
+        while (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("Team"))
+        {
+            yield return null;
+        }
+
+        ManagerGroup.Instance.GetManager<JHT_RoomManager>().PlayerPanelSpawn();
+        ManagerGroup.Instance.GetManager<JHT_RoomManager>().SetGameCustomProperty(false);
+        StateCustomProperty(CurrentState.InRoom);
+
+        yield return new WaitUntil(() =>
+       PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("CurState") &&
+       (CurrentState)PhotonNetwork.LocalPlayer.CustomProperties["CurState"] == CurrentState.InRoom);
+
+        OnRoomIn?.Invoke(true, true);
+        Debug.Log($"ÌòÑÏû¨ ÏÉÅÌÉú {PhotonNetwork.LocalPlayer.CustomProperties["CurState"]}");
+        Debug.Log($"{PhotonNetwork.LocalPlayer.ActorNumber} ÏÉùÏÑ± Ïï°ÌÑ∞ÎÑòÎ≤Ñ");
     }
-    
+
+    public override void OnLeftRoom()
+    {
+        StateCustomProperty(CurrentState.Lobby);
+    }
+
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         if (newPlayer != PhotonNetwork.LocalPlayer)
         {
-            roomManager.PlayerPanelSpawn(newPlayer, teamManager.SetTeam());
-            Debug.Log($"{newPlayer.ActorNumber} : {newPlayer.CustomProperties["Team"]}");
+            StartCoroutine(CallOtherPlayer(newPlayer));
         }
+    }
+
+    private IEnumerator CallOtherPlayer(Player newPlayer)
+    {
+        while (!PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("RedCount") ||
+           !PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("BlueCount"))
+        {
+            yield return null;
+        }
+
+        if (PhotonNetwork.IsMasterClient)
+            ManagerGroup.Instance.GetManager<JHT_TeamManager>().SetPlayerTeam(newPlayer);
+
+        while (!newPlayer.CustomProperties.ContainsKey("Team"))
+            yield return null;
+
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         if (otherPlayer != PhotonNetwork.LocalPlayer)
         {
-            roomManager.PlayerLeaveRoom(otherPlayer);
+            ManagerGroup.Instance.GetManager<JHT_RoomManager>().PlayerLeaveRoom(otherPlayer);
         }
     }
     public override void OnMasterClientSwitched(Player newClientPlayer)
     {
-        Debug.Log($"MasterSwitch : {newClientPlayer}π¯¿∏∑Œ πŸ≤Ò");
-        roomManager.PlayerPanelSpawn(newClientPlayer, teamManager.SetTeam());
+        ManagerGroup.Instance.GetManager<JHT_RoomManager>().PlayerPanelSpawn(newClientPlayer);
+        Debug.Log($"ÎßàÏä§ÌÑ∞ ÌÅ¥ÎùºÏù¥Ïñ∏Ìä∏ Î≥ÄÍ≤Ω : {newClientPlayer.ActorNumber}");
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         foreach (RoomInfo roomInfo in roomList)
         {
-            //πÊ¿Ã ªÁ∂Û¡˙ ∂ß
+            //Î∞©Ïù¥ ÏÇ¨ÎùºÏßà Îïå
             if (roomInfo.RemovedFromList)
             {
                 if (currentRoomDic.TryGetValue(roomInfo.Name, out GameObject obj))
@@ -142,8 +230,8 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
 
                 continue;
             }
-            
-            //πÊ¿Ã ª˝±Ê ∂ß
+
+            //Î∞©Ïù¥ ÏÉùÍ∏∏ Îïå
             if (currentRoomDic.ContainsKey(roomInfo.Name))
             {
                 currentRoomDic[roomInfo.Name].GetComponent<JHT_RoomItem>().Init(roomInfo);
@@ -151,39 +239,133 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks
             else
             {
                 GameObject prefab = Instantiate(roomPanelPrefab);
-                prefab.transform.SetParent(roomListParent);
+
+                prefab.transform.SetParent(OnParent?.Invoke());
                 prefab.GetComponent<JHT_RoomItem>().Init(roomInfo);
+
                 currentRoomDic.Add(roomInfo.Name, prefab);
             }
         }
     }
-
     #endregion
 
-    #region CustomProperty
 
+    #region CustomProperty
     // Player Network State
+
     public void StateCustomProperty(CurrentState _curPlayerState)
     {
         ExitGames.Client.Photon.Hashtable curState = new();
-        curPlayerState = _curPlayerState;
-        curState["CurState"] = curPlayerState; // ¿ßø°±Ó¡ˆ ¿€º∫∞˙¡§
-        PhotonNetwork.LocalPlayer.SetCustomProperties(curState); //¿¸ø™∫Øºˆ ¿˙¿Â ¥¿≥¶
+        CurrentState curstate = _curPlayerState;
+        curState["CurState"] = curstate; // ÏúÑÏóêÍπåÏßÄ ÏûëÏÑ±Í≥ºÏ†ï
+        PhotonNetwork.LocalPlayer.SetCustomProperties(curState); //Ï†ÑÏó≠Î≥ÄÏàò Ï†ÄÏû• ÎäêÎÇå
     }
 
 
 
-    // «¡∑Œ∆€∆º ∫Ø»≠∞° ª˝∞Â¿ª∂ß »£√‚, »£√‚¿Ã µ«æÓæﬂ«“ ∑Œ¡˜¿Ã ¿÷¿ªãö ªÁøÎ
+    // ÌîÑÎ°úÌçºÌã∞ Î≥ÄÌôîÍ∞Ä ÏÉùÍ≤ºÏùÑÎïå Ìò∏Ï∂ú, Ìò∏Ï∂úÏù¥ ÎêòÏñ¥ÏïºÌï† Î°úÏßÅÏù¥ ÏûàÏùÑ¬ã¬ö ÏÇ¨Ïö©
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
-        
+        if (propertiesThatChanged.ContainsKey("RedCount"))
+            ManagerGroup.Instance.GetManager<JHT_TeamManager>().redCount = (int)propertiesThatChanged["RedCount"];
+        if (propertiesThatChanged.ContainsKey("BlueCount"))
+            ManagerGroup.Instance.GetManager<JHT_TeamManager>().blueCount = (int)propertiesThatChanged["BlueCount"];
+
     }
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
     {
-        
+        if (changedProps.ContainsKey("Team"))
+        {
+            ManagerGroup.Instance.GetManager<JHT_RoomManager>().OtherPlayerChangeTeam(targetPlayer);
+        }
+
+        if (changedProps.ContainsKey("IsReady"))
+        {
+            StartCoroutine(WaitForAddDic(targetPlayer, changedProps));
+        }
+
+        if (changedProps.ContainsKey("HeroIndex"))
+        {
+            StartCoroutine(WaitForLoadCharacter(targetPlayer, changedProps));
+        }
+
+        if (changedProps.ContainsKey("GamePlay"))
+        {
+            StartCoroutine(GameStartCor(changedProps));
+        }
+
+    }
+
+    IEnumerator GameStartCor(ExitGames.Client.Photon.Hashtable changedProps)
+    {
+        yield return null;
+        if (changedProps.TryGetValue("GamePlay", out object value))
+        {
+            if (mainLobbyPanel == null)
+            {
+                GameObject inst = Resources.Load<GameObject>("NetworkPrefab/LobbyCanvas");
+                GameObject obj = Instantiate(inst);
+                mainLobbyPanel = obj.GetComponent<JHT_NetworkUIPanel>();
+            }
+
+            if ((bool)value)
+            {
+                if (mainLobbyPanel.gameObject.activeSelf)
+                    mainLobbyPanel.gameObject.SetActive(!(bool)value);
+            }
+            else
+            {
+                if (mainLobbyPanel.gameObject.activeSelf)
+                    mainLobbyPanel.gameObject.SetActive(!(bool)value);
+            }
+        }
+    }
+
+    IEnumerator WaitForAddDic(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    {
+        while (!ManagerGroup.Instance.GetManager<JHT_RoomManager>().playerPanelDic.ContainsKey(targetPlayer.ActorNumber))
+            yield return null;
+
+
+        if (changedProps.ContainsKey("IsReady"))
+        {
+            if (ManagerGroup.Instance.GetManager<JHT_RoomManager>().playerPanelDic.TryGetValue(targetPlayer.ActorNumber, out var panel))
+            {
+                panel.CheckReady(targetPlayer);
+            }
+            else
+            {
+                Debug.LogWarning($"[IsReady] Ìå®ÎÑê ÏóÜÏùå: {targetPlayer.ActorNumber}");
+            }
+        }
+    }
+
+    IEnumerator WaitForLoadCharacter(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    {
+        while (!ManagerGroup.Instance.GetManager<JHT_RoomManager>().playerPanelDic.ContainsKey(targetPlayer.ActorNumber))
+            yield return null;
+
+        if (changedProps.ContainsKey("HeroIndex"))
+        {
+            if (ManagerGroup.Instance.GetManager<JHT_RoomManager>().playerPanelDic.TryGetValue(targetPlayer.ActorNumber, out var panel))
+            {
+                panel.SetChangeCharacter(targetPlayer);
+            }
+            else
+            {
+                Debug.LogWarning($"[HeroIndex] Ìå®ÎÑê ÏóÜÏùå: {targetPlayer.ActorNumber}");
+            }
+        }
     }
     #endregion
 
-   
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            Debug.Log($"ÌòÑÏû¨ Î∞© Ïù∏Ïõê Ïàò : {PhotonNetwork.CurrentRoom.PlayerCount}");
+        }
+    }
 }

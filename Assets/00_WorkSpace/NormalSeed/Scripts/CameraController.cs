@@ -1,4 +1,4 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -17,7 +17,7 @@ public class CameraController : MonoBehaviour
 
     private void Start()
     {
-        //// ¸ğµç ÇÃ·¹ÀÌ¾î¸¦ °Ë»öÇÑ ÈÄ PhotonÀ» ÀÌ¿ëÇØ¼­ ÀÚ½ÅÀÇ Player¸¸ ÂüÁ¶ÇØ ¿È
+        //// ëª¨ë“  í”Œë ˆì´ì–´ë¥¼ ê²€ìƒ‰í•œ í›„ Photonì„ ì´ìš©í•´ì„œ ìì‹ ì˜ Playerë§Œ ì°¸ì¡°í•´ ì˜´
         //players = GameObject.FindGameObjectsWithTag("Player");
         //foreach (GameObject obj in players)
         //{
@@ -32,7 +32,7 @@ public class CameraController : MonoBehaviour
         //camSpd = 20f;
         //screenBoarderThickness = 10f;
         //zoomSpd = 10f;
-        //// Ä«¸Ş¶óÀÇ ½Ã¾ß°¢ °¡Á®¿À±â
+        //// ì¹´ë©”ë¼ì˜ ì‹œì•¼ê° ê°€ì ¸ì˜¤ê¸°
         //camFov = gameObject.GetComponent<Camera>().fieldOfView;
         //transform.position = new Vector3(player.transform.position.x + 5f, 20, player.transform.position.z - 5f);
     }
@@ -46,7 +46,9 @@ public class CameraController : MonoBehaviour
         zoomSpd = 10f;
         camFov = GetComponent<Camera>().fieldOfView;
 
-        SetCameraOnPlayer();  // Ã¹ À§Ä¡ ¼³Á¤
+        transform.rotation = Quaternion.Euler(70f, -45f, 0);
+
+        SetCameraOnPlayer();  // ì²« ìœ„ì¹˜ ì„¤ì •
     }
 
     private void Update()
@@ -65,31 +67,31 @@ public class CameraController : MonoBehaviour
                 }
             }
 
-            // YÅä±ÛÀÌ ÄÑÁ³´Ù¸é
+            // Yí† ê¸€ì´ ì¼œì¡Œë‹¤ë©´
             if (isFollowing)
             {
                 SetCameraOnPlayer();
             }
 
-            // YÅä±ÛÀÌ ²¨Á®ÀÖ°í ½ºÆäÀÌ½º¹Ù¸¦ ´©¸£°í ÀÖ´Â »óÅÂ¶ó¸é
+            // Yí† ê¸€ì´ êº¼ì ¸ìˆê³  ìŠ¤í˜ì´ìŠ¤ë°”ë¥¼ ëˆ„ë¥´ê³  ìˆëŠ” ìƒíƒœë¼ë©´
             if (!isFollowing && Input.GetKey(KeyCode.Space))
             {
                 SetCameraOnPlayer();
             }
 
-            // YÅä±ÛÀÌ ²¨Á®ÀÖ°í ½ºÆäÀÌ½º¹Ù¸¦ ´©¸£°í ÀÖÁö ¾ÊÀº »óÅÂ¶ó¸é
+            // Yí† ê¸€ì´ êº¼ì ¸ìˆê³  ìŠ¤í˜ì´ìŠ¤ë°”ë¥¼ ëˆ„ë¥´ê³  ìˆì§€ ì•Šì€ ìƒíƒœë¼ë©´
             if (!isFollowing && !Input.GetKey(KeyCode.Space))
             {
                 MoveCamera();
             }
 
-            // Ä«¸Ş¶ó ÁÜÀÎ/ÁÜ¾Æ¿ô
+            // ì¹´ë©”ë¼ ì¤Œì¸/ì¤Œì•„ì›ƒ
             ZoomCamera();
         }
     }
 
     /// <summary>
-    /// Ä«¸Ş¶ó¸¦ ÇÃ·¹ÀÌ¾î À§Ä¡·Î ÀÌµ¿½ÃÅ°´Â ¸Ş¼­µå
+    /// ì¹´ë©”ë¼ë¥¼ í”Œë ˆì´ì–´ ìœ„ì¹˜ë¡œ ì´ë™ì‹œí‚¤ëŠ” ë©”ì„œë“œ
     /// </summary>
     void SetCameraOnPlayer()
     {
@@ -97,30 +99,30 @@ public class CameraController : MonoBehaviour
     }
 
     /// <summary>
-    /// ¸¶¿ì½º À§Ä¡¿¡ µû¶ó Ä«¸Ş¶ó¸¦ ÀÌµ¿½ÃÅ°´Â ¸Ş¼­µå
+    /// ë§ˆìš°ìŠ¤ ìœ„ì¹˜ì— ë”°ë¼ ì¹´ë©”ë¼ë¥¼ ì´ë™ì‹œí‚¤ëŠ” ë©”ì„œë“œ
     /// </summary>
     void MoveCamera()
     {
         Vector3 pos = transform.position;
-        // ¸¶¿ì½ºÀÇ À§Ä¡°¡ ½ºÅ©¸° À§ÂÊÀÇ screenBoarder ¿µ¿ª ³»¿¡ À§Ä¡ÇÒ ¶§ Ä«¸Ş¶ó¸¦ À§ÂÊÀ¸·Î
+        // ë§ˆìš°ìŠ¤ì˜ ìœ„ì¹˜ê°€ ìŠ¤í¬ë¦° ìœ„ìª½ì˜ screenBoarder ì˜ì—­ ë‚´ì— ìœ„ì¹˜í•  ë•Œ ì¹´ë©”ë¼ë¥¼ ìœ„ìª½ìœ¼ë¡œ
         if (Input.mousePosition.y >= Screen.height - screenBoarderThickness)
         {
             pos.x -= camSpd * Time.deltaTime;
             pos.z += camSpd * Time.deltaTime;
         }
-        // ¾Æ·¡·Î
+        // ì•„ë˜ë¡œ
         if (Input.mousePosition.y <= screenBoarderThickness)
         {
             pos.x += camSpd * Time.deltaTime;
             pos.z -= camSpd * Time.deltaTime;
         }
-        // ¿À¸¥ÂÊÀ¸·Î
+        // ì˜¤ë¥¸ìª½ìœ¼ë¡œ
         if (Input.mousePosition.x >= Screen.width - screenBoarderThickness)
         {
             pos.x += camSpd * Time.deltaTime;
             pos.z += camSpd * Time.deltaTime;
         }
-        // ¿ŞÂÊÀ¸·Î
+        // ì™¼ìª½ìœ¼ë¡œ
         if (Input.mousePosition.x <= screenBoarderThickness)
         {
             pos.x -= camSpd * Time.deltaTime;
@@ -131,7 +133,7 @@ public class CameraController : MonoBehaviour
     }
 
     /// <summary>
-    /// Ä«¸Ş¶ó¸¦ ÁÜÀÎ/ÁÜ¾Æ¿ô ½ÃÄÑÁÖ´Â ¸Ş¼­µå
+    /// ì¹´ë©”ë¼ë¥¼ ì¤Œì¸/ì¤Œì•„ì›ƒ ì‹œì¼œì£¼ëŠ” ë©”ì„œë“œ
     /// </summary>
     void ZoomCamera()
     {

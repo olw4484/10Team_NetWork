@@ -8,43 +8,24 @@ using UnityEngine;
 
 public class JHT_UIManager : MonoBehaviour
 {
-    #region singleton
-    private static JHT_UIManager uiInstance;
-    public static JHT_UIManager UIInstance { get { return uiInstance; } }
+    //#region singleton
+    //private static JHT_UIManager uiInstance;
+    //public static JHT_UIManager UIInstance { get { return uiInstance; } }
+    //
+    //private void Awake()
+    //{
+    //    if (uiInstance == null)
+    //    {
+    //        uiInstance = this;
+    //        DontDestroyOnLoad(gameObject);
+    //    }
+    //    else
+    //    {
+    //        Destroy(gameObject);
+    //    }
+    //}
+    //#endregion
 
-    private void Awake()
-    {
-        if (uiInstance == null)
-        {
-            uiInstance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-    #endregion
-
-    private void Update()
-    {
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    JHT_PopupCanvas obj = Instantiate(Resources.Load<JHT_PopupCanvas>("PopUpCanvas"));
-        //    obj.GetOrAddComponent<JHT_PopupCanvas>();
-        //
-        //
-        //}
-        //if (Input.GetKeyDown(KeyCode.Alpha1))
-        //{
-        //    isTest = !isTest;
-        //}
-        //
-        //if (isTest)
-        //{
-        //    ShowPopUp<JHT_TestUI>("Test");
-        //}
-    }
 
     private JHT_PopupCanvas popUpCanvas;
     public JHT_PopupCanvas PopUpCanvas
@@ -71,7 +52,7 @@ public class JHT_UIManager : MonoBehaviour
     public T ShowPopUp<T>(string objName) where T : JHT_BaseUI
     {
         Transform child = PopUpCanvas.GetComponentsInChildren<Transform>(true)
-                                .FirstOrDefault(t => t.name == objName); //¹°¾îº¼°Å
+                                .FirstOrDefault(t => t.name == objName); //Â¹Â°Â¾Ã®ÂºÂ¼Â°Ã…
 
         T instance = child.GetComponent<T>();
 

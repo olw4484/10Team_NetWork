@@ -13,11 +13,26 @@ MonoBehaviour:
   m_Name: Bash
   m_EditorClassIdentifier: 
   skillName: Bash
-  skillLevel: 1
   isPassive: 0
-  damage: 50
+  damage: 0000000032000000500000006e0000008c000000aa000000
+  curDamage: 0
   skillRange: 5
   buffAmount: []
-  mana: 30
-  cooldown: 12
+  mana:
+  - 0
+  - 50
+  - 60
+  - 70
+  - 80
+  - 90
+  curMana: 0
+  cooldown:
+  - 0
+  - 12
+  - 11.5
+  - 11
+  - 10.5
+  - 10
+  curCooldown: 12
+  maxLevel: 5
   icon: {fileID: 0}

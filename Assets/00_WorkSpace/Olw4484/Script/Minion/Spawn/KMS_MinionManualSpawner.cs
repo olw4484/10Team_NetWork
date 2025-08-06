@@ -10,6 +10,7 @@ public class KMS_MinionManualSpawner : MonoBehaviour
     public Transform spawnPoint;
     public Transform target;
     public KMS_CommandPlayer player;
+    public int teamId;
 
     public Transform uiButtonParent;
     public GameObject buttonPrefab;
@@ -29,7 +30,8 @@ public class KMS_MinionManualSpawner : MonoBehaviour
                     capturedInfo.type,
                     spawnPoint.position,
                     target,
-                    player
+                    player,
+                    teamId
                 );
             });
         }

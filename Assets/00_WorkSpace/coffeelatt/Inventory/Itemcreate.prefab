@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2839462212489637898
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 208338308293613794}
+  - component: {fileID: 8309729627797176273}
+  m_Layer: 0
+  m_Name: Itemcreate
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &208338308293613794
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2839462212489637898}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8309729627797176273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2839462212489637898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 585d5f8d89ffe3e4185d02ac18306769, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Createitem:
+  - {fileID: 7666981763745117534, guid: cf0d57f0443f58343a7e7a72db1dee6c, type: 3}
+  - {fileID: 8626492250346720606, guid: 9172d86a66e3a664a9a1206699128008, type: 3}
+  - {fileID: 628576685217893846, guid: a3341e269ebc86a45abfbb0bc7966e8c, type: 3}
+  - {fileID: 4722950658263631852, guid: f130bc157017de941963635e2847e481, type: 3}
+  - {fileID: 2911596285320111480, guid: ea6cf804abe633f48a04e448b988368a, type: 3}
+  - {fileID: 3497919971631958939, guid: 41a4999ee48e19f4991739a12da75397, type: 3}
+  - {fileID: 3421545960365940984, guid: deb75b1a4a99af44a8ec1187a8f69cc5, type: 3}
+  - {fileID: 6909216629791466805, guid: cd45a13a55ce09c4c9a97e6916a9fbc6, type: 3}
+  - {fileID: 417341040573441857, guid: b573bf6298a1e344a9813999eb874fc9, type: 3}
+  spawnpoint: {fileID: 208338308293613794}
+  inventory: {fileID: 8316246981922170259, guid: 0a26fb94bd79ef34dbf878789788352c, type: 3}

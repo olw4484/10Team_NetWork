@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23cfb6b67434c484fbd3935fd64c14e4, type: 3}
+  m_Name: PT_HQDataSO
+  m_EditorClassIdentifier: 
+  hqPrefab: {fileID: 7722951474725474331, guid: 5ff327a7319e6994fa400f7aacbc32ad, type: 3}
+  maxHP: 1000
+  manualSpawnList:
+  - type: 0
+    prefab: {fileID: 6030940965793994703, guid: 25e6e30edb9dc3147b8596f982eab9e5, type: 3}
+    cost: 30
+  - type: 1
+    prefab: {fileID: 1668674788522563362, guid: 9cda2caed6553fd4b8f7a9dc31fc874e, type: 3}
+    cost: 25
+  - type: 2
+    prefab: {fileID: 7632942533367234319, guid: dc23ab79e034a0242a96483ff5822b76, type: 3}
+    cost: 150

@@ -1,20 +1,24 @@
+ï»¿using Firebase;
+using Firebase.Auth;
+using Firebase.Database;
+using Firebase.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Firebase.Extensions;
-using Firebase.Auth;
-using Firebase;
 
 public class FirebaseManager : MonoBehaviour
 {
     private static FirebaseManager instance;
     public static FirebaseManager Instance {  get { return instance; } }
 
-    private static FirebaseApp app;
-    public static FirebaseApp App { get { return app; } }
+    private static FirebaseApp app; // FirebaseApp ì¸ìŠ¤í„´ìŠ¤
+    public static FirebaseApp App { get { return app; } }   // FirebaseApp ì¸ìŠ¤í„´ìŠ¤ì— ì ‘ê·¼í•˜ê¸° ìœ„í•œ í”„ë¡œí¼í‹°
 
     private static FirebaseAuth auth;
     public static FirebaseAuth Auth { get { return auth; } }
+
+    private static FirebaseDatabase database;
+    public static FirebaseDatabase Database { get { return database; } }
 
     private void Awake()
     {
@@ -35,15 +39,17 @@ public class FirebaseManager : MonoBehaviour
             Firebase.DependencyStatus dependencyStatus = task.Result;
             if (dependencyStatus == Firebase.DependencyStatus.Available)
             {
-                Debug.Log("ÆÄÀÌ¾î º£ÀÌ½º ¼³Á¤ÀÌ ¸ğµÎ ÃæÁ·µÇ¾î »ç¿ëÇÒ ¼ö ÀÖ´Â »óÈ²");
-                app = FirebaseApp.DefaultInstance;
-                auth = FirebaseAuth.DefaultInstance;
+                Debug.Log("íŒŒì´ì–´ ë² ì´ìŠ¤ ì„¤ì •ì´ ëª¨ë‘ ì¶©ì¡±ë˜ì–´ ì‚¬ìš©í•  ìˆ˜ ìˆëŠ” ìƒí™©");
+                app = FirebaseApp.DefaultInstance;  // FirebaseApp ì¸ìŠ¤í„´ìŠ¤ ì´ˆê¸°í™”
+                auth = FirebaseAuth.DefaultInstance;    // FirebaseAuth ì¸ìŠ¤í„´ìŠ¤ ì´ˆê¸°í™”
+                database = FirebaseDatabase.DefaultInstance;    // FirebaseDatabase ì¸ìŠ¤í„´ìŠ¤ ì´ˆê¸°í™”
             }
             else
             {
-                Debug.LogError($"ÆÄÀÌ¾î º£ÀÌ½º ¼³Á¤ÀÌ ÃæÁ·µÇÁö ¾Ê¾Æ ½ÇÆĞÇß½À´Ï´Ù. ÀÌÀ¯: {dependencyStatus}");
+                Debug.LogError($"íŒŒì´ì–´ ë² ì´ìŠ¤ ì„¤ì •ì´ ì¶©ì¡±ë˜ì§€ ì•Šì•„ ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤. ì´ìœ : {dependencyStatus}");
                 app = null;
                 auth = null;
+                database = null;
             }
         });
 

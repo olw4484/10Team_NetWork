@@ -1,29 +1,42 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
 public class SkillSO : ScriptableObject
 {
-    public string skillName; // ½ºÅ³ ÀÌ¸§
-    public int skillLevel; // ½ºÅ³ ·¹º§
-    public bool isPassive; // ÆĞ½Ãºê ½ºÅ³ÀÎÁö ¿©ºÎ Ã¼Å©
-    public int damage; // ½ºÅ³ µ¥¹ÌÁö
-    public float skillRange; // ½ºÅ³ »ç°Å¸®
-    public List<float> buffAmount = new(); // ½ºÅ³ÀÌ ¹öÇÁ ½ºÅ³ÀÏ ¶§ ¹öÇÁ ¼öÄ¡µé. ¹öÇÁ°¡ ¿©·¯ ¼öÄ¡¿¡ ¿µÇâÀ» ÁÙ ¼ö ÀÖÀ¸¹Ç·Î ¸®½ºÆ®·Î »ı¼ºÇÔ
-    public float mana; // ½ºÅ³ »ç¿ë¿¡ ÇÊ¿äÇÑ ¸¶³ª·®
-    public float cooldown; // ½ºÅ³ ÄğÅ¸ÀÓ
-    public Sprite icon; // ½ºÅ³ ¾ÆÀÌÄÜ
+    public string skillName; // ìŠ¤í‚¬ ì´ë¦„
+    public ObservableProperty<int> skillLevel { get; private set; } = new(); // ìŠ¤í‚¬ ë ˆë²¨
+    public bool isPassive; // íŒ¨ì‹œë¸Œ ìŠ¤í‚¬ì¸ì§€ ì—¬ë¶€ ì²´í¬
+    public List<int> damage; // ìŠ¤í‚¬ ë°ë¯¸ì§€
+    public int curDamage;
+    public float skillRange; // ìŠ¤í‚¬ ì‚¬ê±°ë¦¬
+    public List<float> buffAmount = new(); // ìŠ¤í‚¬ì´ ë²„í”„ ìŠ¤í‚¬ì¼ ë•Œ ë²„í”„ ìˆ˜ì¹˜ë“¤. ë²„í”„ê°€ ì—¬ëŸ¬ ìˆ˜ì¹˜ì— ì˜í–¥ì„ ì¤„ ìˆ˜ ìˆìœ¼ë¯€ë¡œ ë¦¬ìŠ¤íŠ¸ë¡œ ìƒì„±í•¨
+    public List<float> mana; // ìŠ¤í‚¬ ì‚¬ìš©ì— í•„ìš”í•œ ë§ˆë‚˜ëŸ‰
+    public float curMana;
+    public List<float> cooldown; // ìŠ¤í‚¬ ì¿¨íƒ€ì„
+    public float curCooldown;
+    public int maxLevel;
+
+    public Sprite icon; // ìŠ¤í‚¬ ì•„ì´ì½˜
 
     private float lastUsedTime = -Mathf.Infinity;
 
-    // SkillSet¿¡¼­ ÇØ´ç SkillÀÇ Use ¸Ş¼­µå¸¦ ½ÇÇàÇÒ ¶§ Äğ´Ù¿î ÁßÀÎÁö ¾Ë·ÁÁÖ´Â ¸Ş¼­µå
-    public bool IsOnCooldown()
+    public void SetSkillInfoByLevel()
     {
-        return Time.time < lastUsedTime + cooldown;
+        if (skillLevel.Value <= 0) return;
+        curDamage = damage[skillLevel.Value];
+        curMana = mana[skillLevel.Value];
+        curCooldown = cooldown[skillLevel.Value];
     }
 
-    // SkillÀÇ Äğ´Ù¿î ½ÃÀÛ ½Ã°£À» ¼³Á¤ÇÏ´Â ¸Ş¼­µå
+    // SkillSetì—ì„œ í•´ë‹¹ Skillì˜ Use ë©”ì„œë“œë¥¼ ì‹¤í–‰í•  ë•Œ ì¿¨ë‹¤ìš´ ì¤‘ì¸ì§€ ì•Œë ¤ì£¼ëŠ” ë©”ì„œë“œ
+    public bool IsOnCooldown()
+    {
+        return Time.time < lastUsedTime + curCooldown;
+    }
+
+    // Skillì˜ ì¿¨ë‹¤ìš´ ì‹œì‘ ì‹œê°„ì„ ì„¤ì •í•˜ëŠ” ë©”ì„œë“œ
     public void TriggerCooldown()
     {
         lastUsedTime = Time.time;

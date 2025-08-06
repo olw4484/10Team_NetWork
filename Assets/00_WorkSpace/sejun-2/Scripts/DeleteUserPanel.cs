@@ -1,4 +1,4 @@
-using Firebase.Auth;
+ï»¿using Firebase.Auth;
 using Firebase.Extensions;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,18 +33,18 @@ public class DeleteUserPanel : MonoBehaviour
             {
                 if (task.IsCanceled)
                 {
-                    Debug.LogError("À¯Àú »èÁ¦ Ãë¼ÒµÊ");
+                    Debug.LogError("ìœ ì € ì‚­ì œ ì·¨ì†Œë¨");
                     return;
                 }
                 if (task.IsFaulted)
                 {
-                    Debug.LogError($"À¯Àú »èÁ¦ ½ÇÆĞ. ÀÌÀ¯ : {task.Exception}");
+                    Debug.LogError($"ìœ ì € ì‚­ì œ ì‹¤íŒ¨. ì´ìœ  : {task.Exception}");
                     return;
                 }
 
-                Debug.Log("À¯Àú »èÁ¦ ¼º°ø");
+                Debug.Log("ìœ ì € ì‚­ì œ ì„±ê³µ");
                 FirebaseManager.Auth.SignOut();
-                // È¸¿ø Å»Åğ ÈÄ ·Îºñ·Î µ¹¾Æ°¡±â
+                // íšŒì› íƒˆí‡´ í›„ ë¡œë¹„ë¡œ ëŒì•„ê°€ê¸°
                 gameObject.SetActive(false);
                 lobbyPanel.SetActive(true);
         });

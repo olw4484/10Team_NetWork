@@ -1,12 +1,26 @@
-﻿using Scripts.Util;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using UnityEngine;
 
-public class YSJ_PoolManager : YSJ_SimpleSingleton<YSJ_PoolManager>
+public class YSJ_PoolManager : YSJ_SimpleSingleton<YSJ_PoolManager>, IManager
 {
     private Dictionary<string, YSJ_Pool> pools = new Dictionary<string, YSJ_Pool>();
     private Dictionary<GameObject, string> objectToKeyMap = new Dictionary<GameObject, string>(); // 추가
+
+    #region IManager
+    public bool IsDontDestroy => isDontDestroyOnLoad;
+    public void Initialize() { }
+    public void Cleanup()
+    {
+        foreach (var pool in pools.Values)
+        {
+            pool.Clear();
+        }
+        pools.Clear();
+        objectToKeyMap.Clear();
+    }
+    public GameObject GetGameObject() => this.gameObject;
+    #endregion
 
     public void CreatePool(string key, GameObject prefab, int initialSize = 10)
     {
@@ -64,4 +78,6 @@ public class YSJ_PoolManager : YSJ_SimpleSingleton<YSJ_PoolManager>
     }
 
     public bool HasPool(string key) => pools.ContainsKey(key);
+
+    
 }

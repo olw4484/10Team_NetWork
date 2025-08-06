@@ -1,10 +1,11 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class HeroController : MonoBehaviour, LGH_IDamagable
+public class HeroController : MonoBehaviour, IDamageable
 {
     public HeroModel model;
     public HeroView view;
@@ -14,16 +15,14 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
 
     [SerializeField] private int heroType;
     private bool isInCombat;
-
-    private Vector3 cameraOffset = new Vector3(5f, 19f, -5f);
-
     private float atkDelay;
+    private float genTime = 1f;
 
     public readonly int IDLE_HASH = Animator.StringToHash("Idle");
     public readonly int MOVE_HASH = Animator.StringToHash("Move");
     public readonly int ATTACK_HASH = Animator.StringToHash("Attack");
     public readonly int DEAD_HASH = Animator.StringToHash("Dead");
-    // °¢ Hero¸¶´Ù ½ºÅ³ ¾Ö´Ï¸ŞÀÌ¼Ç Á¸Àç
+    // ê° Heroë§ˆë‹¤ ìŠ¤í‚¬ ì• ë‹ˆë©”ì´ì…˜ ì¡´ì¬
 
     private void Awake() => Init();
 
@@ -37,25 +36,41 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
 
         atkDelay = 0f;
 
-        // ÀÓ½Ã·Î Hero1À» ¼±ÅÃÇÑ °ÍÀ¸·Î °¡Á¤ -> °ÔÀÓÀÌ ½ÃÀÛµÇ¸é HeroTypeÀ» °áÁ¤ÇÏ°Ô
+        // ì„ì‹œë¡œ Hero1ì„ ì„ íƒí•œ ê²ƒìœ¼ë¡œ ê°€ì • -> ê²Œì„ì´ ì‹œì‘ë˜ë©´ HeroTypeì„ ê²°ì •í•˜ê²Œ
         heroType = 0;
         model.GetInitStats(heroType);
+
+        model.CurHP.Value = model.MaxHP;
+        model.CurMP.Value = model.MaxMP;
+    }
+
+    private void Start()
+    {
+        StartCoroutine(RegisterRoutine());
+        model.CurHP.Subscribe(OnHPChanged);
+        model.CurMP.Subscribe(OnMPChanged);
+        
+        model.Level.Subscribe(OnLevelChanged);
+    }
+
+    private IEnumerator RegisterRoutine()
+    {
+        while (LGH_TestGameManager.Instance == null)
+        {
+            yield return null; // GameManagerê°€ ìƒì„±ë˜ê¸°ë¥¼ ê¸°ë‹¤ë¦¼
+        }
+        LGH_TestGameManager.Instance.RegisterPlayer(this.gameObject);
+        yield break;
     }
 
     private void Update()
     {
         if (!pv.IsMine) return;
 
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButtonDown(1))
         {
-            //if (atkDelay <= 0f)
-            //{
-            //    mov.HeroAttack(model.MoveSpd, (int)model.Atk, model.AtkRange); // ÃßÈÄ damage º¯¼ö´Â µ¥¹ÌÁö °ø½Ä¿¡ µû¶ó ¹Ù²ãÁÙ ÇÊ¿ä°¡ ÀÖÀ½
-            //    atkDelay = 1 / model.AtkSpd;
-            //}
-            
+            atkDelay = 1f / model.AtkSpd;
             mov.HandleRightClick(model.MoveSpd, (int)model.Atk, model.AtkRange, atkDelay);
-            //atkDelay = 1 / model.AtkSpd; // °ø°İ¼Óµµ¿¡ µû¸¥ °ø°İ µô·¹ÀÌ ¼³Á¤ ÇÊ¿ä
         }
 
         if (Input.GetKeyDown(KeyCode.S))
@@ -63,9 +78,25 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
             agent.ResetPath();
         }
 
-        if (atkDelay > 0f)
+        if (genTime <= 0f)
         {
-            atkDelay -= Time.deltaTime;
+            HandleAutoGen();
+        }
+        else
+        {
+            genTime -= Time.deltaTime;
+        }
+
+        // Testìš© ì½”ë“œë“¤
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            model.CurHP.Value -= 10;
+            Debug.Log("í˜„ì¬ HP : " + model.CurHP.Value);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            AddExp(50);
+            Debug.Log("í˜„ì¬ ê²½í—˜ì¹˜ : " + model.Exp.Value);
         }
     }
 
@@ -76,13 +107,150 @@ public class HeroController : MonoBehaviour, LGH_IDamagable
         mov.LookMoveDir();
     }
 
+    /// <summary>
+    /// HPì™€ MP ì  ì„ ê´€ë¦¬í•˜ëŠ” ë©”ì„œë“œ
+    /// </summary>
+    void HandleAutoGen()
+    {
+        AutoHpGen();
+        AutoMpGen();
+    }
+
+    void AutoHpGen()
+    {   
+        if (model.CurHP.Value + model.HPGen > model.MaxHP)
+        {
+            model.CurHP.Value = model.MaxHP;
+        }
+        else
+        {
+            model.CurHP.Value += model.HPGen;
+            genTime = 1f;
+        }
+    }
+
+    void AutoMpGen()
+    {
+        if (model.CurMP.Value + model.MPGen > model.MaxMP)
+        {
+            model.CurMP.Value = model.MaxMP;
+        }
+        else
+        {
+            model.CurMP.Value += model.MPGen;
+            genTime = 1f;
+        }
+    }
+
+    void OnHPChanged(float newHP)
+    {
+        pv.RPC(nameof(UpdateHeroHP), RpcTarget.All, model.MaxHP, newHP);
+        Debug.Log("í˜„ì¬ ì²´ë ¥ : " + model.CurHP.Value);
+    }
+
+    void OnMPChanged(float newMP)
+    {
+        pv.RPC(nameof(UpdateHeroMP), RpcTarget.All, model.MaxMP, newMP);
+        Debug.Log("í˜„ì¬ ë§ˆë‚˜ : " + model.CurMP.Value);
+    }
+    /// <summary>
+    /// ê²½í—˜ì¹˜ ì¦ê°€ ì‹œ í˜¸ì¶œë˜ëŠ” ë©”ì„œë“œ
+    /// </summary>
+    /// <param name="amount"></param>
+    public void AddExp(int amount)
+    {
+        model.Exp.Value += amount;
+        CheckLevelUp();
+    }
+
+    void CheckLevelUp()
+    {
+        int currentLevel = model.Level.Value;
+        float currentEXP = model.Exp.Value;
+
+        // ëˆ„ì  ê²½í—˜ì¹˜ ê¸°ë°˜ìœ¼ë¡œ ì—¬ëŸ¬ ë ˆë²¨ì—… ì²˜ë¦¬
+        while (model.levelExpTable.ContainsKey(currentLevel + 1) &&
+               currentEXP >= model.levelExpTable[currentLevel + 1])
+        {
+            currentLevel++;
+            TestSkillManager.Instance.skillPoint++;
+            Debug.Log($"ë ˆë²¨ì—…! â†’ {currentLevel}ë ˆë²¨");
+        }
+
+        // ìµœì¢… ë ˆë²¨ ë°˜ì˜
+        model.Level.Value = currentLevel;
+    }
+
+    void OnLevelChanged(int newLevel)
+    {
+        float hp = model.MaxHP;
+        float mp = model.MaxMP;
+
+        pv.RPC(nameof(UpdateHeroLevel), RpcTarget.All, newLevel);
+
+        float levelUpHp = model.MaxHP - hp;
+        float levelUpMp = model.MaxMP - mp;
+
+        model.CurHP.Value += levelUpHp;
+        model.CurMP.Value += levelUpMp;
+    }
+
+    [PunRPC]
+    public void UpdateHeroHP(float maxHP, float curHP)
+    {
+        view.SetHpBar(maxHP, curHP);
+    }
+
+    [PunRPC]
+    public void UpdateHeroMP(float maxMP, float curMP)
+    {
+        view.SetMpBar(maxMP, curMP);
+    }
+
+    [PunRPC]
+    public void UpdateHeroLevel(int nextLevel)
+    {
+        // ìµœëŒ€ ë ˆë²¨ ì œí•œ
+        if (nextLevel > 18)
+        {
+            model.Level.Value = 18;
+            Debug.Log("ìµœëŒ€ ë ˆë²¨ì„.");
+            return;
+        }
+
+        HeroStat nextStat = model.GetStatByLevel(heroType, nextLevel);
+
+        if (nextStat.Equals(default(HeroStat)))
+        {
+            Debug.LogWarning($"ë ˆë²¨ {nextLevel} ë°ì´í„° ì—†ìŒ.");
+            return;
+        }
+
+        // ìŠ¤íƒ¯ ê°±ì‹ 
+        model.Name = nextStat.Name;
+        model.MaxHP = nextStat.MaxHP;
+        model.MaxMP = nextStat.MaxMP;
+        model.MoveSpd = nextStat.MoveSpd;
+        model.Atk = nextStat.Atk;
+        model.AtkRange = nextStat.AtkRange;
+        model.AtkSpd = nextStat.AtkSpd;
+        model.Def = nextStat.Def;
+        model.HPGen = nextStat.HPGen;
+        model.MPGen = nextStat.MPGen;
+
+        Debug.Log($"{model.Name} í˜„ì¬ ë ˆë²¨ : {nextLevel}ë ˆë²¨");
+    }
+
+    [PunRPC]
     public void GetHeal(int amount)
     {
         
     }
 
-    public void TakeDamage(int amount)
+    [PunRPC]
+    public void TakeDamage(int amount, GameObject attacker = null)
     {
-        
+        model.CurHP.Value -= amount;
+        Debug.Log($"{amount}ì˜ ë°ë¯¸ì§€ë¥¼ ì…ìŒ. í˜„ì¬ HP : {model.CurHP.Value}");
     }
 }

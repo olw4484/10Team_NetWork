@@ -1,3 +1,4 @@
+﻿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,14 +11,21 @@ public class SkillSet : MonoBehaviour
     public SkillSO skill_E;
     public SkillSO skill_R;
 
+    public bool isQExecuted = false;
+    public bool isWExecuted = false;
+    public bool isEExecuted = false;
+    public bool isRExecuted = false;
+
     protected Camera mainCam;
     protected HeroController hero;
     protected NavMeshAgent agent;
+    protected PhotonView pv;
 
     private void Start()
     {
         hero = GetComponent<HeroController>();
         agent = GetComponent<NavMeshAgent>();
+        pv = GetComponent<PhotonView>();
         mainCam = Camera.main;
     }
 

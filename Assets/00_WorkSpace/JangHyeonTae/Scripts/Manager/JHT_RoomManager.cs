@@ -3,127 +3,204 @@ using Photon.Realtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.EditorTools;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class JHT_RoomManager : MonoBehaviour
+public class JHT_RoomManager : MonoBehaviour, IManager
 {
+
     [SerializeField] private GameObject playerPanelPrefab;
-    [SerializeField] private Transform playerRedPanelParent;
-    [SerializeField] private Transform playerBluePanelParent;
-    [SerializeField] private Button startButton;
-    [SerializeField] private Button leaveRoomButton;
-
-    //º¸·ù
-    [SerializeField] private Button redButton;
-    [SerializeField] private Button blueButton;
-
-    private bool isRed;
     public Dictionary<int, JHT_PlayerPanelItem> playerPanelDic = new();
+    
+    public Action<bool> OnStartButtonActive;
+    public Func<RectTransform> OnSetRedParent;
+    public Func<RectTransform> OnSetBlueParent;
+    public Action OnLeaveRoom;
+    public Action<int> OnChangeScene;
 
-    private int blueCount;
-    private int redCount;
+    #region IManager
+
+    public bool IsDontDestroy => false;
 
 
-    private void Start()
+    public void Initialize()
     {
-        startButton.onClick.AddListener(GameStart);
-        leaveRoomButton.onClick.AddListener(LeaveRoom);
+        Init();
     }
 
-    public void PlayerPanelSpawn(Player player,Transform parent)
+    public void Cleanup()
+    {
+        Outit();
+    }
+
+    public GameObject GetGameObject() => this.gameObject;
+
+    #endregion
+
+    private void Init()
+    {
+        ManagerGroup.Instance.GetManager<JHT_TeamManager>().OnChangeTeam += ChangeTeam;
+        OnLeaveRoom += LeaveRoom;
+    }
+
+    private void Outit()
+    {
+        ManagerGroup.Instance.GetManager<JHT_TeamManager>().OnChangeTeam -= ChangeTeam;
+    }
+
+
+    #region ì›ë˜ëŠ” ë‹¤ë¥¸í”Œë ˆì´ì–´ íŒ¨ë„ ìƒì„± ì´ì—ˆì§€ë§Œ ì§€ê¸ˆì€ ë§ˆìŠ¤í„° í´ë¼ì´ì–¸íŠ¸ê°€ ë°”ë€”ì‹œì—ë§Œ ì‚¬ìš©(OnPlayerPropertiesUpdateì—ì„œ ë‹¤ë¥¸ í”Œë ˆì´ì–´ ìƒì„±)
+    public void PlayerPanelSpawn(Player player)
     {
         if (playerPanelDic.TryGetValue(player.ActorNumber, out JHT_PlayerPanelItem panel))
         {
-            startButton.interactable = true;
+            OnStartButtonActive?.Invoke(true);
             panel.Init(player);
             return;
         }
 
         GameObject obj = Instantiate(playerPanelPrefab);
-        obj.transform.SetParent(parent);
+        obj.transform.SetParent(SetPanelParent(player));
         JHT_PlayerPanelItem playerPanel = obj.GetComponent<JHT_PlayerPanelItem>();
         playerPanel.Init(player);
         playerPanelDic.Add(player.ActorNumber, playerPanel);
     }
+    #endregion
 
+    #region í”Œë ˆì´ì–´ íŒ¨ë„ ìƒì„±
     public void PlayerPanelSpawn()
     {
         PhotonNetwork.AutomaticallySyncScene = true;
 
         if (!PhotonNetwork.IsMasterClient)
         {
-            startButton.interactable = false;
+            OnStartButtonActive?.Invoke(false);
         }
 
         foreach (Player player in PhotonNetwork.PlayerList)
         {
-            if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("Team", out object team))
+            if (player.CustomProperties.TryGetValue("Team", out object team))
             {
-                if (team == null)
-                {
-                    Debug.Log($"PlayerPanelSpawn : team null");
-                }
-
-                TeamSetting setting = (TeamSetting)team;
-                Transform _parent = setting == TeamSetting.Red ? playerRedPanelParent : playerBluePanelParent;
-
-                if (_parent == null)
-                {
-                    Debug.Log($"PlayerPanelSpawn : {_parent} null");
-                }
-
-                // ¿ÀºêÁ§Æ® »ı¼º ¹× ÁöÁ¤ÇÑ ºÎ¸ğ¿¡ ³Ö±â
                 GameObject obj = Instantiate(playerPanelPrefab);
-                obj.transform.SetParent(_parent);
-                if (obj == null)
-                {
-                    Debug.Log($"PlayerPanelSpawn : {obj} null");
-                }
-                
+                obj.transform.SetParent(SetPanelParent(player));
                 JHT_PlayerPanelItem playerPanel = obj.GetComponent<JHT_PlayerPanelItem>();
                 playerPanel.Init(player);
-
-                if (playerPanel == null)
-                {
-                    Debug.Log($"PlayerPanelSpawn : {playerPanel} null");
-                }
-                
-                //µñ¼Å³Ê¸®¿¡ ³Ö±â
                 playerPanelDic.Add(player.ActorNumber, playerPanel);
+
+                if (player.CustomProperties.ContainsKey("HeroIndex"))
+                    playerPanel.SetChangeCharacter(player);
+
+                if (player.CustomProperties.ContainsKey("IsReady"))
+                    playerPanel.CheckReady(player);
             }
             else
             {
-                Debug.Log($"ÇÃ·¹ÀÌ¾î {player.NickName}¿¡ ´ëÇÑ Á¤º¸ ¾øÀ½");
+                Debug.Log($"í”Œë ˆì´ì–´ {player.NickName}ì— ëŒ€í•œ ì •ë³´ ì—†ìŒ");
             }
-            Debug.Log($"RoomCount : {PhotonNetwork.PlayerList.Length}");
         }
+
     }
-
-
-    #region ÆÀ : ÆÀ³ª´©±â
-    //public void SeparateTeamCustomProperty(Player player)
-    //{
-    //    blueCount = 0;
-    //    redCount = 0;
-    //    string team = blueCount >= redCount ? "Red" : "Blue";
-    //
-    //    ExitGames.Client.Photon.Hashtable teamProp = new();
-    //    teamProp["Team"] = team;
-    //    PhotonNetwork.LocalPlayer.SetCustomProperties(teamProp);
-    //
-    //    if (team == "Blue")
-    //        blueCount++;
-    //    else 
-    //        redCount++;
-    //}
-
     #endregion
 
 
+    #region íŒ€ë°”ê¾¸ê¸°
+    public void ChangeTeam(Player player, int red, int blue)
+    {
+        PhotonNetwork.AutomaticallySyncScene = true;
 
-    //ÇÃ·¹ÀÌ¾î°¡ ¹æÀ» ¶°³µÀ» ¶§
+        if (playerPanelDic.TryGetValue(player.ActorNumber, out var panel))
+        {
+            Destroy(panel.gameObject);
+            playerPanelDic.Remove(player.ActorNumber);
+        }
+
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            OnStartButtonActive?.Invoke(false);
+        }
+
+        StartCoroutine(SetTeamCor(player,red,blue));
+
+    }
+
+    private IEnumerator SetTeamCor(Player player,int _red,int _blue)
+    {
+
+        while (!PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("RedCount") ||
+           !PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("BlueCount"))
+        {
+            yield return null;
+        }
+
+        ManagerGroup.Instance.GetManager<JHT_TeamManager>().SetChangePlayerTeam(player, _red, _blue);
+
+        while (!player.CustomProperties.ContainsKey("Team"))
+            yield return null;
+
+        yield return new WaitForSeconds(0.2f);
+        GameObject obj = Instantiate(playerPanelPrefab);
+        obj.transform.SetParent(SetPanelParent(player));
+        JHT_PlayerPanelItem playerPanel = obj.GetComponent<JHT_PlayerPanelItem>();
+        playerPanel.Init(player);
+        playerPanelDic.Add(player.ActorNumber, playerPanel);
+    }
+
+
+    //íŒ€ë°”ê¾¸ê¸° ë™ê¸°í™”(OnPlayerPropertiesUpdateì—ì„œ ìƒì„±)
+    public void OtherPlayerChangeTeam(Player player)
+    {
+        if (player == PhotonNetwork.LocalPlayer)
+            return;
+
+        PhotonNetwork.AutomaticallySyncScene = true;
+
+        if (playerPanelDic.TryGetValue(player.ActorNumber, out var panel))
+        {
+            Destroy(panel.gameObject);
+            playerPanelDic.Remove(player.ActorNumber);
+        }
+
+        StartCoroutine(OtherPlayerSetTeamCor(player));
+    }
+    private IEnumerator OtherPlayerSetTeamCor(Player player)
+    {
+        while (!player.CustomProperties.ContainsKey("Team"))
+            yield return null;
+
+        yield return new WaitForSeconds(0.1f);
+
+        GameObject obj = Instantiate(playerPanelPrefab);
+        obj.transform.SetParent(SetPanelParent(player));
+        JHT_PlayerPanelItem newPanel = obj.GetComponent<JHT_PlayerPanelItem>();
+        newPanel.Init(player);
+        playerPanelDic.Add(player.ActorNumber, newPanel);
+    }
+    #endregion
+
+    #region ëª¨ë“  ì˜¤ë¸Œì íŠ¸ì˜ ë¶€ëª¨ ì„¤ì • -> CustomPropertyì—ì„œ ë°›ì•„ì„œ ì‚¬ìš©
+    public Transform SetPanelParent(Player player)
+    {
+        if (player.CustomProperties.TryGetValue("Team", out object value))
+        {
+            if ((int)value == (int)TeamSetting.Blue)
+            {
+                return OnSetBlueParent?.Invoke();
+            }
+            else
+            {
+                return OnSetRedParent?.Invoke();
+            }
+        }
+        else
+        {
+            Debug.LogError($"TeamManager SetParentFromCustomProperty íŒ€ ì •ë³´ ì—†ìŒ {PhotonNetwork.LocalPlayer.ActorNumber}");
+            return null;
+        }
+    }
+    #endregion
+
+    #region ë‹¤ë¥¸ í”Œë ˆì´ì–´ê°€ ë– ë‚¬ì„ê²½ìš°
     public void PlayerLeaveRoom(Player player)
     {
         if (playerPanelDic.TryGetValue(player.ActorNumber, out JHT_PlayerPanelItem obj))
@@ -133,35 +210,147 @@ public class JHT_RoomManager : MonoBehaviour
         }
 
     }
+    #endregion
+
+
+    #region ê²Œì„ì‹œì‘
 
     public void GameStart()
     {
-        
+        Debug.Log("ê²Œì„ì”¬ ë¡œë”© ì‹œë„ ì¤‘");
+
+        if (PhotonNetwork.IsMasterClient && AllPlayerReadyCheck()
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] == 2
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] == 2
+            && AllPlayerSelectCharacterCheck())
+        {
+            Debug.Log("ì¡°ê±´ ì¶©ì¡± â†’ GameScenes ë¡œë“œ");
+            SetGameCustomProperty(true);
+            PhotonNetwork.LoadLevel("GameScenes");
+            //ManagerGroup.Instance.GetManager<YSJ_SystemManager>().LoadSceneWithPreActions("GameScenes");
+        }
+        else
+        {
+            Debug.Log("ì¡°ê±´ ë¯¸ì¶©ì¡± â†’ ì”¬ ë¡œë“œ ì•ˆ í•¨");
+        }
     }
 
-    //³» ÇÃ·¹ÀÌ¾î°¡ ¹æÀ» ¶°³µÀ» ¶§
-    public void LeaveRoom()
+    public void SetGameCustomProperty(bool _value)
+    {
+        ExitGames.Client.Photon.Hashtable gameStart = new();
+        bool isStart = _value;
+        gameStart["GamePlay"] = isStart;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(gameStart);
+
+    }
+
+
+    public bool AllPlayerReadyCheck()
     {
         foreach (Player player in PhotonNetwork.PlayerList)
         {
-            Destroy(playerPanelDic[player.ActorNumber].gameObject);
+            if (!player.CustomProperties.TryGetValue("IsReady", out object value) || !(bool)value)
+            {
+                return false;
+            }
         }
-        playerPanelDic.Clear();
-        PhotonNetwork.LeaveRoom();
+
+        return true;
     }
 
+    //í™•ì¸í•´ë´ì•¼í•¨
+    public bool AllPlayerSelectCharacterCheck()
+    {
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (!player.CustomProperties.TryGetValue("HeroIndex", out object value) || (int)value == -1)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    #endregion
+
+    #region ë‚´ê°€ ë°©ì„ ë‚˜ê°”ì„ê²½ìš°
+    public void LeaveRoom()
+    {
+
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("HeroIndex", out object obj))
+        {
+            if ((int)obj >= 0)
+            {
+                playerPanelDic[PhotonNetwork.LocalPlayer.ActorNumber].SetLeaveCharacter();
+                playerPanelDic[PhotonNetwork.LocalPlayer.ActorNumber].SetLeaveReady();
+            }
+        }
+
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (playerPanelDic.ContainsKey(player.ActorNumber))
+                Destroy(playerPanelDic[player.ActorNumber].gameObject);
+        }
+        playerPanelDic.Clear();
+
+
+        ExitGames.Client.Photon.Hashtable props = new();
+
+        if ((TeamSetting)PhotonNetwork.LocalPlayer.CustomProperties["Team"] == TeamSetting.Blue)
+        {
+            int currentBlue = (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"];
+            if (currentBlue > 0)
+            {
+                props["BlueCount"] = currentBlue - 1;
+                PhotonNetwork.CurrentRoom.SetCustomProperties(props);
+                Debug.Log($"[RoomManager - PlayerLeaveRoom] : {(int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"]}");
+            }
+        }
+        else if ((TeamSetting)PhotonNetwork.LocalPlayer.CustomProperties["Team"] == TeamSetting.Red)
+        {
+            int currentRed = (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"];
+            if (currentRed > 0)
+            {
+                props["RedCount"] = currentRed - 1;
+                PhotonNetwork.CurrentRoom.SetCustomProperties(props);
+                Debug.Log($"[RoomManager - PlayerLeaveRoom] : {(int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"]}");
+            }
+        }
+        else
+        {
+            Debug.LogError("[RoomManager - PlayerLeaveRoom] : Not set team");
+        }
+
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out object value))
+        {
+            if ((TeamSetting)value == TeamSetting.Blue || (TeamSetting)value == TeamSetting.Red)
+            {
+                props["Team"] = null;
+                PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+            }
+        }
+
+
+        PhotonNetwork.LeaveRoom();
+    }
+    #endregion
+
+    //ìŠ¤í˜ì´ìŠ¤ë°” ëˆ„ë¥´ë©´ í•´ë‹¹ í”Œë ˆì´ì–´ - íŒ€ ì •ë³´ ë‚˜ì˜´
     public void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out object teamObj) && teamObj != null)
             {
-                Debug.Log($"{PhotonNetwork.LocalPlayer.NickName} : {teamObj.ToString()}");
+                Debug.Log($"{PhotonNetwork.LocalPlayer.NickName} ë²ˆ íŒ€ì› , íŒ€ : {teamObj.ToString()}");
             }
             else
             {
-                Debug.Log($"{PhotonNetwork.LocalPlayer.NickName}ÀÇ ÆÀ Á¤º¸ ¾øÀ½.");
+                Debug.Log($"{PhotonNetwork.LocalPlayer.NickName}ì˜ íŒ€ ì •ë³´ ì—†ìŒ.");
             }
         }
     }
+
+    
 }
