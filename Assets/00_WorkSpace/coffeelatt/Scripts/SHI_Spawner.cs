@@ -67,10 +67,11 @@ public class Spawner : MonoBehaviour
         {
             GameObject prefab = prefabList[Random.Range(0, prefabList.Count)];
             int random = Random.Range(0, _spwanPoint.Count);
-            prefab.transform.position = _spwanPoint[random];
+            Vector3 spawnpoint = _spwanPoint[random];
             _spwanPoint.RemoveAt(random);
-            Instantiate(prefab, prefab.transform.position,prefab.transform.rotation);
-            StartCoroutine(destory(prefab));
+            //Instantiate(prefab, spawnpoint, prefab.transform.rotation);
+            GameObject create = Instantiate(prefab, spawnpoint, prefab.transform.rotation);
+            StartCoroutine(destory(create));
         }
         
        
