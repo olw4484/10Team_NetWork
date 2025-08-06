@@ -49,6 +49,7 @@ public class HeroController : MonoBehaviour, IDamageable
         StartCoroutine(RegisterRoutine());
         model.CurHP.Subscribe(OnHPChanged);
         model.CurMP.Subscribe(OnMPChanged);
+        
         model.Level.Subscribe(OnLevelChanged);
     }
 
@@ -94,8 +95,8 @@ public class HeroController : MonoBehaviour, IDamageable
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            model.Level.Value++;
-            Debug.Log("현재 레벨 : " + model.Level.Value);
+            AddExp(50);
+            Debug.Log("현재 경험치 : " + model.Exp.Value);
         }
     }
 
@@ -151,6 +152,32 @@ public class HeroController : MonoBehaviour, IDamageable
     {
         pv.RPC(nameof(UpdateHeroMP), RpcTarget.All, model.MaxMP, newMP);
         Debug.Log("현재 마나 : " + model.CurMP.Value);
+    }
+    /// <summary>
+    /// 경험치 증가 시 호출되는 메서드
+    /// </summary>
+    /// <param name="amount"></param>
+    public void AddExp(int amount)
+    {
+        model.Exp.Value += amount;
+        CheckLevelUp();
+    }
+
+    void CheckLevelUp()
+    {
+        int currentLevel = model.Level.Value;
+        float currentEXP = model.Exp.Value;
+
+        // 누적 경험치 기반으로 여러 레벨업 처리
+        while (model.levelExpTable.ContainsKey(currentLevel + 1) &&
+               currentEXP >= model.levelExpTable[currentLevel + 1])
+        {
+            currentLevel++;
+            Debug.Log($"레벨업! → {currentLevel}레벨");
+        }
+
+        // 최종 레벨 반영
+        model.Level.Value = currentLevel;
     }
 
     void OnLevelChanged(int newLevel)
