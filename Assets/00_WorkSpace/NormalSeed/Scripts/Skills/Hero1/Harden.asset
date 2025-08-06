@@ -13,12 +13,27 @@ MonoBehaviour:
   m_Name: Harden
   m_EditorClassIdentifier: 
   skillName: Harden
-  skillLevel: 1
   isPassive: 0
-  damage: 0
+  damage: 000000000000000000000000000000000000000000000000
+  curDamage: 0
   skillRange: 0
   buffAmount:
   - 0.2
-  mana: 20
-  cooldown: 15
+  mana:
+  - 0
+  - 50
+  - 40
+  - 30
+  - 20
+  - 10
+  curMana: 0
+  cooldown:
+  - 0
+  - 10
+  - 9.5
+  - 9
+  - 8.5
+  - 8
+  curCooldown: 0
+  maxLevel: 5
   icon: {fileID: 0}

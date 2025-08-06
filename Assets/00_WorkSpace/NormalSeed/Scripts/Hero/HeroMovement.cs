@@ -67,7 +67,7 @@ public class HeroMovement : MonoBehaviour
 
             // 적 오브젝트 체크
             PhotonView targetView = hit.collider.GetComponent<PhotonView>();
-            LGH_IDamagable damagable = hit.collider.GetComponent<LGH_IDamagable>();
+            IDamageable damagable = hit.collider.GetComponent<IDamageable>();
 
             if (damagable != null && targetView != null && !targetView.IsMine)
             {
@@ -107,7 +107,7 @@ public class HeroMovement : MonoBehaviour
     /// <param name="damage"></param>
     /// <param name="moveSpd"></param>
     /// <returns></returns>
-    private IEnumerator HeroAttackRoutine(Transform target, LGH_IDamagable damagable, float atkRange, float atkDelay, int damage, float moveSpd)
+    private IEnumerator HeroAttackRoutine(Transform target, IDamageable damagable, float atkRange, float atkDelay, int damage, float moveSpd)
     {
         Debug.Log("기본공격 코루틴 시작됨");
         if (isAttacking) yield break;
@@ -148,7 +148,7 @@ public class HeroMovement : MonoBehaviour
     /// <param name="target"></param>
     /// <param name="damagable"></param>
     /// <param name="damage"></param>
-    public void ExecuteAttack(Transform target, LGH_IDamagable damagable, int damage)
+    public void ExecuteAttack(Transform target, IDamageable damagable, int damage)
     {
         // 멈춤 동기화를 위해 RPC 실행
         pv.RPC(nameof(RPC_StopAndFace), RpcTarget.All, target.position);
