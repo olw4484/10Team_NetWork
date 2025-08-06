@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 8084535483858672487}
   - component: {fileID: 9183317073510988394}
   - component: {fileID: 1631527219362683224}
-  - component: {fileID: 149937578270707554}
+  - component: {fileID: 6849005101517153907}
   m_Layer: 22
-  m_Name: EliteMinion
+  m_Name: M_EliteMinion
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -100,7 +100,7 @@ MonoBehaviour:
   attackSound: {fileID: 0}
   hitSound: {fileID: 0}
   deathSound: {fileID: 0}
---- !u!114 &149937578270707554
+--- !u!114 &6849005101517153907
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -109,7 +109,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7632942533367234319}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa879553a7ba6344da7fc7d6dc4ebb8e, type: 3}
+  m_Script: {fileID: 11500000, guid: 9657bc4dc780a13499161c237521571e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 0
