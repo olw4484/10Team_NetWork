@@ -221,7 +221,8 @@ public class JHT_RoomManager : MonoBehaviour, IManager
 
         if (PhotonNetwork.IsMasterClient && AllPlayerReadyCheck()
             && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] == 2
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] == 2)
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] == 2
+            && AllPlayerSelectCharacterCheck())
         {
             Debug.Log("조건 충족 → GameScenes 로드");
             SetGameCustomProperty(true);
@@ -276,6 +277,16 @@ public class JHT_RoomManager : MonoBehaviour, IManager
     #region 내가 방을 나갔을경우
     public void LeaveRoom()
     {
+
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("HeroIndex", out object obj))
+        {
+            if ((int)obj >= 0)
+            {
+                playerPanelDic[PhotonNetwork.LocalPlayer.ActorNumber].SetLeaveCharacter();
+                playerPanelDic[PhotonNetwork.LocalPlayer.ActorNumber].SetLeaveReady();
+            }
+        }
+
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             if (playerPanelDic.ContainsKey(player.ActorNumber))
@@ -320,7 +331,6 @@ public class JHT_RoomManager : MonoBehaviour, IManager
             }
         }
 
-        
 
         PhotonNetwork.LeaveRoom();
     }
