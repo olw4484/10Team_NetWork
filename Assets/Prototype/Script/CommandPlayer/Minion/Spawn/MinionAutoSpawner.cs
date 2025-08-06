@@ -19,6 +19,8 @@ public class MinionAutoSpawner : BaseMinionSpawner
 
     private void Start()
     {
+        Debug.Log($"[AutoSpawner] groupId: '{groupId}'");
+
         waypointGroup = WaypointManager.Instance.GetWaypointGroup(groupId);
         if (waypointGroup == null)
             Debug.LogError($"[AutoSpawner] WaypointGroup not found for groupId: {groupId}");

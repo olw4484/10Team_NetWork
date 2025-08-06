@@ -97,33 +97,44 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         if (isDead || !photonView.IsMine) return;
         attackTimer += Time.deltaTime;
 
-        // 공격 우선, 없으면 이동
-        if (attackTarget != null)
+        if (isFollowingWaypoint)
         {
-            HandleAttackTarget();
+            Debug.Log($"[UpdateCheck] isFollowingWaypoint: TRUE, 현재 웨이포인트 인덱스: {currentWaypointIndex}");
         }
-        else if (moveTarget != null && !isAttackMove && !isMovingToPosition)
+        else
         {
-            if (!agent.pathPending && agent.remainingDistance > agent.stoppingDistance)
-                agent.SetDestination(moveTarget.position);
+            Debug.Log($"[UpdateCheck] isFollowingWaypoint: FALSE");
         }
 
-        // 공격-이동 모드
-        if (isAttackMove && attackTarget == null)
+        // 최우선순위: 공격 중일 경우
+        if (attackTarget != null)
         {
-            agent.SetDestination(attackMoveTarget);
-            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
-            {
-                isAttackMove = false;
-                agent.isStopped = true;
-            }
+            Debug.Log("[UpdateCheck] 공격 대상 발견, 웨이포인트 로직 무시.");
+            HandleRotation(); // 타겟 방향으로 회전
+            HandleAttackTarget();
+            return; // 공격 중이므로 다른 행동은 하지 않음
         }
-        else if (isMovingToPosition)
+
+        // 두 번째 우선순위: 수동 이동 명령이 있을 경우
+        if (isAttackMove || isMovingToPosition)
         {
-            agent.SetDestination(targetPosition);
-            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+            Debug.Log("[UpdateCheck] 수동 이동 명령 실행, 웨이포인트 로직 무시.");
+            HandleRotation(); // 이동 방향으로 회전
+            HandleManualMove();
+            return; // 수동 이동 중이므로 다른 행동은 하지 않음
+        }
+
+        // 가장 낮은 우선순위: 자동 웨이포인트 이동
+        if (isFollowingWaypoint)
+        {
+            HandleRotation(); // 이동 방향으로 회전
+            HandleWaypointMove();
+        }
+        else
+        {
+            // 아무것도 하지 않을 때, 에이전트 정지
+            if (agent.hasPath)
             {
-                isMovingToPosition = false;
                 agent.isStopped = true;
             }
         }
@@ -156,13 +167,14 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         attackTarget = null;
     }
 
-    // 공격이동/단일이동
-    public void SetAttackMoveTarget(Vector3 point)
+    // 공격이동/단일이동
+    public void SetAttackMoveTarget(Vector3 point)
     {
         isAttackMove = true;
         isMovingToPosition = false;
         ClearTargets();
         isFollowingWaypoint = false;
+        Debug.Log("[FlagCheck] isFollowingWaypoint가 SetAttackMoveTarget에 의해 FALSE로 변경됨."); // 이 로그가 뜨는지 확인
         attackMoveTarget = point;
         agent.isStopped = false;
         agent.SetDestination(point);
@@ -173,43 +185,104 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         isMovingToPosition = true;
         ClearTargets();
         isFollowingWaypoint = false;
+        Debug.Log("[FlagCheck] isFollowingWaypoint가 MoveToPosition에 의해 FALSE로 변경됨."); // 이 로그가 뜨는지 확인
         targetPosition = position;
         agent.isStopped = false;
         agent.SetDestination(position);
     }
 
-    // 웨이포인트 이동
-    protected IEnumerator WaitAndMoveToNextWaypoint()
+    // 웨이포인트 이동
+    protected IEnumerator WaitAndMoveToNextWaypoint()
     {
         waitingForNextWaypoint = true;
+        Debug.Log($"[WaypointCheck] 코루틴 진입, 인덱스: {currentWaypointIndex}");
         yield return new WaitForSeconds(0.01f);
         currentWaypointIndex++;
+        Debug.Log($"[WaypointCheck] 인덱스 증가: {currentWaypointIndex}");
         MoveToNextWaypoint();
         waitingForNextWaypoint = false;
     }
-    protected void ResumeWaypointMove()
-    {
-        int nearest = FindNearestWaypointIndex();
-        float threshold = agent.stoppingDistance;
-        var point = waypointGroup.GetWaypoint(nearest);
-        if (point != null && Vector3.Distance(transform.position, point.position) < threshold)
-            nearest++;
-        currentWaypointIndex = nearest;
-        isFollowingWaypoint = true;
-        MoveToNextWaypoint();
-    }
     protected void MoveToNextWaypoint()
     {
-        Debug.Log($"[DEBUG] MoveToNextWaypoint 진입. isFollowingWaypoint={isFollowingWaypoint}, currentWaypointIndex={currentWaypointIndex}");
-        if (waypointGroup == null) return;
-        if (currentWaypointIndex >= waypointGroup.GetWaypointCount()) return;
+        Debug.Log($"[MoveToNextWaypoint] {name}: 인덱스 {currentWaypointIndex}, 그룹: {waypointGroup?.groupId}");
+        if (waypointGroup == null) { Debug.LogError("[Minion] WaypointGroup == null"); return; }
+        if (currentWaypointIndex >= waypointGroup.GetWaypointCount())
+        {
+            Debug.LogWarning("[Minion] currentWaypointIndex가 WaypointCount를 벗어남");
+            return;
+        }
         Transform next = waypointGroup.GetWaypoint(currentWaypointIndex);
         if (next != null)
         {
+            Debug.Log($"[Minion] {name} → 다음 웨이포인트: {next.name} ({next.position})");
             agent.isStopped = false;
             agent.SetDestination(next.position);
         }
+        else
+        {
+            Debug.LogWarning("[Minion] next Waypoint가 null임");
+        }
     }
+    private void HandleManualMove()
+    {
+        if (isAttackMove && attackTarget == null)
+        {
+            agent.SetDestination(attackMoveTarget);
+            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+            {
+                isAttackMove = false;
+                agent.isStopped = true;
+            }
+        }
+        else if (isMovingToPosition)
+        {
+            agent.SetDestination(targetPosition);
+            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+            {
+                isMovingToPosition = false;
+                agent.isStopped = true;
+            }
+        }
+    }
+    private void HandleWaypointMove()
+    {
+        if (!waitingForNextWaypoint && waypointGroup != null)
+        {
+            if (agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
+            {
+                if (currentWaypointIndex < waypointGroup.GetWaypointCount() - 1)
+                {
+                    StartCoroutine(WaitAndMoveToNextWaypoint());
+                }
+                else
+                {
+                    isFollowingWaypoint = false;
+                    agent.isStopped = true;
+                }
+            }
+        }
+    }
+
+    private void HandleRotation()
+    {
+        if (agent.velocity.sqrMagnitude > 0.1f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(agent.velocity.normalized);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
+        else if (attackTarget != null)
+        {
+            Vector3 direction = (attackTarget.position - transform.position).normalized;
+            if (direction != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+            }
+        }
+    }
+
+
+
     protected int FindNearestWaypointIndex()
     {
         if (waypointGroup == null) return 0;

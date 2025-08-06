@@ -520,12 +520,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7459064494ae70545a3392c2c68a0c79, type: 2}
   - {fileID: 11400000, guid: 839fcc23cbf8ce849b693dbc5f5dc326, type: 2}
   hqData: {fileID: 11400000, guid: 4748055c1f55ee140b5e22d316c6031d, type: 2}
-  meleeMinionPrefab: {fileID: 6848852395963227363, guid: 333ee4284eb3e8948b8fe1cea83a4f28, type: 3}
-  rangedMinionPrefab: {fileID: 7540996777296793832, guid: 7beaafb69671edc43afa622acbbbbffa, type: 3}
-  eliteMinionPrefab: {fileID: 5949836832596800310, guid: 94d632cb04abd874ba6cbde02bfc9e31, type: 3}
-  m_MeleeMinionPrefab: {fileID: 6030940965793994703, guid: 25e6e30edb9dc3147b8596f982eab9e5, type: 3}
-  m_RangedMinionPrefab: {fileID: 1668674788522563362, guid: 9cda2caed6553fd4b8f7a9dc31fc874e, type: 3}
-  m_EliteMinionPrefab: {fileID: 7632942533367234319, guid: dc23ab79e034a0242a96483ff5822b76, type: 3}
+  meleeMinionPrefab: {fileID: 6030940965793994703, guid: 0f462fa04f724584caac151f19e20158, type: 3}
+  rangedMinionPrefab: {fileID: 1668674788522563362, guid: bebe6aaae72bb5a4f84f5a6716f2ab13, type: 3}
+  eliteMinionPrefab: {fileID: 7632942533367234319, guid: 493d8df240eb7f34a9f81c5f2e092599, type: 3}
 --- !u!4 &160920562
 Transform:
   m_ObjectHideFlags: 0
