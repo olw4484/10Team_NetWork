@@ -12,11 +12,29 @@ public class TestSkillManager : MonoBehaviour
     [SerializeField] private float skillECooldown;
     [SerializeField] private float skillRCooldown;
 
+    public int skillPoint;
+    public float skillWeight;
+
+    public static TestSkillManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        // 이미 인스턴스가 존재하면 중복 제거
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
+
     public void InitSkillManager(GameObject targetPlayer)
     {
         hero = targetPlayer;
         controller = hero.GetComponent<HeroController>();
         skillSet = hero.GetComponent<SkillSet>();
+        skillPoint = 1;
 
         skillSet.skill_Q.skillLevel.Value = 0;
         skillSet.skill_W.skillLevel.Value = 0;
@@ -160,23 +178,121 @@ public class TestSkillManager : MonoBehaviour
         SkillLevelUp();
     }
 
+    /// <summary>
+    /// 스킬 레벨업을 관리하는 메서드
+    /// </summary>
     public void SkillLevelUp()
     {
+        // 스킬 가중치를 설정해서 가중치에 따라 스킬 레벨을 올리고 못 올리고를 결정할 수 있게 해야함
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.Q))
         {
+            int curLevel = skillSet.skill_Q.skillLevel.Value;
+
+            if (skillPoint <= 0)
+            {
+                Debug.Log("스킬포인트가 부족합니다.");
+                return;
+            }
+
+            if (controller.model.Level.Value <= curLevel * 2)
+            {
+                Debug.Log("스킬을 아직 배울 수 없습니다.");
+                return;
+            }
+
+            if (curLevel >= skillSet.skill_Q.maxLevel)
+            {
+                Debug.Log("스킬이 이미 최대 레벨입니다.");
+                return;
+            }
+
             skillSet.skill_Q.skillLevel.Value++;
+            skillPoint--;
         }
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.W))
         {
+            int curLevel = skillSet.skill_W.skillLevel.Value;
+
+            if (skillPoint < 1)
+            {
+                Debug.Log("스킬포인트가 부족합니다.");
+                return;
+            }
+
+            if (controller.model.Level.Value <= curLevel * 2)
+            {
+                Debug.Log("스킬을 아직 배울 수 없습니다.");
+                return;
+            }
+
+            if (curLevel >= skillSet.skill_W.maxLevel)
+            {
+                Debug.Log("스킬이 이미 최대 레벨입니다.");
+                return;
+            }
+
             skillSet.skill_W.skillLevel.Value++;
+            skillPoint--;
         }
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.E))
         {
+            int curLevel = skillSet.skill_E.skillLevel.Value;
+
+            if (skillPoint < 1)
+            {
+                Debug.Log("스킬포인트가 부족합니다.");
+                return;
+            }
+
+            if (controller.model.Level.Value <= curLevel * 2)
+            {
+                Debug.Log("스킬을 아직 배울 수 없습니다.");
+                return;
+            }
+
+            if (curLevel >= skillSet.skill_E.maxLevel)
+            {
+                Debug.Log("스킬이 이미 최대 레벨입니다.");
+                return;
+            }
+
             skillSet.skill_E.skillLevel.Value++;
+            skillPoint--;
         }
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.R))
         {
+            int curLevel = skillSet.skill_R.skillLevel.Value;
+
+            if (skillPoint < 1)
+            {
+                Debug.Log("스킬포인트가 부족합니다.");
+                return;
+            }
+
+            if (controller.model.Level.Value < 6)
+            {
+                Debug.Log("아직 궁극기를 배울 수 없습니다.");
+                return;
+            }
+            else if (controller.model.Level.Value < 11 && curLevel >= 1)
+            {
+                Debug.Log("궁극기 레벨을 올릴 수 없습니다.");
+                return;
+            }
+            else if (controller.model.Level.Value < 16 && curLevel >= 2)
+            {
+                Debug.Log("궁극기 레벨을 올릴 수 없습니다.");
+                return;
+            }
+
+            if (curLevel >= skillSet.skill_R.maxLevel)
+            {
+                Debug.Log("스킬이 이미 최대 레벨입니다.");
+                return;
+            }
+
             skillSet.skill_R.skillLevel.Value++;
+            skillPoint--;
         }
     }
 }

@@ -16,6 +16,8 @@ public class SkillSO : ScriptableObject
     public float curMana;
     public List<float> cooldown; // 스킬 쿨타임
     public float curCooldown;
+    public int maxLevel;
+
     public Sprite icon; // 스킬 아이콘
 
     private float lastUsedTime = -Mathf.Infinity;

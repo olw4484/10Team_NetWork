@@ -173,6 +173,7 @@ public class HeroController : MonoBehaviour, IDamageable
                currentEXP >= model.levelExpTable[currentLevel + 1])
         {
             currentLevel++;
+            TestSkillManager.Instance.skillPoint++;
             Debug.Log($"레벨업! → {currentLevel}레벨");
         }
 

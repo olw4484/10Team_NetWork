@@ -33,5 +33,6 @@ MonoBehaviour:
   - 11
   - 10.5
   - 10
-  curCooldown: 0
+  curCooldown: 12
+  maxLevel: 5
   icon: {fileID: 0}

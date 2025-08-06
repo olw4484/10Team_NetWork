@@ -38,7 +38,7 @@ public class Hero1SkillSet : SkillSet
 
             foreach (Collider collider in hits)
             {
-                LGH_IDamagable damagable = collider.GetComponent<LGH_IDamagable>();
+                IDamageable damagable = collider.GetComponent<IDamageable>();
                 PhotonView view = collider.GetComponent<PhotonView>();
 
                 // OverlapSphere 안의 오브젝트가 damagable이 아니거나 photonView를 가지고 있지 않거나 photonView가 내거라면 스킵
@@ -123,7 +123,7 @@ public class Hero1SkillSet : SkillSet
 
             foreach (Collider collider in hits)
             {
-                LGH_IDamagable damagable = collider.GetComponent<LGH_IDamagable>();
+                IDamageable damagable = collider.GetComponent<IDamageable>();
                 PhotonView view = collider.GetComponent<PhotonView>();
                 bool isPlayerOrObstacle = collider.CompareTag("Player") || collider.CompareTag("Obstacle");
 
@@ -189,7 +189,7 @@ public class Hero1SkillSet : SkillSet
 
     private IEnumerator BrutalSmiteRoutine()
     {
-        if (!TryGetValidTarget(out Transform target, out LGH_IDamagable damagable, out HeroController targetHero))
+        if (!TryGetValidTarget(out Transform target, out IDamageable damagable, out HeroController targetHero))
             yield break;
 
         while (true)
@@ -209,7 +209,7 @@ public class Hero1SkillSet : SkillSet
         }
     }
 
-    private bool TryGetValidTarget(out Transform target, out LGH_IDamagable damagable, out HeroController targetHero)
+    private bool TryGetValidTarget(out Transform target, out IDamageable damagable, out HeroController targetHero)
     {
         target = null;
         damagable = null;
@@ -218,7 +218,7 @@ public class Hero1SkillSet : SkillSet
         if (!Physics.Raycast(mainCam.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
             return false;
 
-        damagable = hit.collider.GetComponent<LGH_IDamagable>();
+        damagable = hit.collider.GetComponent<IDamageable>();
         PhotonView view = hit.collider.GetComponent<PhotonView>();
         targetHero = hit.collider.GetComponent<HeroController>();
 
@@ -239,7 +239,7 @@ public class Hero1SkillSet : SkillSet
         return Vector3.Distance(targetPosition, transform.position) <= skill_R.skillRange;
     }
 
-    private void ExecuteSkill(Transform target, LGH_IDamagable damagable, HeroController targetHero)
+    private void ExecuteSkill(Transform target, IDamageable damagable, HeroController targetHero)
     {
         hero.mov.ExecuteAttack(target, damagable, skill_R.curDamage);
 
