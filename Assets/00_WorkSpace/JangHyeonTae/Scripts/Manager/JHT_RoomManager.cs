@@ -257,6 +257,20 @@ public class JHT_RoomManager : MonoBehaviour, IManager
         return true;
     }
 
+    //확인해봐야함
+    public bool AllPlayerSelectCharacterCheck()
+    {
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (!player.CustomProperties.TryGetValue("HeroIndex", out object value) || (int)value == -1)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     #endregion
 
     #region 내가 방을 나갔을경우

@@ -2,32 +2,51 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class MeleeMinionController : BaseMinionController
 {
-    public override void Initialize(MinionDataSO data, Transform target, WaypointGroup waypointGroup = null, int teamId = 0)
+    protected override void Awake()
     {
-        base.Initialize(data, target, waypointGroup, teamId);
+        Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - MeleeMinionController.Awake");
+        base.Awake();
+    }
 
-        IsManual = false;
-        isFollowingWaypoint = false;
+    protected override void Start()
+    {
+        base.Start();
+
+        if (photonView.IsMine)
+        {
+            Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - MeleeMinionController.Start - IsMine: TRUE");
+        }
+        else
+        {
+            Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - MeleeMinionController.Start - IsMine: FALSE");
+        }
     }
 
     protected override void TryAttack()
     {
-        if (!photonView.IsMine || isDead || target == null) return;
+        if (!photonView.IsMine || attackTimer < attackCooldown || attackTarget == null || isDead) return;
 
-        if (attackTimer >= attackCooldown)
+        // 여기서 어택 이펙트 or 애니메이션 or 데미지 처리
+        var targetPV = attackTarget.GetComponent<PhotonView>();
+        if (targetPV != null)
         {
             attackTimer = 0f;
+            photonView.RPC(nameof(RPC_Attack), RpcTarget.All, targetPV.ViewID, attackPower);
+        }
+    }
 
-            // 애니메이션 실행
+    [PunRPC]
+    public void RPC_Attack(int targetViewID, int dmg)
+    {
+        var targetPV = PhotonView.Find(targetViewID);
+        if (targetPV != null)
+        {
+            var damageable = targetPV.GetComponent<IDamageable>();
+            damageable?.TakeDamage(dmg, this.gameObject);
             view?.PlayMinionAttackAnimation();
-
-            // 대상에게 데미지 적용
-            var targetDamageable = target.GetComponent<IDamageable>();
-            if (targetDamageable != null)
-                targetDamageable.TakeDamage(attackPower, gameObject);
         }
     }
 }
+

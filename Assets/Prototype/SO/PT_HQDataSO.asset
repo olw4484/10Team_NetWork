@@ -16,11 +16,11 @@ MonoBehaviour:
   maxHP: 1000
   manualSpawnList:
   - type: 0
-    prefab: {fileID: 6848852395963227363, guid: d974693ec7636d04aaee793823f90adc, type: 3}
-    cost: 0
+    prefab: {fileID: 6030940965793994703, guid: 0f462fa04f724584caac151f19e20158, type: 3}
+    cost: 30
   - type: 1
-    prefab: {fileID: 7540996777296793832, guid: 5325199a1400d1c41837439a1d788510, type: 3}
-    cost: 0
+    prefab: {fileID: 1668674788522563362, guid: bebe6aaae72bb5a4f84f5a6716f2ab13, type: 3}
+    cost: 25
   - type: 2
-    prefab: {fileID: 5949836832596800310, guid: c20929090f22d0644ba5ec6210412b28, type: 3}
-    cost: 0
+    prefab: {fileID: 7632942533367234319, guid: 493d8df240eb7f34a9f81c5f2e092599, type: 3}
+    cost: 150

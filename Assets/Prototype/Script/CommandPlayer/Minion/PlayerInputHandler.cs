@@ -214,7 +214,7 @@ public class PlayerInputHandler : MonoBehaviour
                     if (hit.collider.CompareTag("Ground"))
                         minion.MoveToPosition(hit.point);
                     else
-                        minion.SetTarget(hit.transform);
+                        minion.SetAttackTarget(hit.transform);
                 }
             }
         }

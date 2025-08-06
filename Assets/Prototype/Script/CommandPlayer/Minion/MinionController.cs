@@ -1,4 +1,4 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -6,28 +6,20 @@ using static ISelectable;
 
 public class MinionController : BaseMinionController, ISelectable
 {
-
-    private bool isManual = false;
-    public override bool IsManualControlled => isManual;
+    public override bool IsManualControl => isManual;
 
     protected override void Awake() => base.Awake();
     protected override void Start() => base.Start();
     protected override void Update() => base.Update();
 
-    public override void Initialize(MinionDataSO data, Transform target, WaypointGroup waypointGroup = null, int teamId = 0)
+Â  Â  public override void SetManualControl(bool isManual)
     {
-        base.Initialize(data, target, waypointGroup, teamId);
+Â  Â  Â  Â  // if (!canBeManuallyControlled) return; // HQí™•ì¥ ê¸°ëŠ¥ìš© ì½”ë“œ
+Â  Â  Â  Â  this.isManual = isManual;
     }
 
-    public override void SetManualControl(bool isManual)
-    {
-        // if (!canBeManuallyControlled) return; // HQÈ®Àå ±â´É¿ë ÄÚµå
-        this.isManual = isManual;
-    }
-
-
-    // ----- ¼±ÅÃ ÀÎÅÍÆäÀÌ½º (ISelectable) -----
-    public void Select() => view?.SetHighlight(true);
+Â  Â  // ----- ì„ íƒ ì¸í„°í˜ì´ìŠ¤ (ISelectable) -----
+Â  Â  public void Select() => view?.SetHighlight(true);
     public void Deselect() => view?.SetHighlight(false);
     public SelectableType GetSelectableType() => SelectableType.Minion;
 
@@ -37,48 +29,51 @@ public class MinionController : BaseMinionController, ISelectable
         else Deselect();
     }
 
-    // ----- RPC Á¦¾î -----
-    [PunRPC]
+Â  Â  // ----- RPC ì œì–´ -----
+
+Â  Â  [PunRPC]
     public void RpcMoveToPosition(Vector3 position)
     {
-        if (photonView.IsMine)
-            MoveToPosition(position);
+Â  Â  Â  Â  MoveToPosition(position);
     }
 
     [PunRPC]
     public void RpcSetAttackMoveTarget(Vector3 point)
     {
-        if (photonView.IsMine)
-            SetAttackMoveTarget(point);
+        SetAttackMoveTarget(point);
     }
 
     [PunRPC]
     public void RpcSetTarget(int targetViewID)
     {
-        if (!photonView.IsMine) return;
-
         var targetObj = PhotonView.Find(targetViewID);
         if (targetObj != null)
-            SetTarget(targetObj.transform);
+            SetAttackTarget(targetObj.transform);
     }
 
-    // ----- °ø°İ ·ÎÁ÷ -----
-    protected override void TryAttack()
+Â  Â  // ----- ê³µê²© ë¡œì§ -----
+Â  Â  protected override void TryAttack()
     {
-        if (!photonView.IsMine) return;
+Â  Â  Â  Â  if (attackTimer < attackCooldown || attackTarget == null || isDead) return;
 
-        if (attackTimer >= attackCooldown && target != null)
+        Debug.Log($"[Minion] TryAttack ëŒ€ìƒ: {attackTarget?.name} / Tag: {attackTarget?.tag}");
+
+        var targetPV = attackTarget.GetComponent<PhotonView>();
+        if (targetPV == null)
         {
-            attackTimer = 0f;
-            int targetViewID = target.GetComponent<PhotonView>().ViewID;
-            photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID);
+            Debug.LogError($"[Minion] TryAttack: attackTargetì— PhotonView ì—†ìŒ! attackTarget: {attackTarget?.name}");
+            return;
         }
+
+        attackTimer = 0f;
+        int targetViewID = targetPV.ViewID;
+        photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID);
     }
 
     [PunRPC]
     private void RPC_TryAttack(int targetViewID)
     {
         view?.PlayMinionAttackAnimation();
-        // Ãß»óÈ­µÈ Ã³¸®°Å³ª, Ranged/Melee¿¡¼­ ¿À¹ö¶óÀÌµåÇÒ ºÎºĞ
-    }
+Â  Â  Â  Â  // ì¶”ìƒí™”ëœ ì²˜ë¦¬ê±°ë‚˜, Ranged/Meleeì—ì„œ ì˜¤ë²„ë¼ì´ë“œí•  ë¶€ë¶„
+Â  Â  }
 }
