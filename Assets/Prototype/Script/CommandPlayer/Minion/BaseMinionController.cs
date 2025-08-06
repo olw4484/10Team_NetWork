@@ -94,10 +94,8 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
 
     protected virtual void Update()
     {
-        if (isDead || !photonView.IsMine) return;
+        if (isDead || !PhotonNetwork.IsMasterClient) return;
         attackTimer += Time.deltaTime;
-
-        Debug.Log($"[Update] isFollowingWaypoint={isFollowingWaypoint}, isDead={isDead}, photonView.IsMine={photonView.IsMine}");
 
         if (isFollowingWaypoint)
         {
@@ -209,10 +207,9 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         Transform next = waypointGroup.GetWaypoint(currentWaypointIndex);
         if (next != null)
         {
-            if (photonView.IsMine)
+            if (PhotonNetwork.IsMasterClient)
             {
-                // 마스터클라이언트만 RPC를 호출하여 모든 클라이언트로 이동 명령을 보냅니다.
-                photonView.RPC("RpcSetDestination", RpcTarget.All, next.position);
+                photonView.RPC("Rpc_SetDestination", RpcTarget.All, next.position);
             }
         }
         else
@@ -244,7 +241,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
 
     private void HandleWaypointMove()
     {
-        if (!photonView.IsMine) return; // 미니언 소유자만 이 로직을 실행합니다.
+        if (!PhotonNetwork.IsMasterClient) return;
 
         if (waypointGroup != null)
         {
@@ -377,10 +374,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         {
             isFollowingWaypoint = true;
             Debug.Log("[InitCheck] isFollowingWaypoint를 TRUE로 설정. 웨이포인트 이동 시작.");
-            if (photonView.IsMine)
-            {
-                MoveToNextWaypoint();
-            }
+            MoveToNextWaypoint();
         }
         else
         {
@@ -390,8 +384,9 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     }
 
     [PunRPC]
-    protected void Rpc_SetDestination(Vector3 destination)
+    public void Rpc_SetDestination(Vector3 destination)
     {
+        Debug.Log($"[RPC] Rpc_SetDestination 호출 on {gameObject.name} : {destination}, agent.enabled={agent.enabled}, speed={agent.speed}");
         if (agent != null)
         {
             agent.isStopped = false;

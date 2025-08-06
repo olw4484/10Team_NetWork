@@ -19,8 +19,8 @@ public class EliteMinionController : BaseMinionController
 
     protected override void TryAttack()
     {
-        if (!photonView.IsMine || attackTimer < attackCooldown || attackTarget == null || isDead) return;
-
+        if (!PhotonNetwork.IsMasterClient || attackTimer < attackCooldown || attackTarget == null || isDead) return;
+            
         var targetPV = attackTarget.GetComponent<PhotonView>();
         if (targetPV != null)
         {
