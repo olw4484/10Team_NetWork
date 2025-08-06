@@ -20,8 +20,30 @@ public class HeroModel : MonoBehaviour
     public ObservableProperty<float> CurHP { get; private set; } = new();
     public ObservableProperty<float> CurMP { get; private set; } = new();
     public ObservableProperty<int> Level { get; private set; } = new();
+    public ObservableProperty<float> Exp { get; private set; } = new();
 
     private Dictionary<int, HeroStat> levelStats = new();
+
+    public Dictionary<int, float> levelExpTable = new()
+    {
+        {2, 15},
+        {3, 30},
+        {4, 76},
+        {5, 122},
+        {6, 196},
+        {7, 314},
+        {8, 503},
+        {9, 805},
+        {10, 1288},
+        {11, 2061},
+        {12, 3298},
+        {13, 5277},
+        {14, 8444},
+        {15, 13510},
+        {16, 21617},
+        {17, 34587},
+        {18, 55340},
+    };
 
     public void GetInitStats(int heroType)
     {
