@@ -12,8 +12,7 @@ public class JHT_RoomManager : MonoBehaviour, IManager
 
     [SerializeField] private GameObject playerPanelPrefab;
     public Dictionary<int, JHT_PlayerPanelItem> playerPanelDic = new();
-
-    public Action<bool> OnGameStart;
+    
     public Action<bool> OnStartButtonActive;
     public Func<RectTransform> OnSetRedParent;
     public Func<RectTransform> OnSetBlueParent;
@@ -22,7 +21,7 @@ public class JHT_RoomManager : MonoBehaviour, IManager
 
     #region IManager
 
-    public bool IsDontDestroy => true;
+    public bool IsDontDestroy => false;
 
 
     public void Initialize()
@@ -88,6 +87,12 @@ public class JHT_RoomManager : MonoBehaviour, IManager
                 JHT_PlayerPanelItem playerPanel = obj.GetComponent<JHT_PlayerPanelItem>();
                 playerPanel.Init(player);
                 playerPanelDic.Add(player.ActorNumber, playerPanel);
+
+                if (player.CustomProperties.ContainsKey("HeroIndex"))
+                    playerPanel.SetChangeCharacter(player);
+
+                if (player.CustomProperties.ContainsKey("IsReady"))
+                    playerPanel.CheckReady(player);
             }
             else
             {
@@ -215,12 +220,13 @@ public class JHT_RoomManager : MonoBehaviour, IManager
         Debug.Log("게임씬 로딩 시도 중");
 
         if (PhotonNetwork.IsMasterClient && AllPlayerReadyCheck()
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] >= 1
-            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] >= 1)
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"] == 2
+            && (int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"] == 2)
         {
             Debug.Log("조건 충족 → GameScenes 로드");
             SetGameCustomProperty(true);
             PhotonNetwork.LoadLevel("GameScenes");
+            //ManagerGroup.Instance.GetManager<YSJ_SystemManager>().LoadSceneWithPreActions("GameScenes");
         }
         else
         {
@@ -243,6 +249,20 @@ public class JHT_RoomManager : MonoBehaviour, IManager
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             if (!player.CustomProperties.TryGetValue("IsReady", out object value) || !(bool)value)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    //확인해봐야함
+    public bool AllPlayerSelectCharacterCheck()
+    {
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (!player.CustomProperties.TryGetValue("HeroIndex", out object value) || (int)value == -1)
             {
                 return false;
             }

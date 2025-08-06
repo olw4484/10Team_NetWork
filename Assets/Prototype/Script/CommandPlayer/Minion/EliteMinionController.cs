@@ -1,51 +1,51 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
+
 public class EliteMinionController : BaseMinionController
 {
-    public override void Initialize(MinionDataSO data, Transform target, WaypointGroup waypointGroup = null, int teamId = 0)
+    protected override void Awake()
     {
-        base.Initialize(data, target, waypointGroup, teamId);
-
-        IsManual = false;
-        isFollowingWaypoint = false;
+        base.Awake();
     }
 
-    protected override void TryAttack()
+    protected override void Start()
     {
-        if (!photonView.IsMine || attackTimer < attackCooldown || target == null || isDead) return;
+        base.Start();
+    }
 
-        attackTimer = 0f;
+Â  Â  protected override void TryAttack()
+    {
+Â  Â  Â  Â  if (!photonView.IsMine || attackTimer < attackCooldown || attackTarget == null || isDead) return;
 
-        int targetViewID = target.GetComponent<PhotonView>().ViewID;
-        photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID);
+        var targetPV = attackTarget.GetComponent<PhotonView>();
+        if (targetPV != null)
+        {
+            attackTimer = 0f;
+Â  Â  Â  Â  Â  Â  photonView.RPC(nameof(RPC_Attack), RpcTarget.All, targetPV.ViewID, attackPower);
+        }
     }
 
     [PunRPC]
-    private void RPC_TryAttack(int targetViewID)
+    public void RPC_Attack(int targetViewID, int dmg)
     {
         var targetPV = PhotonView.Find(targetViewID);
-        if (targetPV == null || isDead) return;
-
-        view?.PlayMinionAttackAnimation();
-
-        var damageable = targetPV.GetComponent<IDamageable>();
-        if (damageable == null)
+        if (targetPV != null)
         {
-            Debug.LogWarning($"{targetPV.name} is not IDamageable");
-            return;
-        }
+Â  Â  Â  Â  Â  Â  var damageable = targetPV.GetComponent<IDamageable>();
+            damageable?.TakeDamage(dmg, this.gameObject);
+            view?.PlayMinionAttackAnimation();
 
-        damageable.TakeDamage(attackPower, gameObject);
-        ApplyEliteEffect(targetPV.gameObject);
+Â  Â  Â  Â  Â  Â  ApplyEliteEffect(targetPV.gameObject);
+        }
     }
 
     private void ApplyEliteEffect(GameObject target)
     {
-        // ¿©±â¿¡ ¿¤¸®Æ® Àü¿ë È¿°ú Ãß°¡ °¡´É
-        // ex: ³Ë¹é, ½½·Î¿ì, Ã¼·Â È¸º¹, ¹öÇÁ µî
-    }
+Â  Â  Â  Â  // ì—¬ê¸°ì— ì—˜ë¦¬íŠ¸ ì „ìš© íš¨ê³¼ ì¶”ê°€ ê°€ëŠ¥
+Â  Â  Â  Â  // ex: ë„‰ë°±, ìŠ¬ë¡œìš°, ì²´ë ¥ íšŒë³µ, ë²„í”„ ë“±
+Â  Â  }
 }

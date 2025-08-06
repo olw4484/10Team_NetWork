@@ -1,4 +1,4 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ public class HeroMovement : MonoBehaviour
 
     public bool isMove;
     private bool isAttacking = false;
-    private float attackDelay;
+    [SerializeField] private float atkCooldown;
     private Vector3 destination;
 
     private Coroutine attackCoroutine;
@@ -35,8 +35,16 @@ public class HeroMovement : MonoBehaviour
         agent.stoppingDistance = 0.5f;
     }
 
+    private void Update()
+    {
+        if (atkCooldown > 0f)
+        {
+            atkCooldown -= Time.deltaTime;
+        }
+    }
+
     /// <summary>
-    /// GetMoveDestination°ú HeroAttackÀ» ÇÕÄ£ ¸Ş¼­µå
+    /// GetMoveDestinationê³¼ HeroAttackì„ í•©ì¹œ ë©”ì„œë“œ
     /// </summary>
     /// <param name="moveSpd"></param>
     /// <param name="damage"></param>
@@ -49,7 +57,7 @@ public class HeroMovement : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit))
         {
-            // ¶¥ Å¬¸¯ ½Ã ÀÌµ¿
+            // ë•… í´ë¦­ ì‹œ ì´ë™
             if (hit.collider.CompareTag("Ground") || hit.collider.CompareTag("Obstacle"))
             {
                 isAttacking = false;
@@ -57,7 +65,7 @@ public class HeroMovement : MonoBehaviour
                 return;
             }
 
-            // Àû ¿ÀºêÁ§Æ® Ã¼Å©
+            // ì  ì˜¤ë¸Œì íŠ¸ ì²´í¬
             PhotonView targetView = hit.collider.GetComponent<PhotonView>();
             LGH_IDamagable damagable = hit.collider.GetComponent<LGH_IDamagable>();
 
@@ -67,7 +75,7 @@ public class HeroMovement : MonoBehaviour
                 bool hasMyTeam = PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam);
                 bool hasTargetTeam = targetView.Owner.CustomProperties.TryGetValue("Team", out targetTeam);
 
-                // ÆÀ ±¸ºĞÀÌ ±¸Á¶Ã¼·Î µÇ¾îÀÖ±â ‹š¹®¿¡ ±¸Á¶Ã¼¸¦ stringÀ¸·Î TryParse Ãß°¡
+                // íŒ€ êµ¬ë¶„ì´ êµ¬ì¡°ì²´ë¡œ ë˜ì–´ìˆê¸° ë–„ë¬¸ì— êµ¬ì¡°ì²´ë¥¼ stringìœ¼ë¡œ TryParse ì¶”ê°€
                 if (hasMyTeam && hasTargetTeam &&
                     Enum.TryParse(myTeam.ToString(), out TestTeamSetting myTeamEnum) &&
                     Enum.TryParse(targetTeam.ToString(), out TestTeamSetting targetTeamEnum) &&
@@ -82,15 +90,15 @@ public class HeroMovement : MonoBehaviour
 
                     return;
                 }
-                // ¾Æ±º À¯´Ö Å¬¸¯ (¿¹: µû¶ó°¡±â µî Ä¿½ºÅÍ¸¶ÀÌÂ¡ °¡´É)
-                Debug.Log("¿ìÅ¬¸¯µÈ ´ë»óÀº ¾Æ±ºÀÔ´Ï´Ù. ±âº» ÀÌµ¿ Ã³¸® ¶Ç´Â ¹«½Ã.");
+                // ì•„êµ° ìœ ë‹› í´ë¦­ (ì˜ˆ: ë”°ë¼ê°€ê¸° ë“± ì»¤ìŠ¤í„°ë§ˆì´ì§• ê°€ëŠ¥)
+                Debug.Log("ìš°í´ë¦­ëœ ëŒ€ìƒì€ ì•„êµ°ì…ë‹ˆë‹¤. ê¸°ë³¸ ì´ë™ ì²˜ë¦¬ ë˜ëŠ” ë¬´ì‹œ.");
             }
             SetDestination(hit.point, moveSpd);
         }
     }
 
     /// <summary>
-    /// ¿µ¿õ ±âº»°ø°İ ÄÚ·çÆ¾
+    /// ì˜ì›… ê¸°ë³¸ê³µê²© ì½”ë£¨í‹´
     /// </summary>
     /// <param name="target"></param>
     /// <param name="damagable"></param>
@@ -101,7 +109,7 @@ public class HeroMovement : MonoBehaviour
     /// <returns></returns>
     private IEnumerator HeroAttackRoutine(Transform target, LGH_IDamagable damagable, float atkRange, float atkDelay, int damage, float moveSpd)
     {
-        Debug.Log("±âº»°ø°İ ÄÚ·çÆ¾ ½ÃÀÛµÊ");
+        Debug.Log("ê¸°ë³¸ê³µê²© ì½”ë£¨í‹´ ì‹œì‘ë¨");
         if (isAttacking) yield break;
 
         isAttacking = true;
@@ -110,14 +118,19 @@ public class HeroMovement : MonoBehaviour
         {
             float dist = Vector3.Distance(transform.position, target.position);
 
-            if (dist <= atkRange)
+            if (dist <= atkRange && atkCooldown <= 0f)
             {
                 ExecuteAttack(target, damagable, damage);
                 attackCoroutine = null;
-                attackDelay = atkDelay;
+                atkCooldown = atkDelay;
                 break;
             }
-            else
+            else if (dist <= atkRange && atkCooldown > 0f)
+            {
+                pv.RPC(nameof(RPC_StopAndFace), RpcTarget.All, target.position);
+                break;
+            }
+            else if (dist > atkRange)
             {
                 isAttacking = false;
                 agent.isStopped = false;
@@ -130,27 +143,27 @@ public class HeroMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// ½ÇÁ¦ °ø°İ ½ÇÇà ¸Ş¼­µå
+    /// ì‹¤ì œ ê³µê²© ì‹¤í–‰ ë©”ì„œë“œ
     /// </summary>
     /// <param name="target"></param>
     /// <param name="damagable"></param>
     /// <param name="damage"></param>
     public void ExecuteAttack(Transform target, LGH_IDamagable damagable, int damage)
     {
-        // ¸ØÃã µ¿±âÈ­¸¦ À§ÇØ RPC ½ÇÇà
+        // ë©ˆì¶¤ ë™ê¸°í™”ë¥¼ ìœ„í•´ RPC ì‹¤í–‰
         pv.RPC(nameof(RPC_StopAndFace), RpcTarget.All, target.position);
         
-        // Å¸°ÙÀÌ °®°í ÀÖ´Â HeroControlelr ¾ÈÀÇ TakeDamage RPC ½ÇÇà
+        // íƒ€ê²Ÿì´ ê°–ê³  ìˆëŠ” HeroControlelr ì•ˆì˜ TakeDamage RPC ì‹¤í–‰
         PhotonView targetPv = target.gameObject.GetComponent<PhotonView>();
         if (targetPv != null)
         {
             targetPv.RPC(nameof(HeroController.TakeDamage), RpcTarget.All, damage);
         }
-        Debug.Log("Hero1 ±âº» °ø°İ");
+        Debug.Log("Hero1 ê¸°ë³¸ ê³µê²©");
     }
 
     /// <summary>
-    /// ÀÌµ¿ ¸ØÃãÀ» ³×Æ®¿öÅ©¿Í µ¿±âÈ­ÇÏ±â À§ÇÑ RPC ¸Ş¼­µå
+    /// ì´ë™ ë©ˆì¶¤ì„ ë„¤íŠ¸ì›Œí¬ì™€ ë™ê¸°í™”í•˜ê¸° ìœ„í•œ RPC ë©”ì„œë“œ
     /// </summary>
     /// <param name="lookPos"></param>
     [PunRPC]
@@ -160,7 +173,7 @@ public class HeroMovement : MonoBehaviour
         agent.velocity = Vector3.zero;
         agent.ResetPath();
 
-        // È¸Àü µ¿±âÈ­
+        // íšŒì „ ë™ê¸°í™”
         Vector3 dir = (lookPos - transform.position).normalized;
         if (dir.sqrMagnitude > 0.1f)
             transform.forward = new Vector3(dir.x, 0, dir.z);
@@ -168,7 +181,7 @@ public class HeroMovement : MonoBehaviour
 
 
     /// <summary>
-    /// HeroÀÇ ÀÌµ¿ ÁöÁ¡À» °áÁ¤ÇÑ ÈÄ ÀÌµ¿ÁßÀÓÀ» ¾Ë·ÁÁÖ´Â ¸Ş¼­µå
+    /// Heroì˜ ì´ë™ ì§€ì ì„ ê²°ì •í•œ í›„ ì´ë™ì¤‘ì„ì„ ì•Œë ¤ì£¼ëŠ” ë©”ì„œë“œ
     /// </summary>
     /// <param name="dest"></param>
     /// <param name="moveSpd"></param>
@@ -181,7 +194,7 @@ public class HeroMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// ÀÌµ¿ ¸ñÇ¥ ÁöÁ¡À» ³×Æ®¿öÅ©¿Í µ¿±âÈ­ÇÏ±â À§ÇÑ RPC ¸Ş¼­µå
+    /// ì´ë™ ëª©í‘œ ì§€ì ì„ ë„¤íŠ¸ì›Œí¬ì™€ ë™ê¸°í™”í•˜ê¸° ìœ„í•œ RPC ë©”ì„œë“œ
     /// </summary>
     /// <param name="dest"></param>
     /// <param name="moveSpd"></param>
@@ -196,14 +209,14 @@ public class HeroMovement : MonoBehaviour
 
 
     /// <summary>
-    /// ÀÌµ¿ÁöÁ¡ÀÌ ¼³Á¤µÇ¾úÀ» ¶§ ÀÌµ¿¹æÇâÀ» ¹Ù¶óº¸µµ·Ï ÇÏ´Â ¸Ş¼­µå
+    /// ì´ë™ì§€ì ì´ ì„¤ì •ë˜ì—ˆì„ ë•Œ ì´ë™ë°©í–¥ì„ ë°”ë¼ë³´ë„ë¡ í•˜ëŠ” ë©”ì„œë“œ
     /// </summary>
     public void LookMoveDir()
     {
-        // ÀÌµ¿ ÁöÁ¡ÀÌ ¼³Á¤µÇ¾úÀ» ¶§
+        // ì´ë™ ì§€ì ì´ ì„¤ì •ë˜ì—ˆì„ ë•Œ
         if (isMove)
         {
-            // ÀÌµ¿ÀÌ ³¡³­´Ù¸é
+            // ì´ë™ì´ ëë‚œë‹¤ë©´
             if (agent.velocity.magnitude == 0.0f)
             {
                 isMove = false;
@@ -211,7 +224,7 @@ public class HeroMovement : MonoBehaviour
             }
         }
 
-        // ÀÌµ¿ÁßÀÌ¶ó¸é ÀÌµ¿¹æÇâÀ» ¹Ù¶óº¸µµ·Ï ¼³Á¤
+        // ì´ë™ì¤‘ì´ë¼ë©´ ì´ë™ë°©í–¥ì„ ë°”ë¼ë³´ë„ë¡ ì„¤ì •
         var dir = new Vector3(agent.steeringTarget.x, transform.position.y, agent.steeringTarget.z) - transform.position;
         if (dir.sqrMagnitude > 0.001f)
         {

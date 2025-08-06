@@ -327,10 +327,9 @@ MonoBehaviour:
   roomPanelPrefab: {fileID: 4335362264787364909, guid: 54bfd109290dbff49be3e112e8dc5a7e, type: 3}
   curPlayerState: 0
   characters:
-  - {fileID: 11400000, guid: 0984631fda865684fa530cabc9b59809, type: 2}
-  - {fileID: 11400000, guid: e8ba4bfa8c4934548bf7fe9d237958f4, type: 2}
-  - {fileID: 11400000, guid: beb4b1365d09c474a8ac263cdebf1215, type: 2}
-  mainLobbyPanel: {fileID: 1775493486719222364, guid: e214a5f21a7e76f4886377a6c7ef6b76, type: 3}
+  - {fileID: 11400000, guid: e74c4251261bc464b9a02ef3370402cb, type: 2}
+  - {fileID: 11400000, guid: e69d60d4a213f9547ab09dc2d0da60f6, type: 2}
+  - {fileID: 11400000, guid: 2dad1c6545f46d14aa5f8cffede9b831, type: 2}
 --- !u!4 &862841095
 Transform:
   m_ObjectHideFlags: 0

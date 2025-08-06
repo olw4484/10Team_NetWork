@@ -3,6 +3,7 @@ using Photon.Pun.Demo.PunBasics;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine;
+using System.Collections;
 
 public class CommandPlayer : MonoBehaviour
 {
@@ -17,10 +18,17 @@ public class CommandPlayer : MonoBehaviour
 
     private void Start()
     {
-        if (photonView.IsMine)
+        StartCoroutine(RegisterRoutine());
+    }
+
+    private IEnumerator RegisterRoutine()
+    {
+        while (LGH_TestGameManager.Instance == null)
         {
-            LGH_TestGameManager.Instance.RegisterPlayer(this.gameObject);
+            yield return null; // GameManager가 생성되기를 기다림
         }
+        LGH_TestGameManager.Instance.RegisterPlayer(this.gameObject);
+        yield break;
     }
 
     void Update()

@@ -1,4 +1,4 @@
-using Photon.Pun;
+Ôªøusing Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,52 +6,65 @@ using UnityEngine;
 public class RangedMinionController : BaseMinionController
 {
     [Header("Projectile Settings")]
-    [SerializeField] private GameObject projectilePrefab; // √ﬂ»ƒ «Æ∏µ¿∏∑Œ ±≥√º ∞°¥…
+    [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
 
-    public override void Initialize(MinionDataSO data, Transform target, WaypointGroup waypointGroup = null, int teamId = 0)
+    protected override void Awake()
     {
-        base.Initialize(data, target, waypointGroup, teamId);
-
-        IsManual = false;
-        isFollowingWaypoint = false;
+        base.Awake();
     }
-    protected override void TryAttack()
+
+    protected override void Start()
     {
-        if (!photonView.IsMine || attackTimer < attackCooldown || target == null || isDead) return;
+        base.Start();
+    }
+
+¬† ¬† protected override void TryAttack()
+    {
+        if (!photonView.IsMine || attackTimer < attackCooldown || attackTarget == null || isDead) return;
+
+        var targetPV = attackTarget.GetComponent<PhotonView>();
+        if (targetPV == null)
+        {
+            Debug.LogError("[Minion] TryAttack: attackTargetÏóê PhotonView ÏóÜÏùå! " + attackTarget.name);
+            return;
+        }
 
         attackTimer = 0f;
-        int targetViewID = target.GetComponent<PhotonView>().ViewID;
-
-        photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID);
+        int targetViewID = targetPV.ViewID;
+¬† ¬† ¬† ¬† photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID, attackPower);
     }
 
     [PunRPC]
-    private void RPC_TryAttack(int targetViewID)
+    private void RPC_TryAttack(int targetViewID, int dmg)
     {
         var targetPV = PhotonView.Find(targetViewID);
         if (targetPV == null || isDead) return;
 
         view?.PlayMinionAttackAnimation();
 
-        // ≈∫»Ø ª˝º∫
-        Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position + transform.forward * 0.5f;
+¬† ¬† ¬† ¬† // ÌÉÑÌôò ÏÉùÏÑ±
+¬† ¬† ¬† ¬† Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position + transform.forward * 0.5f;
         Quaternion rotation = Quaternion.LookRotation(targetPV.transform.position - spawnPos);
 
-        GameObject proj = Instantiate(projectilePrefab, spawnPos, rotation);
-
-        var projectile = proj.GetComponent<MinionProjectile>();
-        if (projectile != null)
+        if (photonView.IsMine)
         {
-            projectile.Initialize(
-                damage: attackPower,
-                target: targetPV.transform,
-                owner: gameObject,
-                teamId: this.teamId
+            object[] instantiationData = new object[]
+            {
+                dmg,
+                targetViewID,
+                photonView.ViewID,
+                teamId
+            };
+
+            PhotonNetwork.Instantiate(
+                projectilePrefab.name,
+                spawnPos,
+                rotation,
+                0,
+                instantiationData
             );
         }
-
-        // TODO: «Æ∏µ ªÁøÎ«“ ∞ÊøÏ Instantiate °Ê PoolManager.Spawn ¿∏∑Œ ±≥√º
     }
 }
 
