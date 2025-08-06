@@ -226,8 +226,8 @@ public class JHT_RoomManager : MonoBehaviour, IManager
         {
             Debug.Log("조건 충족 → GameScenes 로드");
             SetGameCustomProperty(true);
-            PhotonNetwork.LoadLevel("GameScenes");
-            //ManagerGroup.Instance.GetManager<YSJ_SystemManager>().LoadSceneWithPreActions("GameScenes");
+            //PhotonNetwork.LoadLevel("GameScenes");
+            ManagerGroup.Instance.GetManager<YSJ_SystemManager>().LoadPhotonSceneWithPreActions("GameScenes");
         }
         else
         {
