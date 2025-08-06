@@ -30,6 +30,7 @@ public class DatabaseTester : MonoBehaviour
         GetUserinfo(); // Firebase에서 사용자 정보를 가져오는 함수를 호출합니다.
 
         testButton.onClick.AddListener(CheckLeaderBoard);
+        SkillUpdate("스메쉬", "점멸"); 
     }
 
     private void OnEnable() // Firebase 인증 상태가 변경될 때마다 호출되는 이벤트를 구독합니다.
@@ -125,19 +126,20 @@ public class DatabaseTester : MonoBehaviour
     }
 
 
-    //private void DataUpdate()     // UpdateChildrenAsync 로 특정 키에 대한 값만을 업데이트하는 함수
-    //{
-    //    FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // 현재 로그인된 Firebase 사용자를 가져옵니다.
-    //    DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference; // Firebase 데이터베이스의 루트 참조를 가져옵니다.
-    //    DatabaseReference userInfo = root.Child("UserData").Child(user.UserId); // UserData 아래에 현재 사용자의 ID로 하위 참조를 만듭니다.
+    private void SkillUpdate(string skill0, string skill1)     // UpdateChildrenAsync 로 특정 키에 대한 값만을 업데이트하는 함수
+    {
+        FirebaseUser user = FirebaseAuth.DefaultInstance.CurrentUser; // 현재 로그인된 Firebase 사용자를 가져옵니다.
+        DatabaseReference root = FirebaseDatabase.DefaultInstance.RootReference; // Firebase 데이터베이스의 루트 참조를 가져옵니다.
+        DatabaseReference userInfo = root.Child("UserData").Child(user.UserId); // UserData 아래에 현재 사용자의 ID로 하위 참조를 만듭니다.
 
-    //    Dictionary<string, object> dictionry = new Dictionary<string, object>();
-    //    dictionry["level"] = 10;
-    //    dictionry["speed"] = 3.5;
-    //    dictionry["skill/0"] = "스매쉬"; // 리스트의 첫 번째 요소
+        Dictionary<string, object> dictionry = new Dictionary<string, object>();
+        //dictionry["level"] = 10;
+        //dictionry["speed"] = 3.5;
+        dictionry["skill/0"] = skill0; // 리스트의 첫 번째 요소
+        dictionry["skill/1"] = skill1; // 리스트의 두 번째 요소
 
-    //    userInfo.UpdateChildrenAsync(dictionry);    // 특정된 키에 대한 값만을 업데이트합니다.
-    //}
+        userInfo.UpdateChildrenAsync(dictionry);    // 특정된 키에 대한 값만을 업데이트합니다.
+    }
 
 
     private void Delete(string value)     // "value" 키를 삭제하는 함수 -> null을 넣어서 삭제 가능
