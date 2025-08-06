@@ -79,7 +79,6 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
     {
         if (networkUICanvas == null)
         {
-            Debug.LogWarning("networkUICanvas Findobject로 못찾음");
             networkUICanvas = FindObjectOfType<JHT_NetworkUIPanel>();
             if (networkUICanvas == null)
             {
