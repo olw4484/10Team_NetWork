@@ -6,27 +6,17 @@ public class MeleeMinionController : BaseMinionController
 {
     protected override void Awake()
     {
-        Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - MeleeMinionController.Awake");
         base.Awake();
     }
 
     protected override void Start()
     {
         base.Start();
-
-        if (photonView.IsMine)
-        {
-            Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - MeleeMinionController.Start - IsMine: TRUE");
-        }
-        else
-        {
-            Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - MeleeMinionController.Start - IsMine: FALSE");
-        }
     }
 
     protected override void TryAttack()
     {
-        if (!photonView.IsMine || attackTimer < attackCooldown || attackTarget == null || isDead) return;
+        if (!PhotonNetwork.IsMasterClient || attackTimer < attackCooldown || attackTarget == null || isDead) return;
 
         // 여기서 어택 이펙트 or 애니메이션 or 데미지 처리
         var targetPV = attackTarget.GetComponent<PhotonView>();
