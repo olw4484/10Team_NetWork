@@ -59,7 +59,7 @@ public class Hero1SkillSet : SkillSet
                 if (angle <= 30)
                 {
                     // 일단 데미지 계산식 없이 깡 스킬 데미지 부여
-                    view.RPC(nameof(HeroController.TakeDamage), RpcTarget.All, skill_Q.damage);
+                    view.RPC(nameof(HeroController.TakeDamage), RpcTarget.All, skill_Q.curDamage);
                 }
             }
             Debug.Log("BladeWind");
@@ -140,7 +140,7 @@ public class Hero1SkillSet : SkillSet
                         if (targetTeam == myTeam) continue;
                     }
 
-                    damagable.TakeDamage(skill_E.damage);
+                    damagable.TakeDamage(skill_E.curDamage);
                     Debug.Log("Bash Hit");
                 }
 
@@ -155,7 +155,6 @@ public class Hero1SkillSet : SkillSet
 
             if (hitDetected)
             {
-                //transform.position -= dashDir * 0.2f;
                 dashSpeed = 0f;
 
                 agent.enabled = true;
@@ -242,7 +241,7 @@ public class Hero1SkillSet : SkillSet
 
     private void ExecuteSkill(Transform target, LGH_IDamagable damagable, HeroController targetHero)
     {
-        hero.mov.ExecuteAttack(target, damagable, skill_R.damage);
+        hero.mov.ExecuteAttack(target, damagable, skill_R.curDamage);
 
         if (targetHero != null)
         {

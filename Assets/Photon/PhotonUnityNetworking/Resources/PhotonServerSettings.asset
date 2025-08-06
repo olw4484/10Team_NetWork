@@ -56,12 +56,12 @@ MonoBehaviour:
   - TakeDamage
   - RpcSetAttackMoveTarget
   - ConnectGameScene
-
-  - UpdateHeroHP
-  - UpdateHeroMP
-  - UpdateHeroLevel
+  - 
   - RPC_Attack
   - RpcInitialize
+  - UpdateHeroHP
+  - UpdateHeroLevel
+  - UpdateHeroMP
   DisableAutoOpenWizard: 1
-  ShowSettings: 1
-  DevRegionSetOnce: 1
+  ShowSettings: 0
+  DevRegionSetOnce: 0
