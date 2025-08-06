@@ -1539,7 +1539,6 @@ MonoBehaviour:
   groupId: RedUpLine
   spawnDelay: 0.5
   spawnInterval: 50
-  waypointGroup: {fileID: 1598429658}
 --- !u!4 &322685431
 Transform:
   m_ObjectHideFlags: 0
@@ -1680,10 +1679,9 @@ MonoBehaviour:
   minionSequence: 00000000000000000100000001000000
   spawnPoint: {fileID: 342952768}
   teamId: 0
-  groupId: BlueDown
+  groupId: BlueDownLine
   spawnDelay: 0.5
   spawnInterval: 50
-  waypointGroup: {fileID: 1400671247}
 --- !u!4 &342952768
 Transform:
   m_ObjectHideFlags: 0
@@ -5745,7 +5743,6 @@ MonoBehaviour:
   groupId: BlueUpLine
   spawnDelay: 0.5
   spawnInterval: 50
-  waypointGroup: {fileID: 235737469}
 --- !u!4 &1277770949
 Transform:
   m_ObjectHideFlags: 0
@@ -9404,7 +9401,6 @@ MonoBehaviour:
   groupId: RedDownLine
   spawnDelay: 0.5
   spawnInterval: 50
-  waypointGroup: {fileID: 1776220110}
 --- !u!4 &1917078602
 Transform:
   m_ObjectHideFlags: 0
