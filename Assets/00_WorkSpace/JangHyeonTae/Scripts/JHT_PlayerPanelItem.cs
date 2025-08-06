@@ -29,7 +29,7 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
         playerNameText.text = player.NickName;
         hostImage.enabled = player.IsMasterClient;
         readyButton.interactable = player.IsLocal;
-
+        curCharacterIndex = -1;
 
         if (!player.IsLocal)
             return;
@@ -53,7 +53,18 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
 
     public void SetCharacter()
     {
+        if (networkUICanvas.curIndex == -1)
+        {
+            return;
+        }
+
         curCharacterIndex = networkUICanvas.curIndex;
+        SetCharacterProperty();
+    }
+
+    public void SetLeaveCharacter()
+    {
+        curCharacterIndex = -1;
         SetCharacterProperty();
     }
 
@@ -79,6 +90,9 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
 
         if (player.CustomProperties.TryGetValue("HeroIndex", out object value))
         {
+            if ((int)value < 0)
+                return;
+
             playerCharacterImage.sprite = ManagerGroup.Instance.GetManager<JHT_NetworkManager>().characters[(int)value].icon;
         }
     }
@@ -110,7 +124,15 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
         }
     }
 
+    public void SetLeaveReady()
+    {
+        if (isReady)
+        {
+            ReadyButtonClick();
+        }
+    }
+
     #endregion
 
-    
+
 }
