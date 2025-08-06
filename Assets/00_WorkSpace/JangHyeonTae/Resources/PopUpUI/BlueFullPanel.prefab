@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _showTime: 1
-  _backgroundColor: {r: 0, g: 0.0963881, b: 1, a: 0.5}
+  _backgroundColor: {r: 0, g: 0.0963881, b: 1, a: 0}
   _popupBody: {fileID: 2184815274729214502}
 --- !u!1 &584632175899045470
 GameObject:
