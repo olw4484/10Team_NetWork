@@ -1,4 +1,4 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,36 +13,26 @@ public class RangedMinionController : BaseMinionController
     {
         base.Awake();
     }
+
     protected override void Start()
     {
         base.Start();
     }
 
-    public override void LocalInitialize(
-        MinionDataSO data,
-        Transform moveTarget = null,
-        Transform attackTarget = null,
-        WaypointGroup waypointGroup = null,
-        int teamId = 0)
-    {
-        base.LocalInitialize(data, moveTarget, attackTarget, waypointGroup, teamId);
-        // ÇÊ¿äÇÏ¸é ¿©±â¼­¸¸ Ãß°¡ ¼¼ÆÃ
-    }
-
-    protected override void TryAttack()
+Â  Â  protected override void TryAttack()
     {
         if (!photonView.IsMine || attackTimer < attackCooldown || attackTarget == null || isDead) return;
 
         var targetPV = attackTarget.GetComponent<PhotonView>();
         if (targetPV == null)
         {
-            Debug.LogError("[Minion] TryAttack: attackTarget¿¡ PhotonView ¾øÀ½! " + attackTarget.name);
+            Debug.LogError("[Minion] TryAttack: attackTargetì— PhotonView ì—†ìŒ! " + attackTarget.name);
             return;
         }
 
         attackTimer = 0f;
         int targetViewID = targetPV.ViewID;
-        photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID, attackPower);
+Â  Â  Â  Â  photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID, attackPower);
     }
 
     [PunRPC]
@@ -53,23 +43,28 @@ public class RangedMinionController : BaseMinionController
 
         view?.PlayMinionAttackAnimation();
 
-        // ÅºÈ¯ »ı¼º
-        Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position + transform.forward * 0.5f;
+Â  Â  Â  Â  // íƒ„í™˜ ìƒì„±
+Â  Â  Â  Â  Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position + transform.forward * 0.5f;
         Quaternion rotation = Quaternion.LookRotation(targetPV.transform.position - spawnPos);
 
-        GameObject proj = Instantiate(projectilePrefab, spawnPos, rotation);
-
-        var projectile = proj.GetComponent<MinionProjectile>();
-        if (projectile != null)
+        if (photonView.IsMine)
         {
-            projectile.Initialize(
-                damage: dmg,
-                target: targetPV.transform,
-                owner: gameObject,
-                teamId: this.teamId
+            object[] instantiationData = new object[]
+            {
+                dmg,
+                targetViewID,
+                photonView.ViewID,
+                teamId
+            };
+
+            PhotonNetwork.Instantiate(
+                projectilePrefab.name,
+                spawnPos,
+                rotation,
+                0,
+                instantiationData
             );
         }
-        // Ç®¸µÀº ÃßÈÄ ±³Ã¼
     }
 }
 

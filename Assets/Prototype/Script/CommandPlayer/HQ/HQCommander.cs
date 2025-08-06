@@ -16,12 +16,6 @@ public class HQCommander : MonoBehaviour, ISelectable
 
     bool IsSelected = false;
 
-    private void Awake()
-    {
-        // HQ의 하위에서 웨이포인트 그룹 찾아서 할당
-        waypointGroup = GetComponentInChildren<WaypointGroup>();
-    }
-
     private void Update()
     {
         if (!IsSelected) return;

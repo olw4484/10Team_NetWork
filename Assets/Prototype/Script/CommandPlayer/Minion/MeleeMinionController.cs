@@ -2,7 +2,6 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class MeleeMinionController : BaseMinionController
 {
     protected override void Awake()
@@ -10,20 +9,19 @@ public class MeleeMinionController : BaseMinionController
         Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - MeleeMinionController.Awake");
         base.Awake();
     }
+
     protected override void Start()
     {
-        Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - MeleeMinionController.Start");
         base.Start();
-    }
-    public override void LocalInitialize(
-        MinionDataSO data,
-        Transform moveTarget = null,
-        Transform attackTarget = null,
-        WaypointGroup waypointGroup = null,
-        int teamId = 0)
-    {
-        Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - MeleeMinionController.Initialize");
-        base.LocalInitialize(data, moveTarget, attackTarget, waypointGroup, teamId);
+
+        if (photonView.IsMine)
+        {
+            Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - MeleeMinionController.Start - IsMine: TRUE");
+        }
+        else
+        {
+            Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - MeleeMinionController.Start - IsMine: FALSE");
+        }
     }
 
     protected override void TryAttack()

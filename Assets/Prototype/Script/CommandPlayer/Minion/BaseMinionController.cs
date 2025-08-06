@@ -1,10 +1,10 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent), typeof(PhotonView))]
-public abstract class BaseMinionController : MonoBehaviour, IDamageable
+public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunInstantiateMagicCallback
 {
     [Header("Stats")]
     public float moveSpeed;
@@ -33,28 +33,46 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
     [SerializeField] private GameObject redBody;
     [SerializeField] private GameObject blueBody;
 
-    // Waypoint & FSM
-    protected WaypointGroup waypointGroup;
+Â  Â  // Waypoint & FSM
+Â  Â  protected WaypointGroup waypointGroup;
     protected int currentWaypointIndex = 0;
     protected bool isFollowingWaypoint = false;
     protected bool waitingForNextWaypoint = false;
 
-    // ÀÌµ¿¸í·É °ü·Ã
-    private bool isAttackMove = false;
+Â  Â  // ì´ë™ëª…ë ¹ ê´€ë ¨
+Â  Â  private bool isAttackMove = false;
     private bool isMovingToPosition = false;
     private Vector3 attackMoveTarget;
     private Vector3 targetPosition;
 
-    // ¼öµ¿Á¦¾î
-    protected bool isManual = false;
+Â  Â  // ìˆ˜ë™ì œì–´
+Â  Â  protected bool isManual = false;
     public virtual bool IsManualControl => isManual;
 
-    // --- ÃÊ±âÈ­ ---
-    protected virtual void Awake()
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - OnPhotonInstantiate");
+
+        object[] instantiationData = info.photonView.InstantiationData;
+        if (instantiationData != null && instantiationData.Length > 2)
+        {
+            int minionType = (int)instantiationData[0];
+            int teamId = (int)instantiationData[1];
+            string groupId = (string)instantiationData[2];
+
+            RpcInitialize(minionType, teamId, groupId);
+        }
+    }
+
+
+Â  Â  // --- ì´ˆê¸°í™” ---
+Â  Â  protected virtual void Awake()
     {
         photonView = GetComponent<PhotonView>();
         agent = GetComponent<NavMeshAgent>();
         view = GetComponentInChildren<MinionView>();
+
+        Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - BaseMinionController.Awake");
     }
 
     protected virtual void Start()
@@ -70,44 +88,8 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
         }
         currentWaypointIndex = 0;
         isFollowingWaypoint = false;
-    }
 
-    /// <summary>
-    /// Minion ±âº» ¼¼ÆÃ
-    /// </summary>
-    public virtual void LocalInitialize(
-        MinionDataSO data,
-        Transform moveTarget = null,
-        Transform attackTarget = null,
-        WaypointGroup waypointGroup = null,
-        int teamId = 0)
-    {
-        Debug.Log("[DEBUG] Initialize() ÁøÀÔ");
-        this.data = data;
-        this.moveSpeed = data.moveSpeed;
-        this.attackRange = data.attackRange;
-        this.attackCooldown = data.attackCooldown;
-        this.attackPower = data.attackPower;
-        this.maxHP = data.maxHP;
-        this.currentHP = maxHP;
-
-        this.moveTarget = moveTarget;
-        this.attackTarget = attackTarget;
-        this.teamId = teamId;
-        this.waypointGroup = waypointGroup;
-        Debug.Log($"[DEBUG] waypointGroup is {(waypointGroup != null ? "NOT NULL" : "NULL")}");
-        Debug.Log($"[Minion] WaypointGroup injected? {(waypointGroup != null)} / MoveTarget: {moveTarget} / AttackTarget: {attackTarget}");
-        this.currentWaypointIndex = 0;
-
-        // ÆÀº° »ö»ó
-        if (redBody != null) redBody.SetActive(teamId == 0);
-        if (blueBody != null) blueBody.SetActive(teamId == 1);
-
-        if (waypointGroup != null && IsManualControl == false)
-        {
-            isFollowingWaypoint = true;
-            MoveToNextWaypoint();
-        }
+        Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - BaseMinionController.Start");
     }
 
     protected virtual void Update()
@@ -115,8 +97,8 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
         if (isDead || !photonView.IsMine) return;
         attackTimer += Time.deltaTime;
 
-        // °ø°İ ¿ì¼±, ¾øÀ¸¸é ÀÌµ¿
-        if (attackTarget != null)
+Â  Â  Â  Â  // ê³µê²© ìš°ì„ , ì—†ìœ¼ë©´ ì´ë™
+Â  Â  Â  Â  if (attackTarget != null)
         {
             HandleAttackTarget();
         }
@@ -126,8 +108,8 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
                 agent.SetDestination(moveTarget.position);
         }
 
-        // °ø°İ-ÀÌµ¿ ¸ğµå
-        if (isAttackMove && attackTarget == null)
+Â  Â  Â  Â  // ê³µê²©-ì´ë™ ëª¨ë“œ
+Â  Â  Â  Â  if (isAttackMove && attackTarget == null)
         {
             agent.SetDestination(attackMoveTarget);
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
@@ -147,10 +129,10 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>
-    /// °ø°İ ´ë»ó Ã³¸®
-    /// </summary>
-    protected virtual void HandleAttackTarget()
+Â  Â  /// <summary>
+Â  Â  /// ê³µê²© ëŒ€ìƒ ì²˜ë¦¬
+Â  Â  /// </summary>
+Â  Â  protected virtual void HandleAttackTarget()
     {
         float distance = Vector3.Distance(transform.position, attackTarget.position);
         if (distance <= attackRange)
@@ -165,8 +147,8 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
         }
     }
 
-    // Å¸°Ù setterµé
-    public void SetMoveTarget(Transform target) => moveTarget = target;
+Â  Â  // íƒ€ê²Ÿ setterë“¤
+Â  Â  public void SetMoveTarget(Transform target) => moveTarget = target;
     public void SetAttackTarget(Transform target) => attackTarget = target;
     public void ClearTargets()
     {
@@ -174,8 +156,8 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
         attackTarget = null;
     }
 
-    // °ø°İÀÌµ¿/´ÜÀÏÀÌµ¿
-    public void SetAttackMoveTarget(Vector3 point)
+Â  Â  // ê³µê²©ì´ë™/ë‹¨ì¼ì´ë™
+Â  Â  public void SetAttackMoveTarget(Vector3 point)
     {
         isAttackMove = true;
         isMovingToPosition = false;
@@ -196,8 +178,8 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
         agent.SetDestination(position);
     }
 
-    // ¿şÀÌÆ÷ÀÎÆ® ÀÌµ¿
-    protected IEnumerator WaitAndMoveToNextWaypoint()
+Â  Â  // ì›¨ì´í¬ì¸íŠ¸ ì´ë™
+Â  Â  protected IEnumerator WaitAndMoveToNextWaypoint()
     {
         waitingForNextWaypoint = true;
         yield return new WaitForSeconds(0.01f);
@@ -218,7 +200,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
     }
     protected void MoveToNextWaypoint()
     {
-        Debug.Log($"[DEBUG] MoveToNextWaypoint ÁøÀÔ. isFollowingWaypoint={isFollowingWaypoint}, currentWaypointIndex={currentWaypointIndex}");
+        Debug.Log($"[DEBUG] MoveToNextWaypoint ì§„ì…. isFollowingWaypoint={isFollowingWaypoint}, currentWaypointIndex={currentWaypointIndex}");
         if (waypointGroup == null) return;
         if (currentWaypointIndex >= waypointGroup.GetWaypointCount()) return;
         Transform next = waypointGroup.GetWaypoint(currentWaypointIndex);
@@ -246,18 +228,18 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
     }
     public virtual void SetWaypointGroup(WaypointGroup group) => waypointGroup = group;
 
-    // ¿ÜºÎÁ¦¾î
-    public virtual void SetSelected(bool isSelected) { }
+Â  Â  // ì™¸ë¶€ì œì–´
+Â  Â  public virtual void SetSelected(bool isSelected) { }
     public virtual void SetManualControl(bool isManual)
     {
         this.isManual = isManual;
     }
 
-    // -------- °ø°İ Ã³¸® --------
-    protected abstract void TryAttack();
+Â  Â  // -------- ê³µê²© ì²˜ë¦¬ --------
+Â  Â  protected abstract void TryAttack();
 
-    // µ¥¹ÌÁö Ã³¸®
-    public virtual void TakeDamage(int damage, GameObject attacker = null)
+Â  Â  // ë°ë¯¸ì§€ ì²˜ë¦¬
+Â  Â  public virtual void TakeDamage(int damage, GameObject attacker = null)
     {
         if (isDead) return;
         currentHP -= damage;
@@ -280,13 +262,13 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
             Destroy(gameObject, 1f);
     }
 
-    // RPC Ã³¸®
-    #region RPC_CODE
-    [PunRPC]
-    public virtual void RpcInitialize(int minionType, int teamId, int waypointIndex)
+Â  Â  // RPC ì²˜ë¦¬
+Â  Â  #region RPC_CODE
+Â  Â  [PunRPC]
+    public virtual void RpcInitialize(int minionType, int teamId, string groupId)
     {
-        // Å¸ÀÔº° µ¥ÀÌÅÍ ÇÒ´ç
-        MinionDataSO data = MinionFactory.Instance.GetMinionData((MinionType)minionType);
+Â  Â  Â  Â  // íƒ€ì…ë³„ ë°ì´í„° í• ë‹¹
+Â  Â  Â  Â  MinionDataSO data = MinionFactory.Instance.GetMinionData((MinionType)minionType);
         this.data = data;
         this.moveSpeed = data.moveSpeed;
         this.attackRange = data.attackRange;
@@ -297,14 +279,14 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable
 
         this.teamId = teamId;
 
-        // ¿şÀÌÆ÷ÀÎÆ®´Â WaypointManager¿¡¼­ °¡Á®¿À±â (½Ì±ÛÅÏ °ü¸®)
-        WaypointGroup wp = WaypointManager.Instance.GetGroupByIndex(waypointIndex);
+Â  Â  Â  Â  // ì›¨ì´í¬ì¸íŠ¸ëŠ” WaypointManagerì—ì„œ ê°€ì ¸ì˜¤ê¸° (ì‹±ê¸€í„´ ê´€ë¦¬)
+Â  Â  Â  Â  WaypointGroup wp = WaypointManager.Instance.GetWaypointGroup(groupId);
         this.waypointGroup = wp;
 
         this.currentWaypointIndex = 0;
 
-        // ÆÀº° »ö»ó
-        if (redBody != null) redBody.SetActive(teamId == 0);
+Â  Â  Â  Â  // íŒ€ë³„ ìƒ‰ìƒ
+Â  Â  Â  Â  if (redBody != null) redBody.SetActive(teamId == 0);
         if (blueBody != null) blueBody.SetActive(teamId == 1);
 
         if (waypointGroup != null && !IsManualControl)

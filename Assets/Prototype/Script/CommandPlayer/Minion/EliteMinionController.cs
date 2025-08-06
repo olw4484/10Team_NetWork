@@ -1,4 +1,4 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,29 +11,21 @@ public class EliteMinionController : BaseMinionController
     {
         base.Awake();
     }
+
     protected override void Start()
     {
         base.Start();
     }
-    public override void LocalInitialize(
-        MinionDataSO data,
-        Transform moveTarget = null,
-        Transform attackTarget = null,
-        WaypointGroup waypointGroup = null,
-        int teamId = 0)
-    {
-        base.LocalInitialize(data, moveTarget, attackTarget, waypointGroup, teamId);
-    }
 
-    protected override void TryAttack()
+Â  Â  protected override void TryAttack()
     {
-        if (!photonView.IsMine || attackTimer < attackCooldown || attackTarget == null || isDead) return;
+Â  Â  Â  Â  if (!photonView.IsMine || attackTimer < attackCooldown || attackTarget == null || isDead) return;
 
         var targetPV = attackTarget.GetComponent<PhotonView>();
         if (targetPV != null)
         {
             attackTimer = 0f;
-            photonView.RPC(nameof(RPC_Attack), RpcTarget.All, targetPV.ViewID, attackPower);
+Â  Â  Â  Â  Â  Â  photonView.RPC(nameof(RPC_Attack), RpcTarget.All, targetPV.ViewID, attackPower);
         }
     }
 
@@ -43,15 +35,17 @@ public class EliteMinionController : BaseMinionController
         var targetPV = PhotonView.Find(targetViewID);
         if (targetPV != null)
         {
-            var damageable = targetPV.GetComponent<IDamageable>();
+Â  Â  Â  Â  Â  Â  var damageable = targetPV.GetComponent<IDamageable>();
             damageable?.TakeDamage(dmg, this.gameObject);
             view?.PlayMinionAttackAnimation();
+
+Â  Â  Â  Â  Â  Â  ApplyEliteEffect(targetPV.gameObject);
         }
     }
 
     private void ApplyEliteEffect(GameObject target)
     {
-        // ¿©±â¿¡ ¿¤¸®Æ® Àü¿ë È¿°ú Ãß°¡ °¡´É
-        // ex: ³Ë¹é, ½½·Î¿ì, Ã¼·Â È¸º¹, ¹öÇÁ µî
-    }
+Â  Â  Â  Â  // ì—¬ê¸°ì— ì—˜ë¦¬íŠ¸ ì „ìš© íš¨ê³¼ ì¶”ê°€ ê°€ëŠ¥
+Â  Â  Â  Â  // ex: ë„‰ë°±, ìŠ¬ë¡œìš°, ì²´ë ¥ íšŒë³µ, ë²„í”„ ë“±
+Â  Â  }
 }
