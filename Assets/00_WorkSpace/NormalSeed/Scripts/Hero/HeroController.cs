@@ -19,10 +19,17 @@ public class HeroController : MonoBehaviour, IDamageable
     private float atkDelay;
     private float genTime = 1f;
 
+    private int currentAnimationHash = -1;
     public readonly int IDLE_HASH = Animator.StringToHash("Idle");
     public readonly int MOVE_HASH = Animator.StringToHash("Move");
     public readonly int ATTACK_HASH = Animator.StringToHash("Attack");
     public readonly int DEAD_HASH = Animator.StringToHash("Dead");
+
+    public readonly int Q_HASH = Animator.StringToHash("QSkill");
+    public readonly int W_HASH = Animator.StringToHash("WSkill");
+    public readonly int E_HASH = Animator.StringToHash("ESkill");
+    public readonly int R_HASH = Animator.StringToHash("RSkill");
+
     // 각 Hero마다 스킬 애니메이션 존재
 
     private void Awake() => Init();
@@ -256,7 +263,7 @@ public class HeroController : MonoBehaviour, IDamageable
     }
 
     [PunRPC]
-    public void TakeDamage(int amount, GameObject attacker = null)
+    public void RPC_TakeDamage(int amount, int attackerViewID = -1)
     {
         model.CurHP.Value -= amount;
         Debug.Log($"{amount}의 데미지를 입음. 현재 HP : {model.CurHP.Value}");
@@ -268,6 +275,11 @@ public class HeroController : MonoBehaviour, IDamageable
                 pv.RPC("Dead", RpcTarget.All);
             }
         }
+    }
+
+    public void TakeDamage(int amont, GameObject attacker = null)
+    {
+
     }
 
     [PunRPC]
@@ -295,24 +307,30 @@ public class HeroController : MonoBehaviour, IDamageable
 
     private void HandleAnimation()
     {
+        int newAnimationHash;
+
         if (isDead)
         {
-            view.PlayAnimation(DEAD_HASH);
-            return;
+            newAnimationHash = DEAD_HASH;
         }
-
-        if (mov.isMove)
+        else if (mov.isMove)
         {
-            view.PlayAnimation(MOVE_HASH);
-            return;
+            newAnimationHash = MOVE_HASH;
         }
-
-        if (mov.isAttacking)
+        else if (mov.isAttack)
         {
-            view.PlayAnimation(ATTACK_HASH);
-            return;
+            newAnimationHash = ATTACK_HASH;
+        }
+        else
+        {
+            newAnimationHash = IDLE_HASH;
         }
 
-        view.PlayAnimation(IDLE_HASH);
+        // 현재 애니메이션과 다를 때만 재생
+        if (newAnimationHash != currentAnimationHash)
+        {
+            pv.RPC("PlayAnimation", RpcTarget.All, newAnimationHash);
+            currentAnimationHash = newAnimationHash;
+        }
     }
 }
