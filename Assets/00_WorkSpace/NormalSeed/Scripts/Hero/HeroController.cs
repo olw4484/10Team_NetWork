@@ -14,7 +14,7 @@ public class HeroController : MonoBehaviour, IDamageable
     public PhotonView pv;
 
     [SerializeField] private int heroType;
-    private bool isInCombat;
+    public bool isUsingSkill = false;
     private bool isDead = false;
     private float atkDelay;
     private float genTime = 1f;
@@ -308,6 +308,8 @@ public class HeroController : MonoBehaviour, IDamageable
     private void HandleAnimation()
     {
         int newAnimationHash;
+
+        if (isUsingSkill) return;
 
         if (isDead)
         {
