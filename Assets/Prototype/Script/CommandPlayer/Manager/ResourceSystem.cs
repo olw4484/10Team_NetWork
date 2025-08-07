@@ -82,6 +82,14 @@ public class ResourceSystem : MonoBehaviour, IManager
 
     }
 
+    public void AddResourceToPlayer(CommandPlayer player, ResourceType type, int amount)
+    {
+        if (type == ResourceType.Gold)
+        {
+            player.photonView.RPC("RpcAddGold", RpcTarget.All, amount);
+        }
+    }
+
     #region RPC_GOLD
     /// <summary>
     /// 네트워크 환경에서 자원 추가

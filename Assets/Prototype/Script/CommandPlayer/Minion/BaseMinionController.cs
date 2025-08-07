@@ -1,5 +1,4 @@
 ﻿using Photon.Pun;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -154,6 +153,13 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
             }
         }
 
+        if (attackTarget == null && !isDead && !isFollowingWaypoint)
+        {
+            // 웨이포인트 이동 상태로 복귀
+            isFollowingWaypoint = true;
+            MoveToNextWaypoint();
+
+        }
 
         bool isMoving = agent.velocity.magnitude > 0.1f && !agent.isStopped;
         animator.SetBool("IsMoving", isMoving);

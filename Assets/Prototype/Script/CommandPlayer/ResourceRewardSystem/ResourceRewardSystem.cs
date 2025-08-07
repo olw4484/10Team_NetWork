@@ -19,33 +19,33 @@ public class MinionRewardSystem : MonoBehaviour
 
     private void HandleMinionDead(MinionController minion, GameObject killer)
     {
-        // 골드 지급
         var data = minion.data;
-        if (PhotonNetwork.IsMasterClient)
-        {
-            var commendPlayer = killer.GetComponent<CommandPlayer>();
-            if (commendPlayer != null && data.goldReward > 0)
-            {
-                commendPlayer.photonView.RPC("RpcAddGold", RpcTarget.All, data.goldReward);
-            }
+        if (!PhotonNetwork.IsMasterClient) return;
 
-            var heroPlayer = killer.GetComponent<HeroController>();
-            if (heroPlayer != null && data.goldReward > 0)
-            {
-                heroPlayer.pv.RPC("RpcAddGold", RpcTarget.All, data.goldReward);
-            }
+        int reward = data.goldReward;
+        if (reward <= 0) return;
+
+        var minionKiller = killer.GetComponent<BaseMinionController>();
+        if (minionKiller != null)
+        {
+            var ownerCmd = PlayerManager.Instance.GetCommandPlayerByTeam(minionKiller.teamId);
+            if (ownerCmd != null)
+                ownerCmd.photonView.RPC("RpcAddGold", RpcTarget.All, reward);
+            return;
         }
 
-        // 경험치 지급
-        if (PhotonNetwork.IsMasterClient)
+        var commandPlayer = killer.GetComponent<CommandPlayer>();
+        if (commandPlayer != null)
         {
-            var killerExpHandler = killer.GetComponent<IExpReceiver>();
-            if (killerExpHandler != null && data.expReward > 0)
-            {
-                var photonView = ((MonoBehaviour)killerExpHandler).GetComponent<PhotonView>();
-                if (photonView != null)
-                    photonView.RPC("RpcAddExp", RpcTarget.All, data.expReward);
-            }
+            commandPlayer.photonView.RPC("RpcAddGold", RpcTarget.All, reward);
+            return;
+        }
+
+        var heroPlayer = killer.GetComponent<HeroController>();
+        if (heroPlayer != null)
+        {
+            heroPlayer.pv.RPC("RpcAddGold", RpcTarget.All, reward);
+            return;
         }
     }
 }
