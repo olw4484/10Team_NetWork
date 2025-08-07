@@ -1134,16 +1134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e7246983be56fe42842a970ae67d947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabList:
-  - {fileID: 7666981763745117534, guid: cf0d57f0443f58343a7e7a72db1dee6c, type: 3}
-  - {fileID: 8626492250346720606, guid: 9172d86a66e3a664a9a1206699128008, type: 3}
-  - {fileID: 628576685217893846, guid: a3341e269ebc86a45abfbb0bc7966e8c, type: 3}
-  - {fileID: 4722950658263631852, guid: f130bc157017de941963635e2847e481, type: 3}
-  - {fileID: 2911596285320111480, guid: ea6cf804abe633f48a04e448b988368a, type: 3}
-  - {fileID: 3497919971631958939, guid: 41a4999ee48e19f4991739a12da75397, type: 3}
-  - {fileID: 3421545960365940984, guid: deb75b1a4a99af44a8ec1187a8f69cc5, type: 3}
-  - {fileID: 6909216629791466805, guid: cd45a13a55ce09c4c9a97e6916a9fbc6, type: 3}
-  - {fileID: 417341040573441857, guid: b573bf6298a1e344a9813999eb874fc9, type: 3}
+  prefabList: []
   _spwanPoint: []
   spawnInterval: 120
   groundObject: {fileID: 711083070}
@@ -1382,6 +1373,14 @@ PrefabInstance:
       propertyPath: inventoryView
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1200246231334585774, guid: 2b5b3a4cdf1ddd347bda1fca6e1805b2, type: 3}
+      propertyPath: redSpawnPoint
+      value: 
+      objectReference: {fileID: 1861281577}
+    - target: {fileID: 1200246231334585774, guid: 2b5b3a4cdf1ddd347bda1fca6e1805b2, type: 3}
+      propertyPath: blueSpawnPoint
+      value: 
+      objectReference: {fileID: 1369468646}
     - target: {fileID: 1835633107611287557, guid: 2b5b3a4cdf1ddd347bda1fca6e1805b2, type: 3}
       propertyPath: m_Name
       value: GameManager

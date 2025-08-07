@@ -21,6 +21,12 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks, IManager
     [SerializeField] private InventoryHUDView inventoryView;
     InventoryHUDPresenter inventoryHUDPresenter;
 
+    [Header("팀별 리스폰 포인트")]
+    [SerializeField] private Transform redSpawnPoint;
+    [SerializeField] private Transform blueSpawnPoint;
+
+    private float respawnDelay = 5f;
+
     private void Awake()
     {
         // 이미 인스턴스가 존재하면 중복 제거
@@ -145,4 +151,44 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks, IManager
     }
 
     public GameObject GetGameObject() => this.gameObject;
+
+    // 영웅 리스폰 로직
+    public void RequestRespawn(HeroController hero)
+    {
+        StartCoroutine(RespawnRoutine(hero));
+    }
+
+    private IEnumerator RespawnRoutine(HeroController hero)
+    {
+        Debug.Log("리스폰 대기중");
+        yield return new WaitForSeconds(respawnDelay);
+
+        // 팀 정보 가져옴
+        object teamObj;
+        PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out teamObj);
+        string team = teamObj?.ToString();
+
+        // 팀별 리스폰 위치 선택
+        Transform spawnPoint = GetSpawnPointByTeam(team);
+
+        // 위치 재설정 및 활성화
+        hero.pv.RPC("RPC_Respawn", RpcTarget.All, spawnPoint.position, hero.model.MaxHP);
+    }
+
+    private Transform GetSpawnPointByTeam(string team)
+    {
+        if (team == "0")
+        {
+            return redSpawnPoint;
+        }
+
+        if (team == "1")
+        {
+            return blueSpawnPoint;
+        }
+
+        // 팀 정보가 없을 경우 디버깅
+        Debug.LogWarning("팀 정보 없음.");
+        return redSpawnPoint;
+    }
 }

@@ -59,7 +59,7 @@ public class Hero1SkillSet : SkillSet
                 if (angle <= 30)
                 {
                     // 일단 데미지 계산식 없이 깡 스킬 데미지 부여
-                    view.RPC(nameof(HeroController.TakeDamage), RpcTarget.All, skill_Q.curDamage, default);
+                    view.RPC("TakeDamage", RpcTarget.All, skill_Q.curDamage, hero.gameObject);
                 }
             }
             Debug.Log("BladeWind");
@@ -133,6 +133,7 @@ public class Hero1SkillSet : SkillSet
                 // 먼저 데미지를 줄 수 있는 충돌인지 체크
                 if (damagable != null && view != null && !view.IsMine)
                 {
+                    // 팀 체크
                     object targetTeam, myTeam;
                     if (view.Owner.CustomProperties.TryGetValue("Team", out targetTeam) &&
                         PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam))
@@ -140,7 +141,8 @@ public class Hero1SkillSet : SkillSet
                         if (targetTeam == myTeam) continue;
                     }
 
-                    view.RPC(nameof(HeroController.TakeDamage), RpcTarget.All, skill_E.curDamage, default);
+                    // 영웅과 미니언 모두에게 데미지를 줄 수 있어야 함
+                    view.RPC("TakeDamage", RpcTarget.All, skill_E.curDamage, hero.gameObject);
                     Debug.Log("Bash Hit");
                 }
 

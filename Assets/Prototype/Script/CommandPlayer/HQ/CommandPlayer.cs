@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using System.Collections;
 
-public class CommandPlayer : MonoBehaviour
+public class CommandPlayer : MonoBehaviour, IPunInstantiateMagicCallback
 {
     public int teamId;
     public int gold = 150;
@@ -58,6 +58,16 @@ public class CommandPlayer : MonoBehaviour
         Debug.Log($"[CommendPlayer] 골드 -{amount} → 현재: {gold}");
         EventManager.Instance.ResourceChanged(teamId, gold);
         return true;
+    }
+
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        object[] data = info.photonView.InstantiationData;
+        if (data != null && data.Length > 0)
+        {
+            teamId = (int)data[0];
+            Debug.Log($"[CommandPlayer] teamId 동기화: {teamId}");
+        }
     }
 
     public int GetGold() => gold;

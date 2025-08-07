@@ -179,7 +179,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -203,6 +203,7 @@ MonoBehaviour:
   view: {fileID: 0}
   mov: {fileID: 0}
   agent: {fileID: 0}
+  pv: {fileID: 0}
   heroType: 0
 --- !u!114 &5044435142328856903
 MonoBehaviour:

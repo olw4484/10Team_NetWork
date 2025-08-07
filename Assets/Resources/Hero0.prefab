@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 5490075279412252488}
   - component: {fileID: 5116782079230895214}
   - component: {fileID: 8316246981922170259}
-  m_Layer: 0
+  m_Layer: 24
   m_Name: Hero0
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -200,6 +200,7 @@ MonoBehaviour:
   view: {fileID: 0}
   mov: {fileID: 0}
   agent: {fileID: 0}
+  pv: {fileID: 0}
   heroType: 0
 --- !u!114 &5044435142328856903
 MonoBehaviour:

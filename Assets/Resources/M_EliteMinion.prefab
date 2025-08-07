@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 9183317073510988394}
   - component: {fileID: 1631527219362683224}
   - component: {fileID: 6849005101517153907}
+  - component: {fileID: 9156887313966058404}
   m_Layer: 22
   m_Name: M_EliteMinion
   m_TagString: Player
@@ -114,14 +115,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 0
   attackRange: 0
+  detectRange: 0
   attackCooldown: 0
   attackPower: 0
   maxHP: 0
   data: {fileID: 11400000, guid: 2eec27dedff06084c975a8bc5745ddd1, type: 2}
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 23068672
   photonView: {fileID: 8084535483858672487}
   teamId: 0
+  waypointStoppingDistance: 0.8
   redBody: {fileID: 2291505245420282860}
   blueBody: {fileID: 8094093431737471104}
+--- !u!136 &9156887313966058404
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7632942533367234319}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1
+  m_Height: 2.5
+  m_Direction: 1
+  m_Center: {x: 0, y: 1.5, z: 0}
 --- !u!1001 &8094093431737571214
 PrefabInstance:
   m_ObjectHideFlags: 0

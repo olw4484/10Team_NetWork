@@ -234,8 +234,14 @@ public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     // 공격 시도
     private void TryAttack()
     {
-        if (!photonView.IsMine && !PhotonNetwork.IsMasterClient)
-            return; // 권한 없는 클라 무시
+        if (!IsManual) // 자동 미니언은 반드시 마스터만 실행
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
+        }
+        else // 수동/플레이어 미니언은 본인만 실행
+        {
+            if (!photonView.IsMine) return;
+        }
 
         if (attackTimer >= attackCooldown && target != null)
         {

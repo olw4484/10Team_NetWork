@@ -1,3 +1,5 @@
+using JetBrains.Annotations;
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -24,19 +26,18 @@ public class Spawner : MonoBehaviour
 
     private Bounds groundBounds;
     public int dropheight = 10; // 드랍 높이 (기본값 10)
+    public PhotonView pv;
 
     void Start()
     {
-        
-        // 바닥의 Bounds 가져오기 (Collider > Renderer 우선)
+        pv = GetComponent<PhotonView>();
+
+        if (!pv.IsMine) return; // 내 객체가 아니라면 RPC 호출 안 함
+
         if (groundObject.TryGetComponent<Collider>(out Collider col))
-        {
             groundBounds = col.bounds;
-        }
         else if (groundObject.TryGetComponent<Renderer>(out Renderer rend))
-        {
             groundBounds = rend.bounds;
-        }
         else
         {
             Debug.LogError("GroundObject에 Collider 또는 Renderer가 없습니다.");
@@ -44,7 +45,14 @@ public class Spawner : MonoBehaviour
             return;
         }
 
-        // 스폰 반복 시작
+        if (PhotonNetwork.IsMasterClient)
+        {
+            pv.RPC(nameof(spawn), RpcTarget.All);
+        }
+    }
+    [PunRPC]
+    public void spawn()
+    {
         StartCoroutine(SpawnLoop());
     }
     IEnumerator destory(GameObject prefab)
