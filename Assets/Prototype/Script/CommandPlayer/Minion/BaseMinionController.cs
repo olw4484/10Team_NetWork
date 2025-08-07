@@ -28,25 +28,26 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     protected float attackTimer = 0f;
     protected bool isDead = false;
     public int teamId;
+    public float waypointStoppingDistance = 0.8f;
 
     [Header("TeamColor")]
     [SerializeField] private GameObject redBody;
     [SerializeField] private GameObject blueBody;
 
-    // Waypoint & FSM
-    protected WaypointGroup waypointGroup;
+    // Waypoint & FSM
+    protected WaypointGroup waypointGroup;
     protected int currentWaypointIndex = 0;
     protected bool isFollowingWaypoint = false;
-    protected bool waitingForNextWaypoint = false;
 
-    // 이동명령 관련
-    private bool isAttackMove = false;
+
+    // 이동명령 관련
+    private bool isAttackMove = false;
     private bool isMovingToPosition = false;
     private Vector3 attackMoveTarget;
     private Vector3 targetPosition;
 
-    // 수동제어
-    protected bool isManual = false;
+    // 수동제어
+    protected bool isManual = false;
     public virtual bool IsManualControl => isManual;
 
     public void OnPhotonInstantiate(PhotonMessageInfo info)
@@ -60,13 +61,13 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
             int teamId = (int)instantiationData[1];
             string groupId = (string)instantiationData[2];
 
-            RpcInitialize(minionType, teamId, groupId);
+            Rpc_Initialize(minionType, teamId, groupId);
         }
     }
 
 
-    // --- 초기화 ---
-    protected virtual void Awake()
+    // --- 초기화 ---
+    protected virtual void Awake()
     {
         photonView = GetComponent<PhotonView>();
         agent = GetComponent<NavMeshAgent>();
@@ -81,20 +82,19 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         if (agent != null)
         {
             agent.speed = moveSpeed;
-            agent.stoppingDistance = attackRange * 0.8f;
+            agent.stoppingDistance = waypointStoppingDistance;
             agent.angularSpeed = 999f;
             agent.acceleration = 99f;
             agent.updateRotation = false;
         }
         currentWaypointIndex = 0;
-        isFollowingWaypoint = false;
 
         Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - BaseMinionController.Start");
     }
 
     protected virtual void Update()
     {
-        if (isDead || !photonView.IsMine) return;
+        if (isDead || !PhotonNetwork.IsMasterClient) return;
         attackTimer += Time.deltaTime;
 
         if (isFollowingWaypoint)
@@ -110,24 +110,24 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         if (attackTarget != null)
         {
             Debug.Log("[UpdateCheck] 공격 대상 발견, 웨이포인트 로직 무시.");
-            HandleRotation(); // 타겟 방향으로 회전
+            HandleRotation();
             HandleAttackTarget();
-            return; // 공격 중이므로 다른 행동은 하지 않음
+            return;
         }
 
         // 두 번째 우선순위: 수동 이동 명령이 있을 경우
         if (isAttackMove || isMovingToPosition)
         {
             Debug.Log("[UpdateCheck] 수동 이동 명령 실행, 웨이포인트 로직 무시.");
-            HandleRotation(); // 이동 방향으로 회전
+            HandleRotation();
             HandleManualMove();
-            return; // 수동 이동 중이므로 다른 행동은 하지 않음
+            return;
         }
 
         // 가장 낮은 우선순위: 자동 웨이포인트 이동
         if (isFollowingWaypoint)
         {
-            HandleRotation(); // 이동 방향으로 회전
+            HandleRotation();
             HandleWaypointMove();
         }
         else
@@ -140,10 +140,10 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         }
     }
 
-    /// <summary>
-    /// 공격 대상 처리
-    /// </summary>
-    protected virtual void HandleAttackTarget()
+    /// <summary>
+    /// 공격 대상 처리
+    /// </summary>
+    protected virtual void HandleAttackTarget()
     {
         float distance = Vector3.Distance(transform.position, attackTarget.position);
         if (distance <= attackRange)
@@ -158,8 +158,8 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         }
     }
 
-    // 타겟 setter들
-    public void SetMoveTarget(Transform target) => moveTarget = target;
+    // 타겟 setter들
+    public void SetMoveTarget(Transform target) => moveTarget = target;
     public void SetAttackTarget(Transform target) => attackTarget = target;
     public void ClearTargets()
     {
@@ -174,7 +174,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         isMovingToPosition = false;
         ClearTargets();
         isFollowingWaypoint = false;
-        Debug.Log("[FlagCheck] isFollowingWaypoint가 SetAttackMoveTarget에 의해 FALSE로 변경됨."); // 이 로그가 뜨는지 확인
+        Debug.Log("[FlagCheck] isFollowingWaypoint가 SetAttackMoveTarget에 의해 FALSE로 변경됨.");
         attackMoveTarget = point;
         agent.isStopped = false;
         agent.SetDestination(point);
@@ -185,38 +185,32 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         isMovingToPosition = true;
         ClearTargets();
         isFollowingWaypoint = false;
-        Debug.Log("[FlagCheck] isFollowingWaypoint가 MoveToPosition에 의해 FALSE로 변경됨."); // 이 로그가 뜨는지 확인
+        Debug.Log("[FlagCheck] isFollowingWaypoint가 MoveToPosition에 의해 FALSE로 변경됨.");
         targetPosition = position;
         agent.isStopped = false;
         agent.SetDestination(position);
     }
 
-    // 웨이포인트 이동
-    protected IEnumerator WaitAndMoveToNextWaypoint()
-    {
-        waitingForNextWaypoint = true;
-        Debug.Log($"[WaypointCheck] 코루틴 진입, 인덱스: {currentWaypointIndex}");
-        yield return new WaitForSeconds(0.01f);
-        currentWaypointIndex++;
-        Debug.Log($"[WaypointCheck] 인덱스 증가: {currentWaypointIndex}");
-        MoveToNextWaypoint();
-        waitingForNextWaypoint = false;
-    }
     protected void MoveToNextWaypoint()
     {
-        Debug.Log($"[MoveToNextWaypoint] {name}: 인덱스 {currentWaypointIndex}, 그룹: {waypointGroup?.groupId}");
-        if (waypointGroup == null) { Debug.LogError("[Minion] WaypointGroup == null"); return; }
+        if (waypointGroup == null)
+        {
+            Debug.LogError("[Minion] WaypointGroup == null");
+            return;
+        }
         if (currentWaypointIndex >= waypointGroup.GetWaypointCount())
         {
             Debug.LogWarning("[Minion] currentWaypointIndex가 WaypointCount를 벗어남");
             return;
         }
+
         Transform next = waypointGroup.GetWaypoint(currentWaypointIndex);
         if (next != null)
         {
-            Debug.Log($"[Minion] {name} → 다음 웨이포인트: {next.name} ({next.position})");
-            agent.isStopped = false;
-            agent.SetDestination(next.position);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                photonView.RPC("Rpc_SetDestination", RpcTarget.All, next.position);
+            }
         }
         else
         {
@@ -244,20 +238,26 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
             }
         }
     }
+
     private void HandleWaypointMove()
     {
-        if (!waitingForNextWaypoint && waypointGroup != null)
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        if (waypointGroup != null)
         {
-            if (agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
+            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.4f)
             {
                 if (currentWaypointIndex < waypointGroup.GetWaypointCount() - 1)
                 {
-                    StartCoroutine(WaitAndMoveToNextWaypoint());
+                    currentWaypointIndex++;
+                    MoveToNextWaypoint();
                 }
                 else
                 {
                     isFollowingWaypoint = false;
                     agent.isStopped = true;
+                    agent.ResetPath();
+                    Debug.Log("[Waypoint] 마지막 웨이포인트 도달 완료");
                 }
             }
         }
@@ -301,18 +301,18 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     }
     public virtual void SetWaypointGroup(WaypointGroup group) => waypointGroup = group;
 
-    // 외부제어
-    public virtual void SetSelected(bool isSelected) { }
+    // 외부제어
+    public virtual void SetSelected(bool isSelected) { }
     public virtual void SetManualControl(bool isManual)
     {
         this.isManual = isManual;
     }
 
-    // -------- 공격 처리 --------
-    protected abstract void TryAttack();
+    // -------- 공격 처리 --------
+    protected abstract void TryAttack();
 
-    // 데미지 처리
-    public virtual void TakeDamage(int damage, GameObject attacker = null)
+    // 데미지 처리
+    public virtual void TakeDamage(int damage, GameObject attacker = null)
     {
         if (isDead) return;
         currentHP -= damage;
@@ -335,13 +335,13 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
             Destroy(gameObject, 1f);
     }
 
-    // RPC 처리
-    #region RPC_CODE
-    [PunRPC]
-    public virtual void RpcInitialize(int minionType, int teamId, string groupId)
+    // RPC 처리
+    #region RPC_CODE
+    [PunRPC]
+    public virtual void Rpc_Initialize(int minionType, int teamId, string groupId)
     {
-        // 타입별 데이터 할당
-        MinionDataSO data = MinionFactory.Instance.GetMinionData((MinionType)minionType);
+        // 타입별 데이터 할당
+        MinionDataSO data = MinionFactory.Instance.GetMinionData((MinionType)minionType);
         this.data = data;
         this.moveSpeed = data.moveSpeed;
         this.attackRange = data.attackRange;
@@ -352,20 +352,45 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
 
         this.teamId = teamId;
 
-        // 웨이포인트는 WaypointManager에서 가져오기 (싱글턴 관리)
-        WaypointGroup wp = WaypointManager.Instance.GetWaypointGroup(groupId);
+        // 웨이포인트는 WaypointManager에서 가져오기 (싱글턴 관리)
+        WaypointGroup wp = WaypointManager.Instance.GetWaypointGroup(groupId);
         this.waypointGroup = wp;
 
         this.currentWaypointIndex = 0;
 
-        // 팀별 색상
-        if (redBody != null) redBody.SetActive(teamId == 0);
+        // 팀별 색상
+        if (redBody != null) redBody.SetActive(teamId == 0);
         if (blueBody != null) blueBody.SetActive(teamId == 1);
 
         if (waypointGroup != null && !IsManualControl)
         {
             isFollowingWaypoint = true;
             MoveToNextWaypoint();
+        }
+
+        Debug.Log($"[InitCheck] waypointGroup: {(waypointGroup != null ? "존재함" : "Null")}, IsManualControl: {IsManualControl}");
+
+        if (waypointGroup != null && !IsManualControl)
+        {
+            isFollowingWaypoint = true;
+            Debug.Log("[InitCheck] isFollowingWaypoint를 TRUE로 설정. 웨이포인트 이동 시작.");
+            MoveToNextWaypoint();
+        }
+        else
+        {
+            isFollowingWaypoint = false;
+            Debug.Log("[InitCheck] 조건 불충분으로 isFollowingWaypoint가 FALSE로 남음.");
+        }
+    }
+
+    [PunRPC]
+    public void Rpc_SetDestination(Vector3 destination)
+    {
+        Debug.Log($"[RPC] Rpc_SetDestination 호출 on {gameObject.name} : {destination}, agent.enabled={agent.enabled}, speed={agent.speed}");
+        if (agent != null)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(destination);
         }
     }
 

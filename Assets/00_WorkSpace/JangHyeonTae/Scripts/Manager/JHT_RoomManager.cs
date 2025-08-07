@@ -226,8 +226,8 @@ public class JHT_RoomManager : MonoBehaviour, IManager
         {
             Debug.Log("조건 충족 → GameScenes 로드");
             SetGameCustomProperty(true);
-            PhotonNetwork.LoadLevel("GameScenes");
-            //ManagerGroup.Instance.GetManager<YSJ_SystemManager>().LoadSceneWithPreActions("GameScenes");
+            //PhotonNetwork.LoadLevel("GameScenes");
+            ManagerGroup.Instance.GetManager<YSJ_SystemManager>().LoadPhotonSceneWithPreActions("GameScenes");
         }
         else
         {
@@ -304,7 +304,6 @@ public class JHT_RoomManager : MonoBehaviour, IManager
             {
                 props["BlueCount"] = currentBlue - 1;
                 PhotonNetwork.CurrentRoom.SetCustomProperties(props);
-                Debug.Log($"[RoomManager - PlayerLeaveRoom] : {(int)PhotonNetwork.CurrentRoom.CustomProperties["BlueCount"]}");
             }
         }
         else if ((TeamSetting)PhotonNetwork.LocalPlayer.CustomProperties["Team"] == TeamSetting.Red)
@@ -314,7 +313,6 @@ public class JHT_RoomManager : MonoBehaviour, IManager
             {
                 props["RedCount"] = currentRed - 1;
                 PhotonNetwork.CurrentRoom.SetCustomProperties(props);
-                Debug.Log($"[RoomManager - PlayerLeaveRoom] : {(int)PhotonNetwork.CurrentRoom.CustomProperties["RedCount"]}");
             }
         }
         else

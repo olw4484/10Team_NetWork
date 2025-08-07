@@ -40,9 +40,6 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
         CurrentSceneBase.OnInitializeAction -= InitLoadingUI;
         CurrentSceneBase.OnInitializeAction += InitLoadingUI;
 
-        CurrentSceneBase.OnInitializeAction -= TestSceneLoad;
-        CurrentSceneBase.OnInitializeAction += TestSceneLoad;
-
         ChangeState(SystemStateType.Init);
 
         _isInitialized = true;
@@ -154,7 +151,6 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
         yield return new WaitForSeconds(1.0f);
 
         _iLoadingUI?.Hide();
-        SceneLoaded();
     }
 
     private void SceneLoaded()
@@ -179,7 +175,7 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
         _iLoadingUI = loadingUIGO.GetComponent<ILoadingUI>();
         if (_iLoadingUI == null) return;
         _iLoadingUI.Init();
-        // _iLoadingUI.Hide();
+        _iLoadingUI.Hide();
     }
 
     private void TestSceneLoad()

@@ -9,8 +9,8 @@ EditorBuildSettings:
     path: Assets/00_WorkSpace/sejun-2/Email_Login_Scene.unity
     guid: 06be8ec50abdce64cbffd790cd64469a
   - enabled: 1
-    path: Assets/Prototype/Scenes/Lobby.unity
-    guid: 3e6571e36924600489e774378651a9b4
+    path: Assets/00_WorkSpace/JangHyeonTae/Scenes/JHT_Lobby.unity
+    guid: 2a4831e2e30020a42a97dde488ed0c78
   - enabled: 1
     path: Assets/Prototype/Scenes/GameScenes.unity
     guid: 37e27279c4a3d224b90daf38732b3876

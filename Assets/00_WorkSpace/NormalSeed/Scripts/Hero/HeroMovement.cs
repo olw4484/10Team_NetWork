@@ -93,6 +93,7 @@ public class HeroMovement : MonoBehaviour
                 // 아군 유닛 클릭 (예: 따라가기 등 커스터마이징 가능)
                 Debug.Log("우클릭된 대상은 아군입니다. 기본 이동 처리 또는 무시.");
             }
+
             SetDestination(hit.point, moveSpd);
         }
     }
@@ -157,7 +158,7 @@ public class HeroMovement : MonoBehaviour
         PhotonView targetPv = target.gameObject.GetComponent<PhotonView>();
         if (targetPv != null)
         {
-            targetPv.RPC(nameof(HeroController.TakeDamage), RpcTarget.All, damage);
+            targetPv.RPC("TakeDamage", RpcTarget.All, damage, default); // TODO 데미지 줄 때 내가 줬다고 전달해줘야 함
         }
         Debug.Log("Hero1 기본 공격");
     }
@@ -189,7 +190,7 @@ public class HeroMovement : MonoBehaviour
     {
         if (pv.IsMine && !isAttacking)
         {
-            pv.RPC("RPC_SetDestination", RpcTarget.All, dest, moveSpd);
+            pv.RPC(nameof(RPC_SetDestination), RpcTarget.All, dest, moveSpd);
         }
     }
 

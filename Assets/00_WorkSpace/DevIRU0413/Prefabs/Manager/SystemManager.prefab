@@ -45,3 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDontDestroyOnLoad: 1
+  _loadingUIPrefab: {fileID: 1003758323658668737, guid: 6fbc103ec1a8a5e4282b32a8312a65b7, type: 3}
