@@ -429,20 +429,14 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
             agent.SetDestination(destination);
         }
     }
-
     [PunRPC]
     public void RPC_TakeDamage(int damage, int attackerViewID)
     {
-        if (isDead) return;
-        currentHP -= damage;
-        if (currentHP <= 0)
-        {
-            GameObject killer = null;
-            var attackerPV = PhotonView.Find(attackerViewID);
-            if (attackerPV != null)
-                killer = attackerPV.gameObject;
-            Die(killer);
-        }
+        GameObject killer = null;
+        var attackerPV = PhotonView.Find(attackerViewID);
+        if (attackerPV != null)
+            killer = attackerPV.gameObject;
+        TakeDamage(damage, killer);
     }
 
     public void SyncRotation(float x, float y, float z, float w)
