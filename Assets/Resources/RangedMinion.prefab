@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2567840758668717070}
   - component: {fileID: 7790055598492290325}
   - component: {fileID: 7038004876971970469}
+  - component: {fileID: 6870784295696515767}
   m_Layer: 22
   m_Name: RangedMinion
   m_TagString: Player
@@ -125,6 +126,29 @@ MonoBehaviour:
   blueBody: {fileID: 5432122235488987996}
   projectilePrefab: {fileID: 0}
   firePoint: {fileID: 5432122235489282396}
+--- !u!136 &6870784295696515767
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1668674788522563362}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.6
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1001 &5432122235488863370
 PrefabInstance:
   m_ObjectHideFlags: 0
