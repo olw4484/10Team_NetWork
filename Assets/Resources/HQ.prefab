@@ -353,6 +353,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
+  teamId: 0
   defaultSpawnPoint: {fileID: 52061777251493334}
   rallyPointTarget: {fileID: 5537802708903624571}
   rallyPointMarker: {fileID: 1136964881208348331}
