@@ -1,9 +1,9 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-
-
-public class SHI_ItemBase : MonoBehaviour
+[CreateAssetMenu]
+public class SHI_ItembaseData : ScriptableObject
 {
-    public SHI_ItembaseData data;
     public Sprite _Image;
     public enum ItemName
     {
@@ -57,12 +57,4 @@ public class SHI_ItemBase : MonoBehaviour
     public float minionDamageDown; // 아이템이 감소 시키는 미니언 공격력 양
     [Range(1, 5)]
     public float minionAttackRegeneration; // 아이템이 증가시키는 미니언 공격시 재생 속도 증가
-    public void get(SHI_ItembaseData value)
-    {
-        data = value;
-    }
-    private void Awake()
-    {
-        gameObject.GetComponent<SpriteRenderer>().sprite = _Image;
-    }
 }
