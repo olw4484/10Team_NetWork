@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
@@ -71,6 +72,145 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
 
     #region TeamManager
 
+
+    #region Option Popup
+    private Slider bgmSlider => GetUI<Slider>("BGMSlider");
+    private Slider sfxSlider => GetUI<Slider>("SFXSlider");
+    private TextMeshProUGUI bgmAmountText => GetUI<TextMeshProUGUI>("BGMAmountText");
+    private TextMeshProUGUI sfxAmountText => GetUI<TextMeshProUGUI>("SFXAmountText");
+    private GameObject optionPopUp => GetUI("OptionPopUp");
+
+    private bool isBGMMute = false;
+    private bool isSFXMute = false;
+
+    private event Action<Slider> OnBGMSlider;
+    private event Action<Slider> OnSFXSlider;
+    #endregion
+
+    #region AudioClip
+
+    private AudioClip enterClip;
+    private Dictionary<string, AudioClip> audioDic;
+    #endregion
+
+    YSJ_AudioManager audioManager;
+    private void Start()
+    {
+        audioDic = new();
+        AudioClip[] objs = Resources.LoadAll<AudioClip>("Sound/UISound");
+        for (int i = 0; i < objs.Length; i++)
+        {
+            audioDic.Add(objs[i].name, objs[i]);
+        }
+
+
+        #region audioSetting
+        audioManager = ManagerGroup.Instance.GetManager<YSJ_AudioManager>();
+
+        GetEvent("OptionButton").Click += data =>
+        {
+            if (!optionPopUp.activeSelf)
+            {
+                bgmSlider.value = audioManager.GetBgmVolume();
+                sfxSlider.value = audioManager.GetSfxVolume();
+
+                bgmAmountText.text = ((int)(bgmSlider.value * 100f)).ToString();
+                sfxAmountText.text = ((int)(sfxSlider.value * 100f)).ToString();
+
+                GetUI("BGMMuteImage").SetActive(isBGMMute);
+                GetUI("SFXMuteImage").SetActive(isSFXMute);
+
+                optionPopUp.SetActive(true);
+
+                bgmSlider.onValueChanged.AddListener(bgmChanged);
+                sfxSlider.onValueChanged.AddListener(sfxChanged);
+                OnBGMSlider += ChangeBGMInteractable;
+                OnSFXSlider += ChangeSFXIngeractable;
+            }
+        };
+
+
+        GetEvent("OptionExitButton").Click += data =>
+        {
+            if (optionPopUp.activeSelf)
+            {
+                optionPopUp.SetActive(false);
+
+                bgmSlider.onValueChanged.RemoveListener(bgmChanged);
+                sfxSlider.onValueChanged.RemoveListener(sfxChanged);
+                OnBGMSlider -= ChangeBGMInteractable;
+                OnSFXSlider -= ChangeSFXIngeractable;
+            }
+        };
+
+
+        GetEvent("BGMMuteButton").Click += data =>
+        {
+            isBGMMute = !isBGMMute;
+
+            GetUI("BGMMuteImage").SetActive(isBGMMute);
+            OnBGMSlider?.Invoke(bgmSlider);
+            
+        };
+
+        GetEvent("SFXMuteButton").Click += data =>
+        {
+            isSFXMute = !isSFXMute;
+
+            GetUI("SFXMuteImage").SetActive(isSFXMute);
+            OnSFXSlider?.Invoke(sfxSlider);
+        };
+        #endregion
+    }
+
+    #region audioSetting
+    private void ChangeBGMInteractable(Slider snd)
+    {
+        if (isBGMMute)
+        {
+            ManagerGroup.Instance.GetManager<YSJ_AudioManager>().MuteBgm();
+            snd.interactable = false;
+        }
+        else
+        {
+            snd.interactable = true;
+            ManagerGroup.Instance.GetManager<YSJ_AudioManager>().SetBgmVolume(snd.value);
+        }
+    }
+
+    private void ChangeSFXIngeractable(Slider snd)
+    {
+        if (isSFXMute)
+        {
+            ManagerGroup.Instance.GetManager<YSJ_AudioManager>().MuteSfx();
+            snd.interactable = false;
+        }
+        else
+        {
+            snd.interactable = true;
+            ManagerGroup.Instance.GetManager<YSJ_AudioManager>().SetSfxVolume(snd.value);
+        }
+    }
+
+
+    private void bgmChanged(float value)
+    {
+        if (!isBGMMute)
+        {
+            ManagerGroup.Instance.GetManager<YSJ_AudioManager>().SetBgmVolume(value);
+            bgmAmountText.text = ((int)(value * 100)).ToString();
+        }
+    }
+
+    private void sfxChanged(float value)
+    {
+        if (!isSFXMute)
+        {
+            ManagerGroup.Instance.GetManager<YSJ_AudioManager>().SetSfxVolume(value);
+            sfxAmountText.text = ((int)(value * 100)).ToString();
+        }
+    }
+    #endregion
     public void TeamInit()
     {
         teamManager = ManagerGroup.Instance.GetManager<JHT_TeamManager>();
@@ -118,6 +258,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         networkManager.OnParent += AddParent;
 
         #region 룸 버튼 이벤트
+        
         GetEvent("CreateLobbyButton").Click += data =>
         {
             createRoomPanel.SetActive(true);
@@ -210,6 +351,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
             GetUI("DescPopUp1").SetActive(true);
 
             GetUI("DescText1").GetComponent<TextMeshProUGUI>().text = networkManager.characters[0].desc;
+            audioManager.PlaySfx(audioDic["Simple Wood"]);
         };
 
         GetEvent("CharacterPanel1").Exit += data =>
@@ -221,6 +363,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         {
             GetUI("DescPopUp2").SetActive(true);
             GetUI("DescText2").GetComponent<TextMeshProUGUI>().text = networkManager.characters[1].desc;
+            audioManager.PlaySfx(audioDic["Simple Wood"]);
         };
 
         GetEvent("CharacterPanel2").Exit += data =>
@@ -232,6 +375,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         {
             GetUI("DescPopUp3").SetActive(true);
             GetUI("DescText3").GetComponent<TextMeshProUGUI>().text = networkManager.characters[2].desc;
+            audioManager.PlaySfx(audioDic["Simple Wood"]);
         };
 
         GetEvent("CharacterPanel3").Exit += data =>

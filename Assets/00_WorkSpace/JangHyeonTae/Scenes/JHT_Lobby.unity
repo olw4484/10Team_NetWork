@@ -379,7 +379,7 @@ MonoBehaviour:
   - {fileID: 1507226706}
   - {fileID: 862841093}
   _uiPrefabs: []
-  _bgm: {fileID: 0}
+  _bgm: {fileID: 8300000, guid: bdbd6ba4d8ad841cf9f349bf625566db, type: 3}
 --- !u!4 &878890331
 Transform:
   m_ObjectHideFlags: 0
