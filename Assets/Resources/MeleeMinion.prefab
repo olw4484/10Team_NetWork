@@ -122,7 +122,7 @@ MonoBehaviour:
   photonView: {fileID: 7609844220020206891}
   teamId: 0
   waypointStoppingDistance: 0.5
-  redBody: {fileID: 0}
+  redBody: {fileID: 2843375634349503244}
   blueBody: {fileID: 2843375634349323414}
 --- !u!136 &4099702096349562883
 CapsuleCollider:
@@ -332,5 +332,10 @@ Transform:
 --- !u!1 &2843375634349323414 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 116952, guid: a9733678a87478b4689672067b7718fb, type: 3}
+  m_PrefabInstance: {fileID: 2843375634349407310}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2843375634349503244 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 167746, guid: a9733678a87478b4689672067b7718fb, type: 3}
   m_PrefabInstance: {fileID: 2843375634349407310}
   m_PrefabAsset: {fileID: 0}

@@ -146,6 +146,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     protected virtual void HandleAttackTarget()
     {
         float distance = Vector3.Distance(transform.position, attackTarget.position);
+        Debug.Log($"[AttackCheck] 내 TeamId={teamId}, 타겟 TeamId={attackTarget.GetComponent<BaseMinionController>()?.teamId}, 거리={distance}, 어택레인지={attackRange}");
         if (distance <= attackRange)
         {
             agent.isStopped = true;

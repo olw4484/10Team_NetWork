@@ -200,6 +200,7 @@ MonoBehaviour:
   view: {fileID: 0}
   mov: {fileID: 0}
   agent: {fileID: 0}
+  pv: {fileID: 0}
   heroType: 0
 --- !u!114 &5044435142328856903
 MonoBehaviour:
