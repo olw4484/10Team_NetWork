@@ -21,7 +21,7 @@ public class RangedMinionController : BaseMinionController
 
     protected override void TryAttack()
     {
-        if (!photonView.IsMine || attackTimer < attackCooldown || attackTarget == null || isDead) return;
+        if (!PhotonNetwork.IsMasterClient || attackTimer < attackCooldown || attackTarget == null || isDead) return;
 
         var targetPV = attackTarget.GetComponent<PhotonView>();
         if (targetPV == null)
@@ -47,7 +47,7 @@ public class RangedMinionController : BaseMinionController
         Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position + transform.forward * 0.5f;
         Quaternion rotation = Quaternion.LookRotation(targetPV.transform.position - spawnPos);
 
-        if (photonView.IsMine)
+        if (PhotonNetwork.IsMasterClient)
         {
             object[] instantiationData = new object[]
             {
