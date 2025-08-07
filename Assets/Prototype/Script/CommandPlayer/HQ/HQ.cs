@@ -21,6 +21,19 @@ public class HQ : MonoBehaviour, IDamageable, IPunInstantiateMagicCallback
         currentHP = data.maxHP;
     }
 
+    private void Start()
+    {
+        DestroyHQ();
+    }
+
+    private void DestroyHQ()
+    {
+        if (Input.GetKeyUp(KeyCode.B))
+        {
+            OnDestroyed();
+        }
+    }
+
     // 데미지 처리 (공격받을 경우)
     public void TakeDamage(int damage, GameObject attacker = null)
     {
