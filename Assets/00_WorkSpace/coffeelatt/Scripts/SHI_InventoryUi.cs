@@ -14,6 +14,7 @@ public class SHI_InventoryUI : MonoBehaviour
 
     private void Start()
     {
+        inventory = LGH_TestGameManager.Instance.localPlayer?.GetComponent<SHI_Inventory>();
         //inventory = GameObject.Find("Hero1").GetComponent<SHI_Inventory>();
         //for (int i = 0; i < SHI_Inventory.instance.maxSlots; i++)
         //{

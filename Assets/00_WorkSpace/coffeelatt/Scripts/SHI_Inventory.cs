@@ -17,7 +17,7 @@ public class SHI_Inventory : MonoBehaviour
             Debug.Log("인벤토리가 가득 찼습니다.");
             return false;
         }
-
+        Debug.Log($"똑똑 잘계심?{newItem}");
         items.Add(newItem);
        itemadd.Invoke();
         Debug.Log($"{newItem.itemNameEnum} 인벤토리에 추가됨.");
