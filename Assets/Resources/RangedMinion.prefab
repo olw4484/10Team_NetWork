@@ -228,13 +228,67 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 179124, guid: 04c79b5f6e9ebab48af48fdcf7b6d570, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5357493695242678707}
+    - targetCorrespondingSourceObject: {fileID: 179124, guid: 04c79b5f6e9ebab48af48fdcf7b6d570, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 647970935889486406}
   m_SourcePrefab: {fileID: 100100000, guid: 04c79b5f6e9ebab48af48fdcf7b6d570, type: 3}
 --- !u!95 &5432122235479484476 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 9563318, guid: 04c79b5f6e9ebab48af48fdcf7b6d570, type: 3}
   m_PrefabInstance: {fileID: 5432122235488863370}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &5432122235488976702 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 179124, guid: 04c79b5f6e9ebab48af48fdcf7b6d570, type: 3}
+  m_PrefabInstance: {fileID: 5432122235488863370}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5357493695242678707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5432122235488976702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 9
+    SynchronizeType: 0
+    Name: Die
+  - Type: 4
+    SynchronizeType: 0
+    Name: Idle
+  - Type: 4
+    SynchronizeType: 0
+    Name: Move
+  - Type: 9
+    SynchronizeType: 0
+    Name: Attack
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
+--- !u!114 &647970935889486406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5432122235488976702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb03797cade6a1147b84b21f3e41336a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minionController: {fileID: 7038004876971970469}
 --- !u!1 &5432122235488980362 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 182528, guid: 04c79b5f6e9ebab48af48fdcf7b6d570, type: 3}

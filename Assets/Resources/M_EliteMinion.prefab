@@ -231,10 +231,17 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5790834096958251198, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 197908, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3181962937331516963}
+    - targetCorrespondingSourceObject: {fileID: 197908, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7150052890909796066}
   m_SourcePrefab: {fileID: 100100000, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
 --- !u!1 &2291505245420282860 stripped
 GameObject:
@@ -251,6 +258,54 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 165646, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
   m_PrefabInstance: {fileID: 8094093431737571214}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8094093431737504410 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 197908, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
+  m_PrefabInstance: {fileID: 8094093431737571214}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3181962937331516963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8094093431737504410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb03797cade6a1147b84b21f3e41336a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minionController: {fileID: 6849005101517153907}
+--- !u!114 &7150052890909796066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8094093431737504410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 9
+    SynchronizeType: 0
+    Name: Die
+  - Type: 4
+    SynchronizeType: 0
+    Name: Idle
+  - Type: 4
+    SynchronizeType: 0
+    Name: Move
+  - Type: 9
+    SynchronizeType: 0
+    Name: Attack
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
 --- !u!4 &8094093431737801326 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 495072, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
