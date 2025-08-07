@@ -21,7 +21,7 @@ public class HQ : MonoBehaviour, IDamageable, IPunInstantiateMagicCallback
         currentHP = data.maxHP;
     }
 
-    private void Start()
+    private void Update()
     {
         DestroyHQ();
     }
