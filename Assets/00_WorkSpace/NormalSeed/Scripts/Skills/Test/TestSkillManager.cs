@@ -1,19 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TestSkillManager : MonoBehaviour
 {
     [SerializeField] private GameObject hero;
     [SerializeField] private HeroController controller;
     [SerializeField] private SkillSet skillSet;
+    [SerializeField] private SkillWindowUI ui;
     [SerializeField] private float skillQCooldown;
     [SerializeField] private float skillWCooldown;
     [SerializeField] private float skillECooldown;
     [SerializeField] private float skillRCooldown;
 
-    public int skillPoint;
+    public ObservableProperty<int> skillPoint { get; private set; } = new();
     public float skillWeight;
+
+    public bool isQUpable = true;
+    public bool isWUpable = true;
+    public bool isEUpable = true;
+    public bool isRUpable = true;
 
     public static TestSkillManager Instance { get; private set; }
 
@@ -34,7 +41,8 @@ public class TestSkillManager : MonoBehaviour
         hero = targetPlayer;
         controller = hero.GetComponent<HeroController>();
         skillSet = hero.GetComponent<SkillSet>();
-        skillPoint = 1;
+        ui = hero.GetComponentInChildren<SkillWindowUI>();
+        skillPoint.Value = 1;
 
         skillSet.skill_Q.skillLevel.Value = 0;
         skillSet.skill_W.skillLevel.Value = 0;
@@ -45,6 +53,7 @@ public class TestSkillManager : MonoBehaviour
         skillSet.skill_W.skillLevel.Subscribe(OnWSkillLevelChanged);
         skillSet.skill_E.skillLevel.Subscribe(OnESkillLevelChanged);
         skillSet.skill_R.skillLevel.Subscribe(OnRSkillLevelChanged);
+        skillPoint.Subscribe(OnSkillPointChanged);
 
         skillQCooldown = skillSet.skill_Q.curCooldown;
         skillWCooldown = skillSet.skill_W.curCooldown;
@@ -58,6 +67,7 @@ public class TestSkillManager : MonoBehaviour
         skillSet.skill_Q.curDamage = skillSet.skill_Q.damage[level];
         skillSet.skill_Q.curCooldown = skillSet.skill_Q.cooldown[level];
         skillSet.skill_Q.curMana = skillSet.skill_Q.mana[level];
+        ui.ActivateQSkillLevelIcon(level);
     }
 
     void OnWSkillLevelChanged(int level)
@@ -66,6 +76,7 @@ public class TestSkillManager : MonoBehaviour
         skillSet.skill_W.curDamage = skillSet.skill_W.damage[level];
         skillSet.skill_W.curCooldown = skillSet.skill_W.cooldown[level];
         skillSet.skill_W.curMana = skillSet.skill_W.mana[level];
+        ui.ActivateWSkillLevelIcon(level);
     }
 
     void OnESkillLevelChanged(int level)
@@ -74,6 +85,7 @@ public class TestSkillManager : MonoBehaviour
         skillSet.skill_E.curDamage = skillSet.skill_E.damage[level];
         skillSet.skill_E.curCooldown = skillSet.skill_E.cooldown[level];
         skillSet.skill_E.curMana = skillSet.skill_E.mana[level];
+        ui.ActivateESkillLevelIcon(level);
     }
 
     void OnRSkillLevelChanged(int level)
@@ -82,6 +94,22 @@ public class TestSkillManager : MonoBehaviour
         skillSet.skill_R.curDamage = skillSet.skill_R.damage[level];
         skillSet.skill_R.curCooldown = skillSet.skill_R.cooldown[level];
         skillSet.skill_R.curMana = skillSet.skill_R.mana[level];
+        ui.ActivateRSkillLevelIcon(level);
+    }
+
+    void OnSkillPointChanged(int point)
+    {
+        Debug.Log("스킬 포인트 획득함. 현재 스킬 포인트 : " + skillPoint.Value);
+        if (point > 0)
+        {
+            ui.ActivateSkillLevelUpButton();
+
+            RefreshSkillButton();
+        }
+        else
+        {
+            ui.UnactivateSkillLevelUpButton();
+        }
     }
 
     private void Update()
@@ -142,6 +170,7 @@ public class TestSkillManager : MonoBehaviour
             if (skillQCooldown == 0f || skillQCooldown < skillSet.skill_Q.curCooldown)
             {
                 skillQCooldown += Time.deltaTime;
+                SetCooldownShadow(ui.QShadow, skillQCooldown, skillSet.skill_Q.curCooldown);
             }
             else if (skillQCooldown > skillSet.skill_Q.curCooldown)
             {
@@ -151,6 +180,7 @@ public class TestSkillManager : MonoBehaviour
             if (skillWCooldown == 0f || skillWCooldown < skillSet.skill_W.curCooldown)
             {
                 skillWCooldown += Time.deltaTime;
+                SetCooldownShadow(ui.WShadow, skillWCooldown, skillSet.skill_W.curCooldown);
             }
             else if (skillWCooldown > skillSet.skill_W.curCooldown)
             {
@@ -160,6 +190,7 @@ public class TestSkillManager : MonoBehaviour
             if (skillECooldown == 0f || skillECooldown < skillSet.skill_E.curCooldown)
             {
                 skillECooldown += Time.deltaTime;
+                SetCooldownShadow(ui.EShadow, skillECooldown, skillSet.skill_E.curCooldown);
             }
             else if (skillECooldown > skillSet.skill_E.curCooldown)
             {   
@@ -169,6 +200,7 @@ public class TestSkillManager : MonoBehaviour
             if (skillRCooldown == 0f || skillRCooldown < skillSet.skill_R.curCooldown)
             {
                 skillRCooldown += Time.deltaTime;
+                SetCooldownShadow(ui.RShadow, skillRCooldown, skillSet.skill_R.curCooldown);
             }
             else if (skillRCooldown > skillSet.skill_R.curCooldown)
             {
@@ -178,17 +210,22 @@ public class TestSkillManager : MonoBehaviour
         SkillLevelUp();
     }
 
+    private void SetCooldownShadow(Image shadow, float curCooldown, float maxCooldown)
+    {
+        float ratio = Mathf.Clamp01(curCooldown / maxCooldown);
+        shadow.fillAmount = 1f - ratio;
+    }
+
     /// <summary>
     /// 스킬 레벨업을 관리하는 메서드
     /// </summary>
     public void SkillLevelUp()
     {
-        // 스킬 가중치를 설정해서 가중치에 따라 스킬 레벨을 올리고 못 올리고를 결정할 수 있게 해야함
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.Q))
         {
             int curLevel = skillSet.skill_Q.skillLevel.Value;
 
-            if (skillPoint <= 0)
+            if (skillPoint.Value <= 0)
             {
                 Debug.Log("스킬포인트가 부족합니다.");
                 return;
@@ -207,13 +244,13 @@ public class TestSkillManager : MonoBehaviour
             }
 
             skillSet.skill_Q.skillLevel.Value++;
-            skillPoint--;
+            skillPoint.Value--;
         }
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.W))
         {
             int curLevel = skillSet.skill_W.skillLevel.Value;
 
-            if (skillPoint < 1)
+            if (skillPoint.Value < 1)
             {
                 Debug.Log("스킬포인트가 부족합니다.");
                 return;
@@ -232,13 +269,13 @@ public class TestSkillManager : MonoBehaviour
             }
 
             skillSet.skill_W.skillLevel.Value++;
-            skillPoint--;
+            skillPoint.Value--;
         }
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.E))
         {
             int curLevel = skillSet.skill_E.skillLevel.Value;
 
-            if (skillPoint < 1)
+            if (skillPoint.Value < 1)
             {
                 Debug.Log("스킬포인트가 부족합니다.");
                 return;
@@ -257,13 +294,13 @@ public class TestSkillManager : MonoBehaviour
             }
 
             skillSet.skill_E.skillLevel.Value++;
-            skillPoint--;
+            skillPoint.Value--;
         }
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.R))
         {
             int curLevel = skillSet.skill_R.skillLevel.Value;
 
-            if (skillPoint < 1)
+            if (skillPoint.Value < 1)
             {
                 Debug.Log("스킬포인트가 부족합니다.");
                 return;
@@ -292,7 +329,72 @@ public class TestSkillManager : MonoBehaviour
             }
 
             skillSet.skill_R.skillLevel.Value++;
-            skillPoint--;
+            skillPoint.Value--;
+        }
+    }
+
+    public void RefreshSkillButton()
+    {
+        JudgeSkillLevelUpable();
+
+        bool hasSkillPoint = skillPoint.Value > 0;
+
+        ui.QLevelUpButton.gameObject.SetActive(isQUpable);
+        ui.WLevelUpButton.gameObject.SetActive(isWUpable);
+        ui.ELevelUpButton.gameObject.SetActive(isEUpable);
+        ui.RLevelUpButton.gameObject.SetActive(isRUpable);
+    }
+
+    //레벨업을 했을 때 스킬 레벨을 올릴 수 있는지 없는지 전달해주는 메서드
+    public void JudgeSkillLevelUpable()
+    {
+        int qLevel = skillSet.skill_Q.skillLevel.Value;
+        int wLevel = skillSet.skill_W.skillLevel.Value;
+        int eLevel = skillSet.skill_E.skillLevel.Value;
+        int rLevel = skillSet.skill_R.skillLevel.Value;
+
+        if (controller.model.Level.Value > qLevel * 2)
+        {
+            isQUpable = true;
+        }
+        else
+        {
+            isQUpable = false;
+        }
+
+        if (controller.model.Level.Value > wLevel * 2)
+        {
+            isWUpable = true;
+        }
+        else
+        {
+            isWUpable = false;
+        }
+
+        if (controller.model.Level.Value > eLevel * 2)
+        {
+            isEUpable = true;
+        }
+        else
+        {
+            isEUpable = false;
+        }
+
+        if (controller.model.Level.Value < 6)
+        {
+            isRUpable = false;
+        }
+        else if (controller.model.Level.Value < 11 && rLevel >= 1)
+        {
+            isRUpable = false;
+        }
+        else if (controller.model.Level.Value < 16 && rLevel >= 2)
+        {
+            isRUpable = false;
+        }
+        else
+        {
+            isRUpable = true;
         }
     }
 }

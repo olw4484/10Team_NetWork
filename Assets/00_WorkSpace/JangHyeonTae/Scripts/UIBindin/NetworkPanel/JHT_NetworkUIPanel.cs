@@ -16,7 +16,6 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
     private GameObject createRoomPanel => GetUI("CreateRoomPanel");
     private GameObject roomPanelItem => GetUI("RoomPanelItemParent");
     private Button createLobbyButton => GetUI<Button>("CreateLobbyButton");
-    private Button leaveLobbyButton => GetUI<Button>("LeaveLobbyButton");
     private Button createRoomButton => GetUI<Button>("CreateRoomButton");
     private Button secretButton => GetUI<Button>("SecretButton");
     private Button backButton => GetUI<Button>("BackButton");
@@ -124,7 +123,6 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
             createRoomPanel.SetActive(true);
             roomPanelItem.SetActive(false);
             createLobbyButton.interactable = false;
-            leaveLobbyButton.interactable = false;
         };
 
         GetEvent("SecretButton").Click += data =>
@@ -154,7 +152,6 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
             roomPanel.SetActive(true);
             createLobbyButton.interactable = true;
             createRoomButton.interactable = true;
-            leaveLobbyButton.interactable = true;
             lobbyPanel.SetActive(false);
         };
 
@@ -164,7 +161,6 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
                 return;
 
             createLobbyButton.interactable = true;
-            leaveLobbyButton.interactable = true;
             roomPanelItem.SetActive(true);
             createRoomPanel.SetActive(false);
         };
@@ -215,35 +211,36 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
 
         GetEvent("CharacterPanel1").Enter += data =>
         {
-            GetUI($"DescPopUp1").SetActive(true);
-            GetUI<JHT_DescPopUp>("DescPopUp1").Init(networkManager.characters[0].desc);
+            GetUI("DescPopUp1").SetActive(true);
+
+            GetUI("DescText1").GetComponent<TextMeshProUGUI>().text = networkManager.characters[0].desc;
         };
 
         GetEvent("CharacterPanel1").Exit += data =>
         {
-            GetUI($"DescPopUp1").SetActive(false);
+            GetUI("DescPopUp1").SetActive(false);
         };
 
         GetEvent("CharacterPanel2").Enter += data =>
         {
-            GetUI($"DescPopUp2").SetActive(true);
-            GetUI<JHT_DescPopUp>("DescPopUp2").Init(networkManager.characters[1].desc);
+            GetUI("DescPopUp2").SetActive(true);
+            GetUI("DescText2").GetComponent<TextMeshProUGUI>().text = networkManager.characters[1].desc;
         };
 
         GetEvent("CharacterPanel2").Exit += data =>
         {
-            GetUI($"DescPopUp2").SetActive(false);
+            GetUI("DescPopUp2").SetActive(false);
         };
 
         GetEvent("CharacterPanel3").Enter += data =>
         {
-            GetUI($"DescPopUp3").SetActive(true);
-            GetUI<JHT_DescPopUp>("DescPopUp3").Init(networkManager.characters[2].desc);
+            GetUI("DescPopUp3").SetActive(true);
+            GetUI("DescText3").GetComponent<TextMeshProUGUI>().text = networkManager.characters[2].desc;
         };
 
         GetEvent("CharacterPanel3").Exit += data =>
         {
-            GetUI($"DescPopUp3").SetActive(false);
+            GetUI("DescPopUp3").SetActive(false);
         };
         #endregion
     }
