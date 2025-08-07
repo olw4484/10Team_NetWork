@@ -15,6 +15,7 @@ public class HeroController : MonoBehaviour, IDamageable
 
     [SerializeField] private int heroType;
     private bool isInCombat;
+    private bool isDead = false;
     private float atkDelay;
     private float genTime = 1f;
 
@@ -86,6 +87,8 @@ public class HeroController : MonoBehaviour, IDamageable
         {
             genTime -= Time.deltaTime;
         }
+
+        HandleAnimation();
 
         // Test용 코드들
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -271,6 +274,7 @@ public class HeroController : MonoBehaviour, IDamageable
     public void Dead()
     {
         gameObject.SetActive(false);
+        isDead = true;
 
         if (pv.IsMine)
         {
@@ -284,7 +288,31 @@ public class HeroController : MonoBehaviour, IDamageable
         transform.position = spawnPos;
         gameObject.SetActive(true);
         model.CurHP.Value = hp;
+        isDead = false;
 
         Debug.Log($"리스폰 완료. 위치: {spawnPos}, HP: {hp}");
+    }
+
+    private void HandleAnimation()
+    {
+        if (isDead)
+        {
+            view.PlayAnimation(DEAD_HASH);
+            return;
+        }
+
+        if (mov.isMove)
+        {
+            view.PlayAnimation(MOVE_HASH);
+            return;
+        }
+
+        if (mov.isAttacking)
+        {
+            view.PlayAnimation(ATTACK_HASH);
+            return;
+        }
+
+        view.PlayAnimation(IDLE_HASH);
     }
 }

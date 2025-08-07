@@ -15,7 +15,7 @@ public class HeroMovement : MonoBehaviour
     private PhotonView pv;
 
     public bool isMove;
-    private bool isAttacking = false;
+    public bool isAttacking = false;
     [SerializeField] private float atkCooldown;
     private Vector3 destination;
 
