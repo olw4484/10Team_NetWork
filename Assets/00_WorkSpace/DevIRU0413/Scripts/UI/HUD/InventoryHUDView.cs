@@ -25,10 +25,12 @@ public class InventoryHUDView : YSJ_HUDBaseUI
     {
         for (int i = 0; i < slots.Count; i++)
         {
-            if (i < items.Count)
-                slots[i].SetItem(items[i]);
-            else
+
+            if (i >= items.Count || items[i] == null)
                 slots[i].ClearSlot();
+            else 
+                slots[i].SetItem(items[i]);
+            
         }
     }
 
