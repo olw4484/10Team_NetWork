@@ -16,6 +16,7 @@ public class HeroMovement : MonoBehaviour
 
     public bool isMove;
     public bool isAttacking = false;
+    public bool isAttack = false;
     [SerializeField] private float atkCooldown;
     private Vector3 destination;
 
@@ -52,6 +53,7 @@ public class HeroMovement : MonoBehaviour
 
     public void HandleRightClick(float moveSpd, int damage, float atkRange, float atkDelay)
     {
+        isAttack = false;
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
@@ -153,12 +155,15 @@ public class HeroMovement : MonoBehaviour
     {
         // 멈춤 동기화를 위해 RPC 실행
         pv.RPC(nameof(RPC_StopAndFace), RpcTarget.All, target.position);
+
+        isMove = false;
+        isAttack = true;
         
         // 타겟이 갖고 있는 TakeDamage RPC 실행
         PhotonView targetPv = target.gameObject.GetComponent<PhotonView>();
         if (targetPv != null)
         {
-            targetPv.RPC("TakeDamage", RpcTarget.All, damage, this.gameObject); // TODO 데미지 줄 때 내가 줬다고 전달해줘야 함
+            targetPv.RPC("RPC_TakeDamage", RpcTarget.All, damage, pv.ViewID); // TODO 데미지 줄 때 내가 줬다고 전달해줘야 함
         }
         Debug.Log("Hero1 기본 공격");
     }

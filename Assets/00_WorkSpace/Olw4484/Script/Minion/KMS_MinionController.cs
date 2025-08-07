@@ -1,4 +1,4 @@
-using Photon.Pun;
+Ôªøusing Photon.Pun;
 using System.Collections;
 using System.Resources;
 using TMPro;
@@ -7,7 +7,7 @@ using UnityEngine.AI;
 using static KMS_ISelectable;
 using static KMS_ResourceSystem;
 
-public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
+public class KMS_MinionController : MonoBehaviour, KMS_ISelectable
 {
     [Header("Settings")]
     public float moveSpeed;
@@ -27,14 +27,14 @@ public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     private Vector3 targetPosition;
     private float attackTimer = 0f;
 
-    // ¿Ãµø ±◊∑Ï
+    // Ïù¥Îèô Í∑∏Î£π
     public KMS_WaypointGroup waypointGroup;
     private int currentWaypointIndex = 0;
     
     private Coroutine moveCoroutine;
 
 
-    // ªÛ≈¬
+    // ÏÉÅÌÉú
     private bool isDead = false;
     private bool isAttackMove = false;
     private bool isMovingToPosition = false;
@@ -77,7 +77,7 @@ public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
 
         if (isMovingToPosition)
         {
-            // agent.pathPending: ∞Ê∑Œ ∞ËªÍ ¡ﬂ¿Ã∏È true
+            // agent.pathPending: Í≤ΩÎ°ú Í≥ÑÏÇ∞ Ï§ëÏù¥Î©¥ true
             if (!agent.pathPending && agent.remainingDistance < 0.1f)
             {
                 isMovingToPosition = false;
@@ -85,7 +85,7 @@ public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
             }
         }
 
-        // ∞¯∞›¿Ãµø
+        // Í≥µÍ≤©Ïù¥Îèô
         if (isAttackMove)
         {
             var enemy = FindClosestEnemyInRange();
@@ -96,7 +96,7 @@ public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
             }
             else
             {
-                // ∏Ò¿˚¡ˆ±Ó¡ˆ ¿Ãµø
+                // Î™©Ï†ÅÏßÄÍπåÏßÄ Ïù¥Îèô
                 if (agent.destination != attackMoveTarget)
                     agent.SetDestination(attackMoveTarget);
 
@@ -109,7 +109,7 @@ public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
             return;
         }
 
-        // ≈∏∞Ÿ ∞¯∞›
+        // ÌÉÄÍ≤ü Í≥µÍ≤©
         if (target != null)
         {
             float distance = Vector3.Distance(transform.position, target.position);
@@ -154,7 +154,7 @@ public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
             {
                 agent.isStopped = false;
                 agent.SetDestination(firstPoint.position);
-                currentWaypointIndex = 1; // ¥Ÿ¿Ω ¿Ãµø ∂ß 1π¯ ¿Œµ¶Ω∫∫Œ≈Õ
+                currentWaypointIndex = 1; // Îã§Ïùå Ïù¥Îèô Îïå 1Î≤à Ïù∏Îç±Ïä§Î∂ÄÌÑ∞
             }
         }
     }
@@ -176,7 +176,7 @@ public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
 
     private Transform FindClosestEnemyInRange()
     {
-        float searchRadius = attackRange * 1.5f; // « ø‰ø°µ˚∂Û ¡∂¿˝
+        float searchRadius = attackRange * 1.5f; // ÌïÑÏöîÏóêÎî∞Îùº Ï°∞Ï†à
         Collider[] colliders = Physics.OverlapSphere(transform.position, searchRadius, enemyLayerMask);
         float minDist = float.MaxValue;
         Transform closest = null;
@@ -185,7 +185,7 @@ public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         {
             var minion = col.GetComponent<KMS_MinionController>();
             if (minion != null && minion.teamId == this.teamId)
-                continue; // æ∆±∫¿Ã∏È ∆–Ω∫
+                continue; // ÏïÑÍµ∞Ïù¥Î©¥ Ìå®Ïä§
 
             float dist = Vector3.Distance(transform.position, col.transform.position);
             if (dist < minDist)
@@ -231,14 +231,14 @@ public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
 
 
     #region Attack
-    // ∞¯∞› Ω√µµ
+    // Í≥µÍ≤© ÏãúÎèÑ
     private void TryAttack()
     {
-        if (!IsManual) // ¿⁄µø πÃ¥œæ¿∫ π›µÂΩ√ ∏∂Ω∫≈Õ∏∏ Ω««‡
+        if (!IsManual) // ÏûêÎèô ÎØ∏ÎãàÏñ∏ÏùÄ Î∞òÎìúÏãú ÎßàÏä§ÌÑ∞Îßå Ïã§Ìñâ
         {
             if (!PhotonNetwork.IsMasterClient) return;
         }
-        else // ºˆµø/«√∑π¿ÃæÓ πÃ¥œæ¿∫ ∫ª¿Œ∏∏ Ω««‡
+        else // ÏàòÎèô/ÌîåÎ†àÏù¥Ïñ¥ ÎØ∏ÎãàÏñ∏ÏùÄ Î≥∏Ïù∏Îßå Ïã§Ìñâ
         {
             if (!photonView.IsMine) return;
         }
@@ -251,14 +251,14 @@ public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
         }
     }
 
-    // µ•πÃ¡ˆ ¿˚øÎ // æ÷¥œ∏ﬁ¿Ãº« ≈¨∏≥ Attack æ»ø° ¿Ã∫•∆Æ √ﬂ∞°: ApplyDamage
+    // Îç∞ÎØ∏ÏßÄ Ï†ÅÏö© // Ïï†ÎãàÎ©îÏù¥ÏÖò ÌÅ¥Î¶Ω Attack ÏïàÏóê Ïù¥Î≤§Ìä∏ Ï∂îÍ∞Ä: ApplyDamage
     private void ApplyDamage()
     {
         if (target != null)
         {
             var damageable = target.GetComponent<IDamageable>();
-            if (damageable != null)
-                damageable.TakeDamage(attackPower, gameObject);
+            //if (damageable != null)
+                //damageable.TakeDamage(attackPower, gameObject);
         }
     }
 
@@ -288,7 +288,7 @@ public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
             KMS_EventManager.Instance.MinionKillConfirmed(killer, this);
         }
 
-        // ªË¡¶ Ω√ µø±‚»≠
+        // ÏÇ≠Ï†ú Ïãú ÎèôÍ∏∞Ìôî
         if (PhotonNetwork.InRoom)
             PhotonNetwork.Destroy(gameObject);
         else
@@ -355,7 +355,7 @@ public class KMS_MinionController : MonoBehaviour, IDamageable , KMS_ISelectable
     {
         if (isDead) return;
         isDead = true;
-        // ªÁ∏¡ ø¨√‚, ∫∏ªÛ, ªË¡¶ µÓ
+        // ÏÇ¨Îßù Ïó∞Ï∂ú, Î≥¥ÏÉÅ, ÏÇ≠Ï†ú Îì±
         // ...
         if (PhotonNetwork.InRoom)
             PhotonNetwork.Destroy(gameObject);

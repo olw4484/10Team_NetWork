@@ -69,6 +69,7 @@ MonoBehaviour:
   - RequestRespawn
   - RPC_Respawn
   - spawn
+  - PlayAnimation
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

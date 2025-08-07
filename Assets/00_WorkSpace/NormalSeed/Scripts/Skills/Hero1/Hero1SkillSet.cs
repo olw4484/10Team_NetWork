@@ -12,8 +12,15 @@ public class Hero1SkillSet : SkillSet
     //public SkillSO skill_E;
     //public SkillSO skill_R;
 
-    // protected Camera mainCam;
+    //public bool isQExecuted = false;
+    //public bool isWExecuted = false;
+    //public bool isEExecuted = false;
+    //public bool isRExecuted = false;
+
+    //protected Camera mainCam;
     //protected HeroController hero;
+    //protected NavMeshAgent agent;
+    //protected PhotonView pv;
 
     private WaitForSeconds distCheck = new WaitForSeconds(0.1f);
 
@@ -59,7 +66,7 @@ public class Hero1SkillSet : SkillSet
                 if (angle <= 30)
                 {
                     // 일단 데미지 계산식 없이 깡 스킬 데미지 부여
-                    view.RPC("TakeDamage", RpcTarget.All, skill_Q.curDamage, hero.gameObject);
+                    view.RPC("RPC_TakeDamage", RpcTarget.All, skill_Q.curDamage, pv.ViewID);
                 }
             }
             Debug.Log("BladeWind");
@@ -142,7 +149,7 @@ public class Hero1SkillSet : SkillSet
                     }
 
                     // 영웅과 미니언 모두에게 데미지를 줄 수 있어야 함
-                    view.RPC("TakeDamage", RpcTarget.All, skill_E.curDamage, hero.gameObject);
+                    view.RPC("RPC_TakeDamage", RpcTarget.All, skill_E.curDamage, pv.ViewID);
                     Debug.Log("Bash Hit");
                 }
 
