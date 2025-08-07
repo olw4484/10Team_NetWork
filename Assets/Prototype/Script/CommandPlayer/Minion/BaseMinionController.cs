@@ -354,6 +354,18 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         if (currentHP <= 0)
             Die(attacker);
     }
+
+    public void OnAttackAnimationEvent()
+    {
+        if (!PhotonNetwork.IsMasterClient || attackTarget == null || isDead) return;
+
+        var targetPV = attackTarget.GetComponent<PhotonView>();
+        if (targetPV == null) return;
+
+        photonView.RPC(nameof(RPC_DealDamage), RpcTarget.All, targetPV.ViewID, attackPower);
+    }
+
+
     protected virtual void Die(GameObject killer)
     {
         if (isDead) return;
@@ -429,19 +441,24 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
             agent.SetDestination(destination);
         }
     }
-
     [PunRPC]
     public void RPC_TakeDamage(int damage, int attackerViewID)
     {
-        if (isDead) return;
-        currentHP -= damage;
-        if (currentHP <= 0)
+        GameObject killer = null;
+        var attackerPV = PhotonView.Find(attackerViewID);
+        if (attackerPV != null)
+            killer = attackerPV.gameObject;
+        TakeDamage(damage, killer);
+    }
+
+    [PunRPC]
+    public void RPC_DealDamage(int targetViewID, int dmg)
+    {
+        var targetPV = PhotonView.Find(targetViewID);
+        if (targetPV != null)
         {
-            GameObject killer = null;
-            var attackerPV = PhotonView.Find(attackerViewID);
-            if (attackerPV != null)
-                killer = attackerPV.gameObject;
-            Die(killer);
+            var damageable = targetPV.GetComponent<IDamageable>();
+            damageable?.TakeDamage(dmg, this.gameObject);
         }
     }
 
