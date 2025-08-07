@@ -154,11 +154,11 @@ public class HeroMovement : MonoBehaviour
         // 멈춤 동기화를 위해 RPC 실행
         pv.RPC(nameof(RPC_StopAndFace), RpcTarget.All, target.position);
         
-        // 타겟이 갖고 있는 HeroControlelr 안의 TakeDamage RPC 실행
+        // 타겟이 갖고 있는 TakeDamage RPC 실행
         PhotonView targetPv = target.gameObject.GetComponent<PhotonView>();
         if (targetPv != null)
         {
-            targetPv.RPC("TakeDamage", RpcTarget.All, damage, default); // TODO 데미지 줄 때 내가 줬다고 전달해줘야 함
+            targetPv.RPC("TakeDamage", RpcTarget.All, damage, this.gameObject); // TODO 데미지 줄 때 내가 줬다고 전달해줘야 함
         }
         Debug.Log("Hero1 기본 공격");
     }
