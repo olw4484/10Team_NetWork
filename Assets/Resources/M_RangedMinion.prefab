@@ -115,10 +115,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 0
   attackRange: 0
+  detectRange: 0
   attackCooldown: 0
   attackPower: 0
   maxHP: 0
-  data: {fileID: 11400000, guid: 7459064494ae70545a3392c2c68a0c79, type: 2}
+  data: {fileID: 11400000, guid: 4e22bca9680632b45b1d1738de75cd75, type: 2}
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 23068672
   photonView: {fileID: 2797760396086015769}
   teamId: 0
   waypointStoppingDistance: 0.8
@@ -219,10 +223,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9563318, guid: 04c79b5f6e9ebab48af48fdcf7b6d570, type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: b9d7cb7d542a24b458d7a6a9cdeea5dc, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

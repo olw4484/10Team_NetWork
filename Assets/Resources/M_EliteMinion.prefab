@@ -115,10 +115,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 0
   attackRange: 0
+  detectRange: 0
   attackCooldown: 0
   attackPower: 0
   maxHP: 0
   data: {fileID: 11400000, guid: 2eec27dedff06084c975a8bc5745ddd1, type: 2}
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 23068672
   photonView: {fileID: 8084535483858672487}
   teamId: 0
   waypointStoppingDistance: 0.8
