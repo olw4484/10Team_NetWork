@@ -23,9 +23,19 @@ public class HeroView : MonoBehaviour
         {
             animator.Rebind();
             animator.Update(0f);
-            animator.Play(hash, 0, 0f);
+            animator.Play(hash, 0, 0);
         }
     }
+
+    [PunRPC]
+    public void StopAnimation(int idleHash)
+    {
+        if (animator != null)
+        {
+            animator.Play(idleHash, 0, 0);
+        }
+    }
+
 
     /// <summary>
     /// HP 바 UI 최신화 메서드

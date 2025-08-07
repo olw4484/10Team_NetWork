@@ -29,6 +29,9 @@ public class Hero1SkillSet : SkillSet
     {
         isQExecuted = true;
         hero.mov.InterruptMovement();
+        hero.isUsingSkill = true;
+        pv.RPC("PlayAnimation", RpcTarget.All, hero.Q_HASH);
+
         // 마우스 방향에 부채꼴로 공격하는 스킬
         Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
         Vector3 attackDir;
@@ -71,7 +74,14 @@ public class Hero1SkillSet : SkillSet
                 }
             }
             Debug.Log("BladeWind");
+            StartCoroutine(BladeWindRoutine());
         }
+    }
+
+    private IEnumerator BladeWindRoutine()
+    {
+        yield return new WaitForSeconds(0.7f);
+        hero.isUsingSkill = false;
     }
     #endregion
 
@@ -98,6 +108,8 @@ public class Hero1SkillSet : SkillSet
     {
         isEExecuted = true;
         hero.mov.InterruptMovement();
+        hero.isUsingSkill = true;
+        pv.RPC(nameof(HeroView.PlayAnimation), RpcTarget.All, hero.E_HASH);
 
         Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
         RaycastHit hit;
@@ -168,6 +180,7 @@ public class Hero1SkillSet : SkillSet
 
             if (hitDetected)
             {
+                hero.isUsingSkill = false;
                 dashSpeed = 0f;
 
                 agent.enabled = true;
@@ -179,6 +192,8 @@ public class Hero1SkillSet : SkillSet
             timer += Time.deltaTime;
             yield return null;
         }
+
+        hero.isUsingSkill = false;
 
         agent.enabled = true;
         agent.isStopped = false;

@@ -14,7 +14,7 @@ public class HeroController : MonoBehaviour, IDamageable
     public PhotonView pv;
 
     [SerializeField] private int heroType;
-    private bool isInCombat;
+    public bool isUsingSkill = false;
     private bool isDead = false;
     private float atkDelay;
     private float genTime = 1f;
@@ -309,6 +309,8 @@ public class HeroController : MonoBehaviour, IDamageable
     {
         int newAnimationHash;
 
+        if (isUsingSkill) return;
+
         if (isDead)
         {
             newAnimationHash = DEAD_HASH;
@@ -320,22 +322,6 @@ public class HeroController : MonoBehaviour, IDamageable
         else if (mov.isAttack)
         {
             newAnimationHash = ATTACK_HASH;
-        }
-        else if (TestSkillManager.Instance.skillSet.isQExecuted)
-        {
-            newAnimationHash = Q_HASH;
-        }
-        else if (TestSkillManager.Instance.skillSet.isWExecuted)
-        {
-            newAnimationHash = W_HASH;
-        }
-        else if (TestSkillManager.Instance.skillSet.isEExecuted)
-        {
-            newAnimationHash = E_HASH;
-        }
-        else if (TestSkillManager.Instance.skillSet.isRExecuted)
-        {
-            newAnimationHash = R_HASH;
         }
         else
         {

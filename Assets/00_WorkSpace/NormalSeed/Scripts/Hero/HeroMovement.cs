@@ -16,6 +16,7 @@ public class HeroMovement : MonoBehaviour
     public bool isAttack = false;
     [SerializeField] private float atkCooldown;
     private Vector3 destination;
+    private float attackLockTime = 0.6f;
 
     private Coroutine attackCoroutine;
     private WaitForSeconds distCheck = new WaitForSeconds(0.1f);
@@ -50,7 +51,13 @@ public class HeroMovement : MonoBehaviour
 
     public void HandleRightClick(float moveSpd, int damage, float atkRange, float atkDelay)
     {
+        if (isAttack) return;
+
         isAttack = false;
+        HeroController controller = this.gameObject.GetComponent<HeroController>();
+
+        if (controller.isUsingSkill) return;
+
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
@@ -142,6 +149,17 @@ public class HeroMovement : MonoBehaviour
         attackCoroutine = null;
     }
 
+    private IEnumerator AttackLockRoutine(float lockTime)
+    {
+        float timer = 0f;
+        while (timer < lockTime)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        isAttack = false;
+    }
+
     /// <summary>
     /// 실제 공격 실행 메서드
     /// </summary>
@@ -163,6 +181,8 @@ public class HeroMovement : MonoBehaviour
             targetPv.RPC("RPC_TakeDamage", RpcTarget.All, damage, pv.ViewID); // TODO 데미지 줄 때 내가 줬다고 전달해줘야 함
         }
         Debug.Log("Hero1 기본 공격");
+
+        StartCoroutine(AttackLockRoutine(attackLockTime));
     }
 
     /// <summary>
