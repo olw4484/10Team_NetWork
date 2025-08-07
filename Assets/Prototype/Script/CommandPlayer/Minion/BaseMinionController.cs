@@ -34,6 +34,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     private float searchInterval = 0.2f;
     private float searchTimer = 0f;
     private Quaternion lastSentRotation;
+    protected Animator animator;
 
     [Header("TeamColor")]
     [SerializeField] private GameObject redBody;
@@ -152,6 +153,10 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
                 agent.isStopped = true;
             }
         }
+
+
+        bool isMoving = agent.velocity.magnitude > 0.1f && !agent.isStopped;
+        animator.SetBool("IsMoving", isMoving);
     }
 
     /// <summary>
@@ -159,10 +164,17 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     /// </summary>
     protected virtual void HandleAttackTarget()
     {
+        Debug.Log($"[{photonView.name}] HandleAttackTarget() called!");
+        if (attackTarget == null)
+        {
+            Debug.Log("attackTarget is null!");
+            return;
+        }
         float distance = Vector3.Distance(transform.position, attackTarget.position);
-        Debug.Log($"[AttackCheck] 내 TeamId={teamId}, 타겟 TeamId={attackTarget.GetComponent<BaseMinionController>()?.teamId}, 거리={distance}, 어택레인지={attackRange}");
+        Debug.Log($"[AttackCheck] distance={distance}, attackRange={attackRange}");
         if (distance <= attackRange)
         {
+            Debug.Log($"In attack range, [{photonView.name}]calling TryAttack()");
             agent.isStopped = true;
             agent.ResetPath();
             TryAttack();

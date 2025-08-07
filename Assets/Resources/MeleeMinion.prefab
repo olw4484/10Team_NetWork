@@ -123,7 +123,7 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 717a7aabd646f254d9c6b6d83176784c, type: 2}
   targetMask:
     serializedVersion: 2
-    m_Bits: 16777216
+    m_Bits: 20971520
   photonView: {fileID: 7609844220020206891}
   teamId: 0
   waypointStoppingDistance: 0.5

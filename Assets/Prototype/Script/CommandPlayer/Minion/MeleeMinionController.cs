@@ -16,8 +16,12 @@ public class MeleeMinionController : BaseMinionController
 
     protected override void TryAttack()
     {
-        if (!PhotonNetwork.IsMasterClient || attackTimer < attackCooldown || attackTarget == null || isDead) return;
-
+        Debug.Log("TryAttack() called!");
+        if (!PhotonNetwork.IsMasterClient || attackTimer < attackCooldown || attackTarget == null || isDead)
+        {
+            Debug.Log("TryAttack blocked by condition");
+            return;
+        }
         var targetPV = attackTarget.GetComponent<PhotonView>();
         if (targetPV == null)
         {
@@ -27,6 +31,7 @@ public class MeleeMinionController : BaseMinionController
 
         attackTimer = 0f;
         int targetViewID = targetPV.ViewID;
+        Debug.Log("TryAttack conditions passed, sending RPC_TryAttack!");
         photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID, attackPower);
     }
 
