@@ -378,6 +378,7 @@ MonoBehaviour:
   - {fileID: 471917352}
   - {fileID: 1507226706}
   - {fileID: 862841093}
+  _uiPrefabs: []
   _bgm: {fileID: 0}
 --- !u!4 &878890331
 Transform:

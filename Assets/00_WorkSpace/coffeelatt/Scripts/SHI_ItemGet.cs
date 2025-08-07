@@ -38,7 +38,8 @@ public class SHI_Itemget : MonoBehaviour
         if (added)
         {
             // 아이템 습득 후 비활성화 (또는 파괴)
-            Destroy(other.gameObject); // 아이템 오브젝트 제거
+            item.gameObject.SetActive(false); // 아이템 오브젝트 비활성화
+            //Destroy(other.gameObject); // 아이템 오브젝트 제거
             //item.gameObject.SetActive(false);
         }
     }
