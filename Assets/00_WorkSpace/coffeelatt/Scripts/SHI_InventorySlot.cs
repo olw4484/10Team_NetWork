@@ -27,7 +27,7 @@ public class SHI_InventorySlot : MonoBehaviour
 
         useButton.onClick.AddListener(OnUseButtonClicked);
         currentItem = GetComponent<SHI_ItemBase>();
-        useButton.interactable = inventoryManager.stat.CurHP.Value >= 0;
+        useButton.interactable = inventoryManager.stat.CurHP.Value > 0;
        
         
         
