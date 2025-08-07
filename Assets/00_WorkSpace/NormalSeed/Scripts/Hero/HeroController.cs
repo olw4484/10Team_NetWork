@@ -311,6 +311,7 @@ public class HeroController : MonoBehaviour, IDamageable
     private void HandleAnimation()
     {
         int newAnimationHash;
+        double sentTime = PhotonNetwork.Time;
 
         if (isUsingSkill) return;
 
@@ -334,7 +335,7 @@ public class HeroController : MonoBehaviour, IDamageable
         // 현재 애니메이션과 다를 때만 재생
         if (newAnimationHash != currentAnimationHash)
         {
-            pv.RPC("PlayAnimation", RpcTarget.All, newAnimationHash);
+            pv.RPC("PlayAnimation", RpcTarget.All, newAnimationHash, sentTime);
             currentAnimationHash = newAnimationHash;
         }
     }

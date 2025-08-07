@@ -65,6 +65,7 @@ public class HeroMovement : MonoBehaviour
             // 땅 클릭 시 이동
             if (hit.collider.CompareTag("Ground") || hit.collider.CompareTag("Obstacle"))
             {
+                CancleAttackRoutine();
                 isAttacking = false;
                 SetDestination(hit.point, moveSpd);
                 return;
@@ -116,7 +117,10 @@ public class HeroMovement : MonoBehaviour
     private IEnumerator HeroAttackRoutine(Transform target, IDamageable damagable, float atkRange, float atkDelay, int damage, float moveSpd)
     {
         Debug.Log("기본공격 코루틴 시작됨");
-        if (isAttacking) yield break;
+        if (isAttacking)
+        {
+            yield break;
+        }
 
         isAttacking = true;
 
@@ -146,6 +150,16 @@ public class HeroMovement : MonoBehaviour
         }
         isAttacking = false;
         attackCoroutine = null;
+    }
+
+    private void CancleAttackRoutine()
+    {
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+            attackCoroutine = null;
+            isAttacking = false;
+        }
     }
 
     private IEnumerator AttackLockRoutine(float lockTime)
@@ -254,6 +268,7 @@ public class HeroMovement : MonoBehaviour
         }
     }
 
+    [PunRPC]
     public void InterruptMovement()
     {
         if (attackCoroutine != null)
