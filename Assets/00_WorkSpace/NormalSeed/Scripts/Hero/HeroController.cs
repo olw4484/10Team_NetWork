@@ -90,8 +90,11 @@ public class HeroController : MonoBehaviour, IDamageable
         // Test용 코드들
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            model.CurHP.Value -= 10;
-            Debug.Log("현재 HP : " + model.CurHP.Value);
+            if (pv.IsMine)
+            {
+                pv.RPC("TakeDamage", RpcTarget.All, 100, default);
+                Debug.Log("현재 HP : " + model.CurHP.Value);
+            }
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
@@ -254,5 +257,34 @@ public class HeroController : MonoBehaviour, IDamageable
     {
         model.CurHP.Value -= amount;
         Debug.Log($"{amount}의 데미지를 입음. 현재 HP : {model.CurHP.Value}");
+
+        if (model.CurHP.Value <= 0)
+        {
+            if (pv.IsMine)
+            {
+                pv.RPC("Dead", RpcTarget.All);
+            }
+        }
+    }
+
+    [PunRPC]
+    public void Dead()
+    {
+        gameObject.SetActive(false);
+
+        if (pv.IsMine)
+        {
+            LGH_TestGameManager.Instance.RequestRespawn(this);
+        }
+    }
+
+    [PunRPC]
+    public void RPC_Respawn(Vector3 spawnPos, float hp)
+    {
+        transform.position = spawnPos;
+        gameObject.SetActive(true);
+        model.CurHP.Value = hp;
+
+        Debug.Log($"리스폰 완료. 위치: {spawnPos}, HP: {hp}");
     }
 }
