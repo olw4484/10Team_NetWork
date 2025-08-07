@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c14a3c5179b217419c072926ddff47c, type: 3}
   m_Name: HeroIndex0
   m_EditorClassIdentifier: 
-  <name>k__BackingField: Hero1
-  <icon>k__BackingField: {fileID: 21300000, guid: 936345f7fc3934efa8119a8700d904c7, type: 3}
-  <desc>k__BackingField: aaa
+  <name>k__BackingField: Warrior
+  <icon>k__BackingField: {fileID: 21300000, guid: e20f81ecd06479749882537119c196a9, type: 3}
+  <desc>k__BackingField: Warrior
