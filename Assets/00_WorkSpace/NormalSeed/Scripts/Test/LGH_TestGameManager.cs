@@ -25,7 +25,7 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks, IManager
     [SerializeField] private Transform redSpawnPoint;
     [SerializeField] private Transform blueSpawnPoint;
 
-    private float respawnDelay = 20f;
+    private float respawnDelay = 5f;
 
     private void Awake()
     {
@@ -172,10 +172,7 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks, IManager
         Transform spawnPoint = GetSpawnPointByTeam(team);
 
         // 위치 재설정 및 활성화
-        hero.transform.position = spawnPoint.position;
-        hero.gameObject.SetActive(true);
-        hero.model.CurHP.Value = hero.model.MaxHP;
-        Debug.Log("리스폰 완료. 팀 : " + team);
+        hero.pv.RPC("RPC_Respawn", RpcTarget.All, spawnPoint.position, hero.model.MaxHP);
     }
 
     private Transform GetSpawnPointByTeam(string team)

@@ -260,10 +260,14 @@ public class HeroController : MonoBehaviour, IDamageable
 
         if (model.CurHP.Value <= 0)
         {
-            Dead();
+            if (pv.IsMine)
+            {
+                pv.RPC("Dead", RpcTarget.All);
+            }
         }
     }
 
+    [PunRPC]
     public void Dead()
     {
         gameObject.SetActive(false);
@@ -272,5 +276,15 @@ public class HeroController : MonoBehaviour, IDamageable
         {
             LGH_TestGameManager.Instance.RequestRespawn(this);
         }
+    }
+
+    [PunRPC]
+    public void RPC_Respawn(Vector3 spawnPos, float hp)
+    {
+        transform.position = spawnPos;
+        gameObject.SetActive(true);
+        model.CurHP.Value = hp;
+
+        Debug.Log($"리스폰 완료. 위치: {spawnPos}, HP: {hp}");
     }
 }
