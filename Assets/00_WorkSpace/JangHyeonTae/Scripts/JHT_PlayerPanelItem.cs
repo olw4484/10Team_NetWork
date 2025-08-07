@@ -18,7 +18,7 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
 
 
     private bool isReady;
-    private int curCharacterIndex;
+    public int curCharacterIndex { get; set; }
 
     public JHT_NetworkUIPanel networkUICanvas;
     private string curMyCharacter;
@@ -37,6 +37,7 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
         networkUICanvas = FindObjectOfType<JHT_NetworkUIPanel>();
         isReady = false;
         SetReadyProperty();
+        networkUICanvas.OnChangedClick -= SetCharacter;
         networkUICanvas.OnChangedClick += SetCharacter;
 
         readyButton.onClick.RemoveListener(ReadyButtonClick);
@@ -57,7 +58,7 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
         {
             return;
         }
-
+        Debug.Log($"PlayerPanelItem - {curCharacterIndex}");
         curCharacterIndex = networkUICanvas.curIndex;
         SetCharacterProperty();
     }
@@ -65,6 +66,16 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
     public void SetLeaveCharacter()
     {
         curCharacterIndex = -1;
+        SetCharacterProperty();
+    }
+
+    public void SetChangeTeamCharacter(Player player)
+    {
+        if ((int)player.CustomProperties["HeroIndex"] == -1)
+        {
+            return;
+        }
+
         SetCharacterProperty();
     }
 
@@ -79,7 +90,6 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
     {
         if (networkUICanvas == null)
         {
-            Debug.LogWarning("networkUICanvas Findobject로 못찾음");
             networkUICanvas = FindObjectOfType<JHT_NetworkUIPanel>();
             if (networkUICanvas == null)
             {

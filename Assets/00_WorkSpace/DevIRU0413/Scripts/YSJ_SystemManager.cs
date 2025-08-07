@@ -175,7 +175,7 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
         _iLoadingUI = loadingUIGO.GetComponent<ILoadingUI>();
         if (_iLoadingUI == null) return;
         _iLoadingUI.Init();
-        // _iLoadingUI.Hide();
+        _iLoadingUI.Hide();
     }
 
     private void TestSceneLoad()
