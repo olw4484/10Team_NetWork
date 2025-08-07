@@ -28,6 +28,7 @@ public class Hero1SkillSet : SkillSet
     public override void UseQ()
     {
         isQExecuted = true;
+        hero.mov.InterruptMovement();
         // 마우스 방향에 부채꼴로 공격하는 스킬
         Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
         Vector3 attackDir;
@@ -74,6 +75,7 @@ public class Hero1SkillSet : SkillSet
     }
     #endregion
 
+    #region UseW
     public override void UseW()
     {
         isWExecuted = true;
@@ -89,11 +91,13 @@ public class Hero1SkillSet : SkillSet
         hero.model.Def = hero.model.Def - hero.model.Atk * 0.2f;
         Debug.Log($"방어력 돌아감. 방어력 : {hero.model.Def}");
     }
+    #endregion
 
+    #region UseE
     public override void UseE()
     {
         isEExecuted = true;
-        hero.mov.isMove = false;
+        hero.mov.InterruptMovement();
 
         Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
         RaycastHit hit;
@@ -187,7 +191,9 @@ public class Hero1SkillSet : SkillSet
     {
         StartCoroutine(BashRoutine(dashDir));
     }
+    #endregion
 
+    #region UseR
     public override void UseR()
     {
         // 사정거리 안의 Hero를 선택해서 공격 가능, 적에게 큰 데미지를 주고 이동속도를 1초동안 감소시키는 스킬
@@ -281,4 +287,5 @@ public class Hero1SkillSet : SkillSet
             agent.ResetPath();
         }   
     }
+    #endregion
 }

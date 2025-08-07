@@ -1,12 +1,9 @@
 ﻿using Photon.Pun;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Data;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.TextCore.Text;
-using static UnityEngine.GraphicsBuffer;
+
 
 public class HeroMovement : MonoBehaviour
 {
@@ -237,4 +234,22 @@ public class HeroMovement : MonoBehaviour
             transform.forward = dir;
         }
     }
+
+    public void InterruptMovement()
+    {
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+            attackCoroutine = null;
+        }
+
+        isAttacking = false;
+        isAttack = false;
+        isMove = false;
+
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.ResetPath();
+    }
+
 }

@@ -321,6 +321,22 @@ public class HeroController : MonoBehaviour, IDamageable
         {
             newAnimationHash = ATTACK_HASH;
         }
+        else if (TestSkillManager.Instance.skillSet.isQExecuted)
+        {
+            newAnimationHash = Q_HASH;
+        }
+        else if (TestSkillManager.Instance.skillSet.isWExecuted)
+        {
+            newAnimationHash = W_HASH;
+        }
+        else if (TestSkillManager.Instance.skillSet.isEExecuted)
+        {
+            newAnimationHash = E_HASH;
+        }
+        else if (TestSkillManager.Instance.skillSet.isRExecuted)
+        {
+            newAnimationHash = R_HASH;
+        }
         else
         {
             newAnimationHash = IDLE_HASH;

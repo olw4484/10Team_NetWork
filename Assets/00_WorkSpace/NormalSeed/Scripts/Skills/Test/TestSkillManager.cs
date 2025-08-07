@@ -7,7 +7,7 @@ public class TestSkillManager : MonoBehaviour
 {
     [SerializeField] private GameObject hero;
     [SerializeField] private HeroController controller;
-    [SerializeField] private SkillSet skillSet;
+    [SerializeField] public SkillSet skillSet;
     [SerializeField] private SkillWindowUI ui;
     [SerializeField] private float skillQCooldown;
     [SerializeField] private float skillWCooldown;
@@ -141,6 +141,7 @@ public class TestSkillManager : MonoBehaviour
         {
             controller.model.CurMP.Value -= (int)skillSet.skill_Q.curMana;
             skillQCooldown = 0f;
+
             skillSet.isQExecuted = false;
         }
 
@@ -148,6 +149,7 @@ public class TestSkillManager : MonoBehaviour
         {
             controller.model.CurMP.Value -= (int)skillSet.skill_W.curMana;
             skillWCooldown = 0f;
+
             skillSet.isWExecuted = false;
         }
 
@@ -155,6 +157,7 @@ public class TestSkillManager : MonoBehaviour
         {
             controller.model.CurMP.Value -= (int)skillSet.skill_E.curMana;
             skillECooldown = 0f;
+
             skillSet.isEExecuted = false;
         }
 
@@ -162,6 +165,7 @@ public class TestSkillManager : MonoBehaviour
         {
             controller.model.CurMP.Value -= (int)skillSet.skill_R.curMana;
             skillRCooldown = 0f;
+
             skillSet.isRExecuted = false;
         }
 
