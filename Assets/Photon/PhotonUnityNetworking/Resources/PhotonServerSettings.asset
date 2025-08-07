@@ -66,6 +66,7 @@ MonoBehaviour:
   - Rpc_SetDestination
   - ActivateAllPlayers
   - Dead
+  - RequestRespawn
   - RPC_Respawn
   - spawn
   DisableAutoOpenWizard: 1
