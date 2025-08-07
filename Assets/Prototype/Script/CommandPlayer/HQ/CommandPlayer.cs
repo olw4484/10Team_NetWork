@@ -28,6 +28,8 @@ public class CommandPlayer : MonoBehaviour, IPunInstantiateMagicCallback
             yield return null; // GameManager가 생성되기를 기다림
         }
         LGH_TestGameManager.Instance.RegisterPlayer(this.gameObject);
+
+        PlayerManager.Instance.AllPlayers.Add(this);
         yield break;
     }
 
