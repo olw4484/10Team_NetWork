@@ -95,8 +95,6 @@ public class HeroController : MonoBehaviour, IDamageable
             genTime -= Time.deltaTime;
         }
 
-        HandleAnimation();
-
         // Test용 코드들
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -118,6 +116,11 @@ public class HeroController : MonoBehaviour, IDamageable
         if (!pv.IsMine) return;
 
         mov.LookMoveDir();
+    }
+
+    private void LateUpdate()
+    {
+        HandleAnimation();
     }
 
     /// <summary>

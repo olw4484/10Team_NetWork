@@ -1134,12 +1134,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e7246983be56fe42842a970ae67d947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabList: []
+  prefab: {fileID: 0}
   _spwanPoint: []
   spawnInterval: 120
   groundObject: {fileID: 711083070}
   spawnCount: 53
   dropheight: 10
+  pv: {fileID: 0}
 --- !u!1 &1214583329
 GameObject:
   m_ObjectHideFlags: 0
