@@ -19,6 +19,7 @@ public class HeroController : MonoBehaviour, IDamageable
     private float atkDelay;
     private float genTime = 1f;
 
+    private int currentAnimationHash = -1;
     public readonly int IDLE_HASH = Animator.StringToHash("Idle");
     public readonly int MOVE_HASH = Animator.StringToHash("Move");
     public readonly int ATTACK_HASH = Animator.StringToHash("Attack");
@@ -295,24 +296,31 @@ public class HeroController : MonoBehaviour, IDamageable
 
     private void HandleAnimation()
     {
+        int newAnimationHash;
+
         if (isDead)
         {
-            view.PlayAnimation(DEAD_HASH);
-            return;
+            newAnimationHash = DEAD_HASH;
         }
-
-        if (mov.isMove)
+        else if (mov.isMove)
         {
-            view.PlayAnimation(MOVE_HASH);
-            return;
+            newAnimationHash = MOVE_HASH;
         }
-
-        if (mov.isAttacking)
+        else if (mov.isAttacking)
         {
-            view.PlayAnimation(ATTACK_HASH);
-            return;
+            newAnimationHash = ATTACK_HASH;
+        }
+        else
+        {
+            newAnimationHash = IDLE_HASH;
         }
 
-        view.PlayAnimation(IDLE_HASH);
+        // 현재 애니메이션과 다를 때만 재생
+        if (newAnimationHash != currentAnimationHash)
+        {
+            //view.PlayAnimation(newAnimationHash);
+            pv.RPC("PlayAnimation", RpcTarget.All, newAnimationHash);
+            currentAnimationHash = newAnimationHash;
+        }
     }
 }
