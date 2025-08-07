@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2567840758668717070}
   - component: {fileID: 7790055598492290325}
   - component: {fileID: 7038004876971970469}
+  - component: {fileID: 6870784295696515767}
   m_Layer: 22
   m_Name: RangedMinion
   m_TagString: Player
@@ -114,17 +115,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 0
   attackRange: 0
+  detectRange: 0
   attackCooldown: 0
   attackPower: 0
   maxHP: 0
   data: {fileID: 11400000, guid: 4e22bca9680632b45b1d1738de75cd75, type: 2}
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 23068672
   photonView: {fileID: 2797760396086015769}
   teamId: 0
   waypointStoppingDistance: 0.5
   redBody: {fileID: 5432122235488980362}
   blueBody: {fileID: 5432122235488987996}
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 2897799780412381489, guid: 3ed504c762edcb24394e5f8828ab5147, type: 3}
   firePoint: {fileID: 5432122235489282396}
+--- !u!136 &6870784295696515767
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1668674788522563362}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.6
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1001 &5432122235488863370
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -197,10 +225,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9563318, guid: 04c79b5f6e9ebab48af48fdcf7b6d570, type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: b9d7cb7d542a24b458d7a6a9cdeea5dc, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

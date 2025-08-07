@@ -28,6 +28,12 @@ public class MinionRewardSystem : MonoBehaviour
             {
                 commendPlayer.photonView.RPC("RpcAddGold", RpcTarget.All, data.goldReward);
             }
+
+            var heroPlayer = killer.GetComponent<HeroController>();
+            if (heroPlayer != null && data.goldReward > 0)
+            {
+                heroPlayer.pv.RPC("RpcAddGold", RpcTarget.All, data.goldReward);
+            }
         }
 
         // 경험치 지급

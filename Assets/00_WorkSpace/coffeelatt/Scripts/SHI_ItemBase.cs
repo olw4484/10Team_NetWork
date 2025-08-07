@@ -1,15 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
 public class SHI_ItemBase : MonoBehaviour
 {
+    public SHI_ItembaseData data;
     public Sprite _Image;
     public enum ItemName
     {
-       HealHp,
-       HealMp,
+        HealHp,
+        HealMp,
         GainExp,
         TrinityForce, //  트포
         RapidFirecannon, //고연포
@@ -31,10 +30,10 @@ public class SHI_ItemBase : MonoBehaviour
     public float hp; // 아이템이 증가시키는 HP 양
     public float mp; // 아이템이 증가시키는 MP 양
     public float atk; // 아이템이 증가시키는 공격력 양
-    
+
     public float moveSpeed; // 아이템이 증가시키는 이동 속도 양
     public float atkSpeed; // 아이템이 증가시키는 공격 속도 양
-    
+
     public float skillPower; // 아이템이 증가시키는 스킬 공격력 양
     public float rangeUp; // 아이템이 증가시키는 사거리 양
     [Range(0, 1)]
@@ -42,23 +41,26 @@ public class SHI_ItemBase : MonoBehaviour
     [Range(0, 1)]
     public float critChance; // 아이템이 증가시키는 치명타 확률 양
     [Header("특수 효과")]
-    [Range(0,1)]
+    [Range(0, 1)]
     public float lifeSteal; // 아이템이 증가시키는 생명력 흡수 양
     [Header("장비로 인한 증가량MinionSlayer")]
     [Range(0, 1)]
     public float minionHitup; // 아이템이 증가시키는 미니언 공격력 양
     [Header("버프로 인한 증가량BuffSlayer")]
-    [Range(0,2)]
+    [Range(0, 2)]
     public float minionHitup2; // 아이템이 증가시키는 미니언 공격력 양2 (추가 변수로 사용 가능)
     [Range(1, 2)]
     public float nexusHitUp; // 아이템이 증가시키는 넥서스 공격력 양
-    [Range(1,2)]
-    public float allup ; // 아이템이 증가시키는 전체 스탯 양
+    [Range(1, 2)]
+    public float allup; // 아이템이 증가시키는 전체 스탯 양
     [Range(0, 1)]
     public float minionDamageDown; // 아이템이 감소 시키는 미니언 공격력 양
     [Range(1, 5)]
     public float minionAttackRegeneration; // 아이템이 증가시키는 미니언 공격시 재생 속도 증가
-
+    public void get(SHI_ItembaseData value)
+    {
+        data = value;
+    }
     private void Awake()
     {
         gameObject.GetComponent<SpriteRenderer>().sprite = _Image;

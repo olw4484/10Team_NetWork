@@ -134,7 +134,6 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         {
             if (string.IsNullOrEmpty(roomNameInput.text))
             {
-                //JHT_UIManager.UIInstance.ShowPopUp<JHT_ErrorText>();
                 return;
             }
 
@@ -166,9 +165,6 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         };
 
         #endregion
-
-
-        
 
         #region Character select
         for (int i = 0; i < networkManager.characters.Length; i++)

@@ -52,6 +52,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
 
     public CurrentState curPlayerState;
     private Dictionary<string, GameObject> currentRoomDic;
+
     [Header("캐릭터")]
     public JHT_Character[] characters;
     #endregion
@@ -112,7 +113,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
     {
         OnLoading?.Invoke(false);
         PhotonNetwork.JoinLobby();
-        Debug.Log("마스터서버 접속");
     }
 
     public override void OnDisconnected(DisconnectCause cause)
@@ -169,8 +169,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
        (CurrentState)PhotonNetwork.LocalPlayer.CustomProperties["CurState"] == CurrentState.InRoom);
 
         OnRoomIn?.Invoke(true, true);
-        Debug.Log($"현재 상태 {PhotonNetwork.LocalPlayer.CustomProperties["CurState"]}");
-        Debug.Log($"{PhotonNetwork.LocalPlayer.ActorNumber} 생성 액터넘버");
     }
 
     public override void OnLeftRoom()
@@ -212,7 +210,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
     public override void OnMasterClientSwitched(Player newClientPlayer)
     {
         ManagerGroup.Instance.GetManager<JHT_RoomManager>().PlayerPanelSpawn(newClientPlayer);
-        Debug.Log($"마스터 클라이언트 변경 : {newClientPlayer.ActorNumber}");
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -275,6 +272,9 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
     {
+        if ((CurrentState)targetPlayer.CustomProperties["CurState"] == CurrentState.InGame)
+            return;
+
         if (changedProps.ContainsKey("Team"))
         {
             ManagerGroup.Instance.GetManager<JHT_RoomManager>().OtherPlayerChangeTeam(targetPlayer);

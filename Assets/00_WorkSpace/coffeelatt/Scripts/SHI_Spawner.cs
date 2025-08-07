@@ -1,5 +1,8 @@
+using JetBrains.Annotations;
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,7 +11,9 @@ using UnityEngine.UIElements;
 public class Spawner : MonoBehaviour
 {
     [Header("스폰할 프리팹들")]
-    public List<GameObject> prefabList;
+    //public List<SHI_ItembaseData> ItembaseData;
+    //[SerializeField] private GameObject _itemPrefab;
+    public prefabSo prefab;
     public List<Vector3> _spwanPoint;
     [Header("스폰 주기 (초)")]
     public float spawnInterval = 120f;
@@ -21,18 +26,18 @@ public class Spawner : MonoBehaviour
 
     private Bounds groundBounds;
     public int dropheight = 10; // 드랍 높이 (기본값 10)
+    public PhotonView pv;
 
     void Start()
     {
-        // 바닥의 Bounds 가져오기 (Collider > Renderer 우선)
+        pv = GetComponent<PhotonView>();
+
+        if (!pv.IsMine) return; // 내 객체가 아니라면 RPC 호출 안 함
+
         if (groundObject.TryGetComponent<Collider>(out Collider col))
-        {
             groundBounds = col.bounds;
-        }
         else if (groundObject.TryGetComponent<Renderer>(out Renderer rend))
-        {
             groundBounds = rend.bounds;
-        }
         else
         {
             Debug.LogError("GroundObject에 Collider 또는 Renderer가 없습니다.");
@@ -40,13 +45,20 @@ public class Spawner : MonoBehaviour
             return;
         }
 
-        // 스폰 반복 시작
+        if (PhotonNetwork.IsMasterClient)
+        {
+            pv.RPC(nameof(spawn), RpcTarget.All);
+        }
+    }
+    [PunRPC]
+    public void spawn()
+    {
         StartCoroutine(SpawnLoop());
     }
     IEnumerator destory(GameObject prefab)
     {
         yield return new WaitForSeconds(spawnInterval/2);
-        Destroy(prefab);
+        prefab.SetActive(false);
     }
     IEnumerator SpawnLoop()
     {
@@ -65,13 +77,23 @@ public class Spawner : MonoBehaviour
         
         for(int i = 0; i < spawnCount; i++)
         {
-            GameObject prefab = prefabList[Random.Range(0, prefabList.Count)];
+            GameObject item = prefab.GetRandomPrefab();
             int random = Random.Range(0, _spwanPoint.Count);
             Vector3 spawnpoint = _spwanPoint[random];
+            
+            GameObject spawnitem = Instantiate(item, spawnpoint , item.transform.rotation);
+            spawnitem.transform.parent = this.gameObject.transform;
+            //SHI_ItemBase itemBase = spawnitem.GetComponent<SHI_ItemBase>();
+            //itemBase.get(ItembaseData[Random.Range(0, ItembaseData.Count)]);
+            //itemBase._Image = itemBase.data._Image;
+            //itemBase.GetComponent<SpriteRenderer>().sprite = itemBase._Image;
+            
+
             _spwanPoint.RemoveAt(random);
+           destory(spawnitem);
             //Instantiate(prefab, spawnpoint, prefab.transform.rotation);
-            GameObject create = Instantiate(prefab, spawnpoint, prefab.transform.rotation);
-            StartCoroutine(destory(create));
+            //GameObject create = Instantiate(prefab, spawnpoint, prefab.transform.rotation);
+            StartCoroutine(destory(spawnitem));
         }
         
        
