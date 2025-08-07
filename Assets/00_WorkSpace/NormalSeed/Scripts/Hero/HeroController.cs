@@ -11,7 +11,7 @@ public class HeroController : MonoBehaviour, IDamageable
     public HeroView view;
     public HeroMovement mov;
     public NavMeshAgent agent;
-    private PhotonView pv;
+    public PhotonView pv;
 
     [SerializeField] private int heroType;
     private bool isInCombat;
