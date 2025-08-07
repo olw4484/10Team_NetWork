@@ -45,7 +45,7 @@ public class MinionAutoSpawner : BaseMinionSpawner
         isSpawning = true;
         foreach (var type in minionSequence)
         {
-            MinionFactory.Instance.SpawnAutoMinion(type, spawnPoint.position, groupId, teamId);
+            MinionFactory.Instance.SpawnAutoMinion(type, spawnPoint.position, groupId, this.teamId);
             yield return new WaitForSeconds(spawnDelay);
         }
         isSpawning = false;

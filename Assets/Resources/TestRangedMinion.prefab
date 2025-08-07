@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7038004876971970469}
   - component: {fileID: 6870784295696515767}
   m_Layer: 22
-  m_Name: RangedMinion
+  m_Name: TestRangedMinion
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -175,7 +175,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 182528, guid: 04c79b5f6e9ebab48af48fdcf7b6d570, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 192470, guid: 04c79b5f6e9ebab48af48fdcf7b6d570, type: 3}
       propertyPath: m_Name

@@ -104,12 +104,12 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
         {
             Vector3 hqPos = (myTeamId == 0) ? hqRedSpawnPoint.position : hqBlueSpawnPoint.position;
             Quaternion hqRot = (myTeamId == 0) ? hqRedSpawnPoint.rotation : hqBlueSpawnPoint.rotation;
-            var hqObj = PhotonNetwork.Instantiate("HQ", hqPos, hqRot);
+            var hqObj = PhotonNetwork.Instantiate("HQ", hqPos, hqRot, 0, new object[] { myTeamId });
             Debug.Log($"[SpawnByRole] HQ 인스턴스 생성됨: {hqObj}");
 
             Vector3 pos = (myTeamId == 0) ? cmdRedSpawnPoint.position : cmdBlueSpawnPoint.position;
             Quaternion rot = (myTeamId == 0) ? cmdRedSpawnPoint.rotation : cmdBlueSpawnPoint.rotation;
-            var cmdObj = PhotonNetwork.Instantiate("CommandPlayer", pos, rot);
+            var cmdObj = PhotonNetwork.Instantiate("CommandPlayer", pos, rot, 0, new object[] { myTeamId });
             Debug.Log($"[SpawnByRole] CommandPlayer 인스턴스 생성됨: {cmdObj}");
 
             var commandPlayer = cmdObj.GetComponent<CommandPlayer>();

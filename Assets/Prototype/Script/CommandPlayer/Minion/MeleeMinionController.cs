@@ -18,17 +18,20 @@ public class MeleeMinionController : BaseMinionController
     {
         if (!PhotonNetwork.IsMasterClient || attackTimer < attackCooldown || attackTarget == null || isDead) return;
 
-        // 여기서 어택 이펙트 or 애니메이션 or 데미지 처리
         var targetPV = attackTarget.GetComponent<PhotonView>();
-        if (targetPV != null)
+        if (targetPV == null)
         {
-            attackTimer = 0f;
-            photonView.RPC(nameof(RPC_Attack), RpcTarget.All, targetPV.ViewID, attackPower);
+            Debug.LogError("[Minion] TryAttack: attackTarget에 PhotonView 없음! " + attackTarget.name);
+            return;
         }
+
+        attackTimer = 0f;
+        int targetViewID = targetPV.ViewID;
+        photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID, attackPower);
     }
 
     [PunRPC]
-    public void RPC_Attack(int targetViewID, int dmg)
+    public void RPC_TryAttack(int targetViewID, int dmg)
     {
         var targetPV = PhotonView.Find(targetViewID);
         if (targetPV != null)

@@ -9,6 +9,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     [Header("Stats")]
     public float moveSpeed;
     public float attackRange;
+    public float detectRange;
     public float attackCooldown;
     public int attackPower;
     public int maxHP;
@@ -16,6 +17,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
 
     [Header("Data")]
     public MinionDataSO data;
+    public LayerMask targetMask;
 
     [Header("Components")]
     public PhotonView photonView;
@@ -29,6 +31,9 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     protected bool isDead = false;
     public int teamId;
     public float waypointStoppingDistance = 0.8f;
+    private float searchInterval = 0.2f;
+    private float searchTimer = 0f;
+    private Quaternion lastSentRotation;
 
     [Header("TeamColor")]
     [SerializeField] private GameObject redBody;
@@ -64,7 +69,6 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
             Rpc_Initialize(minionType, teamId, groupId);
         }
     }
-
 
     // --- 초기화 ---
     protected virtual void Awake()
@@ -104,6 +108,16 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         else
         {
             Debug.Log($"[UpdateCheck] isFollowingWaypoint: FALSE");
+        }
+
+        if (attackTarget == null || attackTarget.GetComponent<BaseMinionController>()?.isDead == true)
+        {
+            searchTimer += Time.deltaTime;
+            if (searchTimer >= searchInterval)
+            {
+                SearchForTarget();
+                searchTimer = 0f;
+            }
         }
 
         // 최우선순위: 공격 중일 경우
@@ -146,9 +160,11 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     protected virtual void HandleAttackTarget()
     {
         float distance = Vector3.Distance(transform.position, attackTarget.position);
+        Debug.Log($"[AttackCheck] 내 TeamId={teamId}, 타겟 TeamId={attackTarget.GetComponent<BaseMinionController>()?.teamId}, 거리={distance}, 어택레인지={attackRange}");
         if (distance <= attackRange)
         {
             agent.isStopped = true;
+            agent.ResetPath();
             TryAttack();
         }
         else
@@ -263,25 +279,44 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         }
     }
 
+
     private void HandleRotation()
     {
+        Quaternion targetRotation = transform.rotation;
+
         if (agent.velocity.sqrMagnitude > 0.1f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(agent.velocity.normalized);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-        }
+            targetRotation = Quaternion.LookRotation(agent.velocity.normalized);
         else if (attackTarget != null)
         {
             Vector3 direction = (attackTarget.position - transform.position).normalized;
             if (direction != Vector3.zero)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(direction);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-            }
+                targetRotation = Quaternion.LookRotation(direction);
+        }
+
+        // 부드럽게 회전
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+
+        // 네트워크 전파 (예: 5도 이상 각도 차이 있을 때만)
+        if (Quaternion.Angle(lastSentRotation, transform.rotation) > 5f)
+        {
+            photonView.RPC("SyncRotation", RpcTarget.Others, transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
+            lastSentRotation = transform.rotation;
         }
     }
 
-
+    private void SearchForTarget()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, detectRange, targetMask);
+        foreach (var hit in hits)
+        {
+            var minion = hit.GetComponent<BaseMinionController>();
+            if (minion != null && minion.teamId != this.teamId && !minion.isDead)
+            {
+                attackTarget = minion.transform;
+                break;
+            }
+        }
+    }
 
     protected int FindNearestWaypointIndex()
     {
@@ -345,6 +380,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         this.data = data;
         this.moveSpeed = data.moveSpeed;
         this.attackRange = data.attackRange;
+        this.detectRange = data.detectRange;
         this.attackCooldown = data.attackCooldown;
         this.attackPower = data.attackPower;
         this.maxHP = data.maxHP;
@@ -407,6 +443,11 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
                 killer = attackerPV.gameObject;
             Die(killer);
         }
+    }
+
+    public void SyncRotation(float x, float y, float z, float w)
+    {
+        transform.rotation = new Quaternion(x, y, z, w);
     }
     #endregion
 }

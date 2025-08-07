@@ -16,7 +16,7 @@ MonoBehaviour:
   maxHP: 200
   attackPower: 25
   moveSpeed: 3
-  attackRange: 1
+  attackRange: 3
   attackCooldown: 1
   goldReward: 8
   gearReward: 0
