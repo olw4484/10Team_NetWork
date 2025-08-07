@@ -33,12 +33,13 @@ public class SHI_InventorySlot : MonoBehaviour
 
     public void SetItem(SHI_ItemBase item)
     {
+        Debug.Log($"아이템 {item.itemNameEnum}이 슬롯에 설정되었습니다.");
         currentItem = item;
         icon.sprite = item.GetComponent<SpriteRenderer>()?.sprite; // 아이템 프리팹에 이미지 필요
         //icon.sprite = item._Image;
         icon.enabled = true;
         useButton.interactable = true;
-
+      
     }
 
     public void ClearSlot()

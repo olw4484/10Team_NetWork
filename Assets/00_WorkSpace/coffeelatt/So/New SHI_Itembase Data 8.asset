@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5825cee1e0b46044d86096b6cc27cbe8, type: 3}
+  m_Name: New SHI_Itembase Data 8
+  m_EditorClassIdentifier: 
+  _Image: {fileID: 21300000, guid: dc577187bdf4cca47a26164ebc605250, type: 3}
+  itemNameEnum: 3
+  Duration: 0
+  type: 1
+  Healhp: 0
+  Healmp: 0
+  GainExp: 0
+  hp: 333
+  mp: 333
+  atk: 33
+  moveSpeed: 0.3
+  atkSpeed: 0.3
+  skillPower: 0.3
+  rangeUp: 0
+  coolDown: 0.13
+  critChance: 0
+  lifeSteal: 0
+  minionHitup: 0
+  minionHitup2: 0
+  nexusHitUp: 1
+  allup: 1
+  minionDamageDown: 0
+  minionAttackRegeneration: 1
