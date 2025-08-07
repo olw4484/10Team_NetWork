@@ -11,7 +11,7 @@ public class HeroController : MonoBehaviour, IDamageable
     public HeroView view;
     public HeroMovement mov;
     public NavMeshAgent agent;
-    private PhotonView pv;
+    public PhotonView pv;
 
     [SerializeField] private int heroType;
     private bool isInCombat;
@@ -173,7 +173,7 @@ public class HeroController : MonoBehaviour, IDamageable
                currentEXP >= model.levelExpTable[currentLevel + 1])
         {
             currentLevel++;
-            TestSkillManager.Instance.skillPoint++;
+            TestSkillManager.Instance.skillPoint.Value++;
             Debug.Log($"레벨업! → {currentLevel}레벨");
         }
 
@@ -193,6 +193,8 @@ public class HeroController : MonoBehaviour, IDamageable
 
         model.CurHP.Value += levelUpHp;
         model.CurMP.Value += levelUpMp;
+
+        TestSkillManager.Instance.RefreshSkillButton();
     }
 
     [PunRPC]
