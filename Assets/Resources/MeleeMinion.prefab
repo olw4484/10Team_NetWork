@@ -55,7 +55,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 4572498792076361470}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -383,17 +384,17 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters:
   - Type: 9
-    SynchronizeType: 0
+    SynchronizeType: 1
     Name: Die
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 1
     Name: Idle
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 1
     Name: Move
   - Type: 9
-    SynchronizeType: 0
+    SynchronizeType: 1
     Name: Attack
   m_SynchronizeLayers:
-  - SynchronizeType: 0
+  - SynchronizeType: 1
     LayerIndex: 0

@@ -239,10 +239,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 197908, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2096645433556820517}
+      addedObject: {fileID: 4760478892094629379}
     - targetCorrespondingSourceObject: {fileID: 197908, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4760478892094629379}
+      addedObject: {fileID: 2096645433556820517}
   m_SourcePrefab: {fileID: 100100000, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
 --- !u!1 &2291505245420282860 stripped
 GameObject:
@@ -264,6 +264,19 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 197908, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
   m_PrefabInstance: {fileID: 8094093431737571214}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4760478892094629379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8094093431737504410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb03797cade6a1147b84b21f3e41336a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minionController: {fileID: 149937578270707554}
 --- !u!114 &2096645433556820517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,33 +293,20 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters:
   - Type: 9
-    SynchronizeType: 0
+    SynchronizeType: 1
     Name: Die
   - Type: 4
     SynchronizeType: 0
     Name: Idle
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 1
     Name: Move
   - Type: 9
-    SynchronizeType: 0
+    SynchronizeType: 1
     Name: Attack
   m_SynchronizeLayers:
-  - SynchronizeType: 0
+  - SynchronizeType: 1
     LayerIndex: 0
---- !u!114 &4760478892094629379
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8094093431737504410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb03797cade6a1147b84b21f3e41336a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minionController: {fileID: 149937578270707554}
 --- !u!4 &8094093431737801326 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 495072, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
