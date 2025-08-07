@@ -223,6 +223,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 1b2d7d16a16295648bdbcee23f85edf4, type: 2}
+    - target: {fileID: 5790834096958251198, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
+      propertyPath: minionController
+      value: 
+      objectReference: {fileID: 6849005101517153907}
     - target: {fileID: 8043130927031923810, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
       propertyPath: m_Name
       value: RedSkin

@@ -370,6 +370,21 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
             Destroy(gameObject, 1f);
     }
 
+    public virtual void OnAttackAnimationEvent()
+    {
+        if (!PhotonNetwork.IsMasterClient || attackTarget == null || isDead) return;
+
+        var targetPV = attackTarget.GetComponent<PhotonView>();
+        if (targetPV == null) return;
+
+        photonView.RPC(nameof(RPC_DealDamage), RpcTarget.All, targetPV.ViewID, attackPower);
+    }
+
+    public void SyncRotation(float x, float y, float z, float w)
+    {
+        transform.rotation = new Quaternion(x, y, z, w);
+    }
+
     // RPC 처리
     #region RPC_CODE
     [PunRPC]
@@ -445,9 +460,15 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         }
     }
 
-    public void SyncRotation(float x, float y, float z, float w)
+    [PunRPC]
+    public void RPC_DealDamage(int targetViewID, int dmg)
     {
-        transform.rotation = new Quaternion(x, y, z, w);
+        var targetPV = PhotonView.Find(targetViewID);
+        if (targetPV != null)
+        {
+            var damageable = targetPV.GetComponent<IDamageable>();
+            damageable?.TakeDamage(dmg, this.gameObject);
+        }
     }
     #endregion
 }
