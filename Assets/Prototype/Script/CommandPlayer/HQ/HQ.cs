@@ -1,10 +1,10 @@
 ﻿using Photon.Pun;
 using UnityEngine;
 
-public class HQ : MonoBehaviour, IPunInstantiateMagicCallback
+public class HQ : MonoBehaviour, IDamageable ,IPunInstantiateMagicCallback
 {
     [Header("HQ 설정 데이터")]
-    public KMS_HQDataSO data;
+    public HQDataSO data;
     public int teamId;
 
     private int currentHP;
@@ -85,5 +85,17 @@ public class HQ : MonoBehaviour, IPunInstantiateMagicCallback
     {
         // UI/승패/게임오버 처리
         EventManager.Instance.HQDestroyed(destroyedTeamId);
+    }
+    [PunRPC]
+    public void RPC_TakeDamage(int amount, int attackerViewID = -1)
+    {
+        GameObject attacker = null;
+        if (attackerViewID != -1)
+        {
+            var attackerPV = PhotonView.Find(attackerViewID);
+            if (attackerPV != null)
+                attacker = attackerPV.gameObject;
+        }
+        TakeDamage(amount, attacker);
     }
 }
