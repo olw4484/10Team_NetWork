@@ -205,10 +205,13 @@ public class JHT_RoomManager : MonoBehaviour, IManager
     {
         if (playerPanelDic.TryGetValue(player.ActorNumber, out JHT_PlayerPanelItem obj))
         {
+            if (playerPanelDic[player.ActorNumber] == null)
+                return;
+
             playerPanelDic.Remove(player.ActorNumber);
             Destroy(obj.gameObject);
         }
-
+        Debug.Log($"[JHT_RoomManager - PlayerLeaveRoom] - {player.ActorNumber}에 해당하는 {player.NickName}이 떠남");
     }
     #endregion
 
@@ -226,7 +229,7 @@ public class JHT_RoomManager : MonoBehaviour, IManager
         {
             Debug.Log("조건 충족 → GameScenes 로드");
             SetGameCustomProperty(true);
-            //PhotonNetwork.LoadLevel("GameScenes");
+            ManagerGroup.Instance.GetManager<JHT_NetworkManager>().StateCustomProperty(CurrentState.InGame);
             ManagerGroup.Instance.GetManager<YSJ_SystemManager>().LoadPhotonSceneWithPreActions("GameScenes");
         }
         else
@@ -329,7 +332,7 @@ public class JHT_RoomManager : MonoBehaviour, IManager
             }
         }
 
-
+        Debug.Log($"[JHT_RoomManager - LeaveRoom] - 떠남");
         PhotonNetwork.LeaveRoom();
     }
     #endregion
