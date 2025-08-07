@@ -272,6 +272,9 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
     {
+        if ((CurrentState)targetPlayer.CustomProperties["CurState"] == CurrentState.InGame)
+            return;
+
         if (changedProps.ContainsKey("Team"))
         {
             ManagerGroup.Instance.GetManager<JHT_RoomManager>().OtherPlayerChangeTeam(targetPlayer);
