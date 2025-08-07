@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,15 +16,26 @@ public class HeroView : MonoBehaviour
     }
 
     // HeroController에서 설정한 애니메이션 hash값을 가져옴
+    [PunRPC]
     public void PlayAnimation(int hash)
     {
         if (animator != null)
         {
             animator.Rebind();
             animator.Update(0f);
-            animator.Play(hash, 0, 0f);
+            animator.Play(hash, 0, 0);
         }
     }
+
+    [PunRPC]
+    public void StopAnimation(int idleHash)
+    {
+        if (animator != null)
+        {
+            animator.Play(idleHash, 0, 0);
+        }
+    }
+
 
     /// <summary>
     /// HP 바 UI 최신화 메서드

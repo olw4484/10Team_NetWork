@@ -14,14 +14,22 @@ public class HeroController : MonoBehaviour, IDamageable
     public PhotonView pv;
 
     [SerializeField] private int heroType;
-    private bool isInCombat;
+    public bool isUsingSkill = false;
+    private bool isDead = false;
     private float atkDelay;
     private float genTime = 1f;
 
+    private int currentAnimationHash = -1;
     public readonly int IDLE_HASH = Animator.StringToHash("Idle");
     public readonly int MOVE_HASH = Animator.StringToHash("Move");
     public readonly int ATTACK_HASH = Animator.StringToHash("Attack");
     public readonly int DEAD_HASH = Animator.StringToHash("Dead");
+
+    public readonly int Q_HASH = Animator.StringToHash("QSkill");
+    public readonly int W_HASH = Animator.StringToHash("WSkill");
+    public readonly int E_HASH = Animator.StringToHash("ESkill");
+    public readonly int R_HASH = Animator.StringToHash("RSkill");
+
     // 각 Hero마다 스킬 애니메이션 존재
 
     private void Awake() => Init();
@@ -86,6 +94,8 @@ public class HeroController : MonoBehaviour, IDamageable
         {
             genTime -= Time.deltaTime;
         }
+
+        HandleAnimation();
 
         // Test용 코드들
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -253,7 +263,7 @@ public class HeroController : MonoBehaviour, IDamageable
     }
 
     [PunRPC]
-    public void TakeDamage(int amount, GameObject attacker = null)
+    public void RPC_TakeDamage(int amount, int attackerViewID = -1)
     {
         model.CurHP.Value -= amount;
         Debug.Log($"{amount}의 데미지를 입음. 현재 HP : {model.CurHP.Value}");
@@ -267,10 +277,16 @@ public class HeroController : MonoBehaviour, IDamageable
         }
     }
 
+    public void TakeDamage(int amont, GameObject attacker = null)
+    {
+
+    }
+
     [PunRPC]
     public void Dead()
     {
         gameObject.SetActive(false);
+        isDead = true;
 
         if (pv.IsMine)
         {
@@ -284,7 +300,39 @@ public class HeroController : MonoBehaviour, IDamageable
         transform.position = spawnPos;
         gameObject.SetActive(true);
         model.CurHP.Value = hp;
+        isDead = false;
 
         Debug.Log($"리스폰 완료. 위치: {spawnPos}, HP: {hp}");
+    }
+
+    private void HandleAnimation()
+    {
+        int newAnimationHash;
+
+        if (isUsingSkill) return;
+
+        if (isDead)
+        {
+            newAnimationHash = DEAD_HASH;
+        }
+        else if (mov.isMove)
+        {
+            newAnimationHash = MOVE_HASH;
+        }
+        else if (mov.isAttack)
+        {
+            newAnimationHash = ATTACK_HASH;
+        }
+        else
+        {
+            newAnimationHash = IDLE_HASH;
+        }
+
+        // 현재 애니메이션과 다를 때만 재생
+        if (newAnimationHash != currentAnimationHash)
+        {
+            pv.RPC("PlayAnimation", RpcTarget.All, newAnimationHash);
+            currentAnimationHash = newAnimationHash;
+        }
     }
 }

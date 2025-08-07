@@ -1,10 +1,10 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using UnityEngine;
 
-public class HQ : MonoBehaviour, IDamageable, IPunInstantiateMagicCallback
+public class HQ : MonoBehaviour, IDamageable ,IPunInstantiateMagicCallback
 {
-    [Header("HQ ¼³Á¤ µ¥ÀÌÅÍ")]
-    public KMS_HQDataSO data;
+    [Header("HQ ì„¤ì • ë°ì´í„°")]
+    public HQDataSO data;
     public int teamId;
 
     private int currentHP;
@@ -34,11 +34,11 @@ public class HQ : MonoBehaviour, IDamageable, IPunInstantiateMagicCallback
         }
     }
 
-    // µ¥¹ÌÁö Ã³¸® (°ø°İ¹ŞÀ» °æ¿ì)
+    // ë°ë¯¸ì§€ ì²˜ë¦¬ (ê³µê²©ë°›ì„ ê²½ìš°)
     public void TakeDamage(int damage, GameObject attacker = null)
     {
         currentHP -= damage;
-        Debug.Log($"[HQ] ÇÇ°İ! ÇöÀç HP: {currentHP}");
+        Debug.Log($"[HQ] í”¼ê²©! í˜„ì¬ HP: {currentHP}");
 
         if (currentHP <= 0)
         {
@@ -48,23 +48,23 @@ public class HQ : MonoBehaviour, IDamageable, IPunInstantiateMagicCallback
 
     private void Die(GameObject killer)
     {
-        Debug.Log("[HQ] ÆÄ±«µÊ!");
+        Debug.Log("[HQ] íŒŒê´´ë¨!");
         OnDestroyed();
     }
 
     private void OnDestroyed()
     {
-        Debug.Log($"{gameObject.name} HQ ÆÄ±«µÊ!");
+        Debug.Log($"{gameObject.name} HQ íŒŒê´´ë¨!");
 
         if (PhotonNetwork.InRoom)
         {
-            // ³×Æ®¿öÅ©·Î ¸ğµÎ¿¡°Ô HQ ÆÄ±« ¾Ë¸²
+            // ë„¤íŠ¸ì›Œí¬ë¡œ ëª¨ë‘ì—ê²Œ HQ íŒŒê´´ ì•Œë¦¼
             photonView.RPC("RpcHQDestroyed", RpcTarget.All, teamId);
             PhotonNetwork.Destroy(gameObject);
         }
         else
         {
-            // ·ÎÄÃ ¿ÀÇÁ¶óÀÎ
+            // ë¡œì»¬ ì˜¤í”„ë¼ì¸
             EventManager.Instance.HQDestroyed(teamId);
             Destroy(gameObject);
         }
@@ -76,14 +76,26 @@ public class HQ : MonoBehaviour, IDamageable, IPunInstantiateMagicCallback
         if (data != null && data.Length > 0)
         {
             teamId = (int)data[0];
-            Debug.Log($"[HQ] teamId µ¿±âÈ­: {teamId}");
+            Debug.Log($"[HQ] teamId ë™ê¸°í™”: {teamId}");
         }
     }
 
     [PunRPC]
     public void RpcHQDestroyed(int destroyedTeamId)
     {
-        // UI/½ÂÆĞ/°ÔÀÓ¿À¹ö Ã³¸®
+        // UI/ìŠ¹íŒ¨/ê²Œì„ì˜¤ë²„ ì²˜ë¦¬
         EventManager.Instance.HQDestroyed(destroyedTeamId);
+    }
+    [PunRPC]
+    public void RPC_TakeDamage(int amount, int attackerViewID = -1)
+    {
+        GameObject attacker = null;
+        if (attackerViewID != -1)
+        {
+            var attackerPV = PhotonView.Find(attackerViewID);
+            if (attackerPV != null)
+                attacker = attackerPV.gameObject;
+        }
+        TakeDamage(amount, attacker);
     }
 }
