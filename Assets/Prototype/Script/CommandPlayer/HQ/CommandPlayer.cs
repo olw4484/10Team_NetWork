@@ -52,7 +52,7 @@ public class CommandPlayer : MonoBehaviour, IPunInstantiateMagicCallback
             yield return null;
         }
 
-        PlayerManager.Instance.AllPlayers.Add(this);
+        PlayerManager.Instance.RegisterPlayer(this);
         yield break;
     }
 

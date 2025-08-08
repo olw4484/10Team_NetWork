@@ -8,7 +8,7 @@ using TMPro;
 
 public enum TeamSetting
 {
-    Red,
+    Red = 0,
     Blue,
     None
 }

@@ -59,7 +59,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
 
     #region IManager
 
-    public bool IsDontDestroy => IsDontDestroy;
+    public bool IsDontDestroy => true;
 
     public Action<bool> OnLoading;
     public Action<bool> OnLobbyIn;
@@ -101,10 +101,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
         mainLobbyPanel.NetInit();
         mainLobbyPanel.RoomInit();
 
-        AudioClip bgmObj = Resources.Load<AudioClip>("LobbySound/LobbyBGM");
-
-        ManagerGroup.Instance.GetManager<YSJ_AudioManager>().StopBgm();
-        ManagerGroup.Instance.GetManager<YSJ_AudioManager>().PlayBgm(bgmObj);
         //PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
     }
 

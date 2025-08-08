@@ -4215,6 +4215,7 @@ MonoBehaviour:
   isWExecuted: 0
   isEExecuted: 0
   isRExecuted: 0
+  pv: {fileID: 0}
   bladeWindMeshObj: {fileID: 8074135623744487020}
 --- !u!54 &8180743592024114992
 Rigidbody:
@@ -4374,6 +4375,9 @@ MonoBehaviour:
   - Type: 9
     SynchronizeType: 2
     Name: wSkill
+  - Type: 9
+    SynchronizeType: 0
+    Name: eSkill
   m_SynchronizeLayers:
   - SynchronizeType: 0
     LayerIndex: 0

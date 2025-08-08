@@ -35,48 +35,45 @@ MonoBehaviour:
   StartInOfflineMode: 0
   RpcList:
   - ClickRpc
+  - Dead
   - DestroyRpc
   - DestroySpaceship
   - Fire
-  - RespawnSpaceship
-  - RpcAddGold
-  - RpcTrySpendGold
-  - RpcMoveToPosition
-  - RpcSetTarget
-  - RpcAddExp
-  - RpcAddResource
-  - RpcHQDestroyed
   - GetHeal
-  - RPC_Die
-  - RPC_TakeDamage
-  - RPC_TryAttack
+  - HideBladeWindArea
+  - InterruptMovement
+  - LookAttackDir
+  - PlayAnimation
+  - RespawnSpaceship
+  - RPC_Attack
+  - RPC_DealDamage
+  - Rpc_Initialize
+  - RPC_Respawn
+  - Rpc_SetDestination
   - RPC_SetDestination
+  - RPC_SetMoving
   - RPC_StartBash
   - RPC_StopAndFace
-  - TakeDamage
+  - RPC_TakeDamage
+  - RPC_TryAttack
+  - RpcAddExp
+  - RpcAddGold
+  - RpcAddResource
+  - RpcHQDestroyed
+  - RpcMoveToPosition
   - RpcSetAttackMoveTarget
-  - ConnectGameScene
-  - 
-  - RPC_Attack
-  - RpcInitialize
+  - RpcSetTarget
+  - RpcTrySpendGold
+  - ShowBladeWindArea
+  - spawn
+  - StopAnimation
   - UpdateHeroHP
   - UpdateHeroLevel
   - UpdateHeroMP
-  - Rpc_Initialize
-  - Rpc_SetDestination
-  - ActivateAllPlayers
-  - Dead
-  - RequestRespawn
-  - RPC_Respawn
-  - spawn
-  - PlayAnimation
-  - RPC_DealDamage
-  - StopAnimation
-  - HideBladeWindArea
-  - ShowBladeWindArea
-  - InterruptMovement
-  - LookAttackDir
-  - RPC_SetMoving
+  - RPC_SyncRotation
+  - setspawn
+  - SpawnRandom
+  - SpawnItem
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

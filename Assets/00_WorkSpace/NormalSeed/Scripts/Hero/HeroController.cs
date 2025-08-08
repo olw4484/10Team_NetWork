@@ -21,6 +21,9 @@ public class HeroController : MonoBehaviour, IDamageable, IPunInstantiateMagicCa
 
     public int teamId;
 
+    int IDamageable.teamId => this.teamId;
+    bool IDamageable.isDead => this.isDead;
+
     private int currentAnimationHash = -1;
     public readonly int IDLE_HASH = Animator.StringToHash("Idle");
     public readonly int MOVE_HASH = Animator.StringToHash("Move");
@@ -302,15 +305,23 @@ public class HeroController : MonoBehaviour, IDamageable, IPunInstantiateMagicCa
         }
     }
 
-    public void TakeDamage(int amont, GameObject attacker = null)
+    public void TakeDamage(int amount, GameObject attacker = null)
     {
+        model.CurHP.Value -= amount;
 
+        if (model.CurHP.Value <= 0)
+        {
+            if (pv.IsMine)
+            {
+                pv.RPC("Dead", RpcTarget.All);
+            }
+        }
     }
 
     [PunRPC]
     public void Dead()
     {
-        StartCoroutine(DeadRoutine());
+        //StartCoroutine(DeadRoutine());
         gameObject.SetActive(false);
 
         if (pv.IsMine)

@@ -32,7 +32,7 @@ public class Spawner : MonoBehaviour
     {
         pv = GetComponent<PhotonView>();
 
-        if (!pv.IsMine) return; // 내 객체가 아니라면 RPC 호출 안 함
+        if (!PhotonNetwork.IsMasterClient) return; // 내 객체가 아니라면 RPC 호출 안 함
 
         if (groundObject.TryGetComponent<Collider>(out Collider col))
             groundBounds = col.bounds;
@@ -44,60 +44,93 @@ public class Spawner : MonoBehaviour
             enabled = false;
             return;
         }
-        
+
         if (PhotonNetwork.IsMasterClient)
         {
-            pv.RPC(nameof(spawn), RpcTarget.All);
+            Spawn();
         }
-        
-        
     }
-    [PunRPC]
-    public void spawn()
+
+    public void Spawn()
     {
         StartCoroutine(SpawnLoop());
     }
-    IEnumerator destory(GameObject prefab)
+    IEnumerator Destory(GameObject prefab)
     {
-        yield return new WaitForSeconds(spawnInterval/2);
+        yield return new WaitForSeconds(spawnInterval / 2);
         prefab.SetActive(false);
     }
+
+    public void setspawn()
+    {
+        _spwanPoint = SHI_RandomPosCreater.RandomPosList(groundBounds.min, groundBounds.max, spawnCount);
+    }
+
     IEnumerator SpawnLoop()
     {
         while (true)
         {
-            
-                _spwanPoint = SHI_RandomPosCreater.RandomPosList(groundBounds.min, groundBounds.max, spawnCount);
-                SpawnRandom();
-            
+            List<Vector3> spawnPoints = SHI_RandomPosCreater.RandomPosList(groundBounds.min, groundBounds.max, spawnCount);
+
+            for (int i = 0; i < spawnCount; i++)
+            {
+                GameObject itemPrefab = prefab.GetRandomPrefab();
+                string prefabName = itemPrefab.name;
+                Vector3 spawnPos = spawnPoints[i];
+
+                // 모든 클라이언트에게 스폰 정보 전달
+                pv.RPC(nameof(SpawnItem), RpcTarget.All, prefabName, spawnPos);
+            }
+
+            //_spwanPoint = SHI_RandomPosCreater.RandomPosList(groundBounds.min, groundBounds.max, spawnCount);
+
+
+            // SpawnRandom();
+
             yield return new WaitForSeconds(spawnInterval);
         }
     }
 
+    [PunRPC]
+    void SpawnItem(string prefabName, Vector3 position)
+    {
+        GameObject spawnItem = PhotonNetwork.Instantiate(prefabName, position + Vector3.up * dropheight, Quaternion.identity);
+        spawnItem.transform.parent = this.transform;
+    }
+
+    [PunRPC]
     void SpawnRandom()
     {
-        
-        for(int i = 0; i < spawnCount; i++)
-        {
-            GameObject item = prefab.GetRandomPrefab();
-            int random = Random.Range(0, _spwanPoint.Count);
-            Vector3 spawnpoint = _spwanPoint[random];
-            
-            GameObject spawnitem = Instantiate(item, spawnpoint , item.transform.rotation);
-            spawnitem.transform.parent = this.gameObject.transform;
-            //SHI_ItemBase itemBase = spawnitem.GetComponent<SHI_ItemBase>();
-            //itemBase.get(ItembaseData[Random.Range(0, ItembaseData.Count)]);
-            //itemBase._Image = itemBase.data._Image;
-            //itemBase.GetComponent<SpriteRenderer>().sprite = itemBase._Image;
-            
+        if (PhotonNetwork.IsMasterClient)
 
-            _spwanPoint.RemoveAt(random);
-           destory(spawnitem);
-            //Instantiate(prefab, spawnpoint, prefab.transform.rotation);
-            //GameObject create = Instantiate(prefab, spawnpoint, prefab.transform.rotation);
-            StartCoroutine(destory(spawnitem));
-        }
-        
-       
+            for (int i = 0; i < spawnCount; i++)
+            {
+                GameObject item = prefab.GetRandomPrefab();
+                int random = Random.Range(0, _spwanPoint.Count);
+                Vector3 spawnpoint = _spwanPoint[random];
+
+                GameObject spawnitem = Instantiate(item, spawnpoint, item.transform.rotation);
+                spawnitem.transform.parent = this.gameObject.transform;
+                //SHI_ItemBase itemBase = spawnitem.GetComponent<SHI_ItemBase>();
+                //itemBase.get(ItembaseData[Random.Range(0, ItembaseData.Count)]);
+                //itemBase._Image = itemBase.data._Image;
+                //itemBase.GetComponent<SpriteRenderer>().sprite = itemBase._Image;
+
+
+                _spwanPoint.RemoveAt(random);
+                Destory(spawnitem);
+                //Instantiate(prefab, spawnpoint, prefab.transform.rotation);
+                //GameObject create = Instantiate(prefab, spawnpoint, prefab.transform.rotation);
+                StartCoroutine(Destory(spawnitem));
+            }
     }
+
+   //[PunRPC]
+   //public void RPC_SpawnItemSync(Vector3 pos, int prefabIndex)
+   //{
+   //    GameObject item = prefab.GetPrefabAtIndex(prefabIndex);
+   //    GameObject spawnitem = Instantiate(item, pos, item.transform.rotation);
+   //    spawnitem.transform.parent = this.transform;
+   //    StartCoroutine(DestroyAfterTime(spawnitem));
+   //}
 }

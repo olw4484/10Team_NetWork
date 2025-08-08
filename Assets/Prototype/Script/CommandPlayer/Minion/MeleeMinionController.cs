@@ -42,7 +42,7 @@ public class MeleeMinionController : BaseMinionController
         if (targetPV != null)
         {
             var damageable = targetPV.GetComponent<IDamageable>();
-            damageable?.TakeDamage(dmg, this.gameObject);
+            damageable?.TakeDamage(dmg, gameObject);
             view?.PlayMinionAttackAnimation();
         }
     }
