@@ -1,18 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class JHT_OptionPopUp : MonoBehaviour
+public class JHT_OptionPopUp : YSJ_PopupBaseUI
 {
-    // Start is called before the first frame update
-    void Start()
+
+
+    public override void Open()
     {
+        base.Open();
+        // 커스텀 초기화
         
     }
 
-    // Update is called once per frame
-    void Update()
+    //public void SetVolume()
+    //{
+    //    sfxSlider.value
+    //}
+
+    public override void Close()
     {
-        
+        base.Close();
+        // 닫기 후 로직
     }
 }
