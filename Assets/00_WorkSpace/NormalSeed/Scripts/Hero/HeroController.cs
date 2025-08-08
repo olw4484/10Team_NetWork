@@ -308,6 +308,14 @@ public class HeroController : MonoBehaviour, IDamageable, IPunInstantiateMagicCa
     public void TakeDamage(int amount, GameObject attacker = null)
     {
         model.CurHP.Value -= amount;
+
+        if (model.CurHP.Value <= 0)
+        {
+            if (pv.IsMine)
+            {
+                pv.RPC("Dead", RpcTarget.All);
+            }
+        }
     }
 
     [PunRPC]
