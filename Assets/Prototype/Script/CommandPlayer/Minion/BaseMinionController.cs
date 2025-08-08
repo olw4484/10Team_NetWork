@@ -493,7 +493,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         }
     }
 
-    [PunRPC]
+    [PunRPC] 
     private void RPC_SetMoving(bool isMoving)
     {
         animator.SetBool("IsMoving", isMoving);
