@@ -32,7 +32,7 @@ public class Spawner : MonoBehaviour
     {
         pv = GetComponent<PhotonView>();
 
-        if (!pv.IsMine) return; // 내 객체가 아니라면 RPC 호출 안 함
+        if (!PhotonNetwork.IsMasterClient) return; // 내 객체가 아니라면 RPC 호출 안 함
 
         if (groundObject.TryGetComponent<Collider>(out Collider col))
             groundBounds = col.bounds;
