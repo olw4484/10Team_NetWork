@@ -77,7 +77,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
         }
         DontDestroyOnLoad(gameObject);
 
-        Init();
+        PhotonNetwork.ConnectUsingSettings();
     }
 
     public void Cleanup()
@@ -91,7 +91,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
     public void Init()
     {
         currentRoomDic = new();
-        PhotonNetwork.ConnectUsingSettings();
 
         GameObject inst = Resources.Load<GameObject>("NetworkPrefab/LobbyCanvas");
         GameObject obj = Instantiate(inst);
@@ -101,12 +100,19 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
         mainLobbyPanel.NetInit();
         mainLobbyPanel.RoomInit();
 
+
+        
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("CurState",out object value)&& (CurrentState)value == CurrentState.InGame)
+        {
+            AA();
+        }
         //PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
     }
 
     #region Photon Callbacks
     public override void OnConnectedToMaster()
     {
+        Init();
         OnLoading?.Invoke(false);
         PhotonNetwork.JoinLobby();
     }
@@ -291,6 +297,11 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
             StartCoroutine(GameStartCor(changedProps));
         }
 
+        if (changedProps.ContainsKey("Win"))
+        {
+            StartCoroutine(WinLoseCor(targetPlayer,changedProps));
+        }
+
     }
 
     IEnumerator GameStartCor(ExitGames.Client.Photon.Hashtable changedProps)
@@ -354,6 +365,24 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
             }
         }
     }
+
+    IEnumerator WinLoseCor(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    {
+        while (!changedProps.ContainsKey("Win"))
+            yield return null;
+
+        bool targetWin = (bool)changedProps["Win"];
+
+        int myTeam = (int)PhotonNetwork.LocalPlayer.CustomProperties["Team"];
+        int targetTeam = (int)targetPlayer.CustomProperties["Team"];
+
+        bool myWin = (myTeam == targetTeam) ? targetWin : !targetWin;
+
+        var prefab = Resources.Load<GameObject>("PopUpUI/WinLosePanel");
+        var inst = Instantiate(prefab);
+        var panel = inst.GetComponent<JHT_WinPanel>();
+        panel.Init(myWin);
+    }
     #endregion
 
 
@@ -362,6 +391,24 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
         if (Input.GetKeyDown(KeyCode.M))
         {
             Debug.Log($"현재 방 인원 수 : {PhotonNetwork.CurrentRoom.PlayerCount}");
+        }
+    }
+
+
+    private void AA()
+    {
+
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out object value))
+        {
+            if ((TeamSetting)value == TeamSetting.Blue || (TeamSetting)value == TeamSetting.Red)
+            {
+                ExitGames.Client.Photon.Hashtable props = new();
+                props["Team"] = null;
+                props["Role"] = null;
+                props["Character"] = -1;
+                props["Win"] = null;
+                PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+            }
         }
     }
 }

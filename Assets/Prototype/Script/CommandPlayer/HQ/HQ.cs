@@ -1,4 +1,5 @@
 ﻿using Photon.Pun;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class HQ : MonoBehaviour, IDamageable ,IPunInstantiateMagicCallback
@@ -36,6 +37,8 @@ public class HQ : MonoBehaviour, IDamageable ,IPunInstantiateMagicCallback
         if (Input.GetKeyUp(KeyCode.B))
         {
             OnDestroyed();
+            if(this.gameObject != null)
+                ManagerGroup.Instance.GetManager<LGH_TestGameManager>().OnWin?.Invoke(false);
         }
     }
 
