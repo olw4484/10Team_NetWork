@@ -139,6 +139,8 @@ public class TestSkillManager : MonoBehaviour
 
         if (skillSet.isQExecuted)
         {
+            controller.view.animator.SetTrigger("qSkill");
+
             controller.model.CurMP.Value -= (int)skillSet.skill_Q.curMana;
             skillQCooldown = 0f;
 

@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class HeroController : MonoBehaviour, IDamageable
+public class HeroController : MonoBehaviour, IDamageable, IPunInstantiateMagicCallback
 {
     public HeroModel model;
     public HeroView view;
@@ -38,13 +38,12 @@ public class HeroController : MonoBehaviour, IDamageable
 
     private void Init()
     {
+        Debug.Log("HeroController Init");
         model = GetComponent<HeroModel>();
         view = GetComponent<HeroView>();
         mov = GetComponent<HeroMovement>();
         agent = GetComponent<NavMeshAgent>();
         pv = GetComponent<PhotonView>();
-
-        teamId = (int)PhotonNetwork.LocalPlayer.CustomProperties["Team"];
 
         atkDelay = 0f;
 
@@ -72,6 +71,16 @@ public class HeroController : MonoBehaviour, IDamageable
         {
             view.animator.SetBool("isAttack", attack);
         };
+    }
+
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        object[] data = info.photonView.InstantiationData;
+        if (data != null && data.Length > 0)
+        {
+            teamId = (int)data[0];
+            Debug.Log($"[HeroController] teamId 동기화: {teamId}");
+        }
     }
 
     private IEnumerator RegisterRoutine()
@@ -348,5 +357,10 @@ public class HeroController : MonoBehaviour, IDamageable
         {
             
         }
+    }
+
+    private void OnDisable()
+    {
+        Debug.Log("비활성화됨");
     }
 }
