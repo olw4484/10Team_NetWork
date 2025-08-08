@@ -42,7 +42,7 @@ public class Hero1SkillSet : SkillSet
 
         if (pv != null && pv.IsMine)
         {
-            pv.RPC("InterruptMovement", RpcTarget.All);
+            pv.RPC(nameof(HeroMovement.InterruptMovement), RpcTarget.All);
         }
         else if (pv == null)
         {
@@ -195,7 +195,7 @@ public class Hero1SkillSet : SkillSet
     {
         double sentTime = PhotonNetwork.Time;
         isEExecuted = true;
-        pv.RPC("InterruptMovement", RpcTarget.All);
+        pv.RPC(nameof(HeroMovement.InterruptMovement), RpcTarget.All);
 
         hero.isUsingSkill = true;
         hero.view.animator.SetTrigger("eSkill");
