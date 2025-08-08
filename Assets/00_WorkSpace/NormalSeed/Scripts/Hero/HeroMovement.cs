@@ -80,6 +80,7 @@ public class HeroMovement : MonoBehaviour
     {
         if (IsAttack) return;
 
+        isAttack = false;
         HeroController controller = this.gameObject.GetComponent<HeroController>();
 
         if (controller.isUsingSkill) return;
