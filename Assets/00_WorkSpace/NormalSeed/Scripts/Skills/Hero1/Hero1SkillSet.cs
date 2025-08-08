@@ -191,6 +191,8 @@ public class Hero1SkillSet : SkillSet
         pv.RPC("InterruptMovement", RpcTarget.All);
 
         hero.isUsingSkill = true;
+        hero.view.animator.SetTrigger("eSkill");
+
         pv.RPC(nameof(HeroView.PlayAnimation), RpcTarget.All, hero.E_HASH, sentTime);
 
         Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
