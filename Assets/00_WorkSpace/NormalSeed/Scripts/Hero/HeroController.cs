@@ -15,9 +15,11 @@ public class HeroController : MonoBehaviour, IDamageable
 
     [SerializeField] private int heroType;
     public bool isUsingSkill = false;
-    private bool isDead = false;
+    public bool isDead = false;
     private float atkDelay;
     private float genTime = 1f;
+
+    public int teamId;
 
     private int currentAnimationHash = -1;
     public readonly int IDLE_HASH = Animator.StringToHash("Idle");
@@ -42,6 +44,8 @@ public class HeroController : MonoBehaviour, IDamageable
         agent = GetComponent<NavMeshAgent>();
         pv = GetComponent<PhotonView>();
 
+        teamId = (int)PhotonNetwork.LocalPlayer.CustomProperties["Team"];
+
         atkDelay = 0f;
 
         // 임시로 Hero1을 선택한 것으로 가정 -> 게임이 시작되면 HeroType을 결정하게
@@ -59,6 +63,15 @@ public class HeroController : MonoBehaviour, IDamageable
         model.CurMP.Subscribe(OnMPChanged);
         
         model.Level.Subscribe(OnLevelChanged);
+
+        mov.OnMoveStateChanged += (moving) =>
+        {
+            view.animator.SetBool("isMove", moving);
+        };
+        mov.OnAttackStateChanged += (attack) =>
+        {
+            view.animator.SetBool("isAttack", attack);
+        };
     }
 
     private IEnumerator RegisterRoutine()
@@ -95,8 +108,6 @@ public class HeroController : MonoBehaviour, IDamageable
             genTime -= Time.deltaTime;
         }
 
-        HandleAnimation();
-
         // Test용 코드들
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -118,6 +129,11 @@ public class HeroController : MonoBehaviour, IDamageable
         if (!pv.IsMine) return;
 
         mov.LookMoveDir();
+    }
+
+    private void LateUpdate()
+    {
+        //HandleAnimation();
     }
 
     /// <summary>
@@ -285,13 +301,20 @@ public class HeroController : MonoBehaviour, IDamageable
     [PunRPC]
     public void Dead()
     {
+        StartCoroutine(DeadRoutine());
         gameObject.SetActive(false);
-        isDead = true;
 
         if (pv.IsMine)
         {
             LGH_TestGameManager.Instance.RequestRespawn(this);
         }
+    }
+
+    private IEnumerator DeadRoutine()
+    {
+        isDead = true;
+        view.animator.SetBool("isDead", isDead);
+        yield return new WaitForSeconds(0.5f);
     }
 
     [PunRPC]
@@ -307,32 +330,23 @@ public class HeroController : MonoBehaviour, IDamageable
 
     private void HandleAnimation()
     {
-        int newAnimationHash;
-
         if (isUsingSkill) return;
 
         if (isDead)
         {
-            newAnimationHash = DEAD_HASH;
+            view.animator.SetBool("isDead", isDead);
         }
         else if (mov.isMove)
         {
-            newAnimationHash = MOVE_HASH;
+            
         }
         else if (mov.isAttack)
         {
-            newAnimationHash = ATTACK_HASH;
+            
         }
         else
         {
-            newAnimationHash = IDLE_HASH;
-        }
-
-        // 현재 애니메이션과 다를 때만 재생
-        if (newAnimationHash != currentAnimationHash)
-        {
-            pv.RPC("PlayAnimation", RpcTarget.All, newAnimationHash);
-            currentAnimationHash = newAnimationHash;
+            
         }
     }
 }

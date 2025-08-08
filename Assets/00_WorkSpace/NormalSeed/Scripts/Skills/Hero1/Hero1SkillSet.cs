@@ -23,14 +23,27 @@ public class Hero1SkillSet : SkillSet
     //protected PhotonView pv;
 
     private WaitForSeconds distCheck = new WaitForSeconds(0.1f);
+    [SerializeField] private GameObject bladeWindMeshObj;
+    private MeshFilter meshFilter;
+    private MeshRenderer meshRenderer;
+
+    private void Awake()
+    {
+        meshFilter = bladeWindMeshObj.GetComponent<MeshFilter>();
+        meshRenderer = bladeWindMeshObj.GetComponent<MeshRenderer>();
+        meshRenderer.enabled = false;
+    }
 
     #region UseQ
     public override void UseQ()
     {
         isQExecuted = true;
-        hero.mov.InterruptMovement();
+        double sentTime = PhotonNetwork.Time;
+
+        pv.RPC("InterruptMovement", RpcTarget.All);
+        
         hero.isUsingSkill = true;
-        pv.RPC("PlayAnimation", RpcTarget.All, hero.Q_HASH);
+        pv.RPC(nameof(HeroView.PlayAnimation), RpcTarget.All, hero.Q_HASH, sentTime);
 
         // 마우스 방향에 부채꼴로 공격하는 스킬
         Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
@@ -45,7 +58,7 @@ public class Hero1SkillSet : SkillSet
             // 공격 방향은 마우스 위치로 설정
             attackDir = (hit.point - originPos).normalized;
             // 공격 방향을 바라보게 forward를 바꿔줌
-            transform.forward = new Vector3(attackDir.x, transform.position.y, attackDir.z);
+            pv.RPC(nameof(LookAttackDir), RpcTarget.All, attackDir);
 
             foreach (Collider collider in hits)
             {
@@ -74,14 +87,81 @@ public class Hero1SkillSet : SkillSet
                 }
             }
             Debug.Log("BladeWind");
-            StartCoroutine(BladeWindRoutine());
+            StartCoroutine(BladeWindRoutine(sentTime));
         }
     }
 
-    private IEnumerator BladeWindRoutine()
+    private IEnumerator BladeWindRoutine(double sentTime)
     {
-        yield return new WaitForSeconds(0.7f);
+        double now = PhotonNetwork.Time;
+        float lag = (float)(now - sentTime);
+
+        pv.RPC(nameof(ShowBladeWindArea), RpcTarget.All, skill_Q.skillRange, 60f, sentTime);
+
+        float duration = 0.7f;
+        float waitTime = Mathf.Max(0f, duration - lag);
+        yield return new WaitForSeconds(waitTime);
+
+        pv.RPC(nameof(HideBladeWindArea), RpcTarget.All);
+        HideBladeWindArea();
         hero.isUsingSkill = false;
+    }
+
+    private Mesh CreateFanMesh(float radius, float angleDeg, int segments)
+    {
+        Mesh mesh = new Mesh();
+
+        List<Vector3> vertices = new List<Vector3>();
+        List<int> triangles = new List<int>();
+
+        vertices.Add(Vector3.zero); // 중심점
+
+        float angleRad = Mathf.Deg2Rad * angleDeg;
+        float segmentAngle = angleRad / segments;
+
+        for (int i = 0; i <= segments; i++)
+        {
+            float currentAngle = -angleRad / 2 + segmentAngle * i;
+            Vector3 point = new Vector3(Mathf.Sin(currentAngle), 0, Mathf.Cos(currentAngle)) * radius;
+            vertices.Add(point);
+        }
+
+        for (int i = 1; i < vertices.Count - 1; i++)
+        {
+            triangles.Add(0);
+            triangles.Add(i);
+            triangles.Add(i + 1);
+        }
+
+        mesh.SetVertices(vertices);
+        mesh.SetTriangles(triangles, 0);
+        mesh.RecalculateNormals();
+
+        return mesh;
+    }
+
+    [PunRPC]
+    private void LookAttackDir(Vector3 attackDir)
+    {
+        transform.forward = new Vector3(attackDir.x, transform.position.y, attackDir.z);
+    }
+
+    [PunRPC]
+    private void ShowBladeWindArea(float radius, float angleDeg, double sentTime)
+    {
+        double now = PhotonNetwork.Time;
+        float lag = (float)(now - sentTime);
+
+        meshFilter.mesh = CreateFanMesh(radius, angleDeg, 600); 
+        bladeWindMeshObj.transform.position = transform.position;
+        bladeWindMeshObj.transform.rotation = Quaternion.LookRotation(transform.forward);
+        meshRenderer.enabled = true;
+    }
+
+    [PunRPC]
+    private void HideBladeWindArea()
+    {
+        meshRenderer.enabled = false;
     }
     #endregion
 
@@ -106,10 +186,12 @@ public class Hero1SkillSet : SkillSet
     #region UseE
     public override void UseE()
     {
+        double sentTime = PhotonNetwork.Time;
         isEExecuted = true;
-        hero.mov.InterruptMovement();
+        pv.RPC("InterruptMovement", RpcTarget.All);
+
         hero.isUsingSkill = true;
-        pv.RPC(nameof(HeroView.PlayAnimation), RpcTarget.All, hero.E_HASH);
+        pv.RPC(nameof(HeroView.PlayAnimation), RpcTarget.All, hero.E_HASH, sentTime);
 
         Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
         RaycastHit hit;
@@ -117,12 +199,14 @@ public class Hero1SkillSet : SkillSet
         {
             Vector3 dashDir = (hit.point - originPos).normalized;
             pv.RPC(nameof(RPC_StartBash), RpcTarget.All, dashDir);
+            
             Debug.Log("RPC_StartBash 호출됨, dashDir: " + dashDir);
         }
     }
 
     private IEnumerator BashRoutine(Vector3 dashDir)
     {
+        double sentTime = PhotonNetwork.Time;
         Debug.Log("BashRoutine 시작!");
 
         // 마우스 방향으로 돌진하고 경로상에 부딪힌 적에 데미지를 주고 적 Hero나 장애물과 부딪히면 멈추는 스킬
@@ -194,6 +278,7 @@ public class Hero1SkillSet : SkillSet
         }
 
         hero.isUsingSkill = false;
+        pv.RPC("PlayAnimation", RpcTarget.All, hero.IDLE_HASH, sentTime);
 
         agent.enabled = true;
         agent.isStopped = false;
