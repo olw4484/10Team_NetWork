@@ -10551,8 +10551,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6f4765ff06d9854e8cfe8096ef81403, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldPerTick: 3
-  tickInterval: 1
+  goldPerTick: 5
+  tickInterval: 2
 --- !u!4 &1671740624
 Transform:
   m_ObjectHideFlags: 0
