@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
 
 public class HeroMovement : MonoBehaviour
@@ -11,9 +12,35 @@ public class HeroMovement : MonoBehaviour
     private NavMeshAgent agent;
     private PhotonView pv;
 
-    public bool isMove;
+    public bool isMove = false;
+    public UnityAction<bool> OnMoveStateChanged;
+
+    public bool IsMove 
+    {
+        get => isMove;
+        set
+        {
+            if (isMove == value) return; // 값이 같으면 무시
+            isMove = value;
+            OnMoveStateChanged?.Invoke(isMove);
+
+        }
+    }
     public bool isAttacking = false;
     public bool isAttack = false;
+    public UnityAction<bool> OnAttackStateChanged;
+
+    public bool IsAttack
+    {
+        get => isAttack;
+        set
+        {
+            if (isAttack == value) return; // 값이 같으면 무시
+            isAttack = value;
+            OnAttackStateChanged?.Invoke(isAttack);
+        }
+    }
+
     [SerializeField] private float atkCooldown;
     private Vector3 destination;
     private float attackLockTime = 0.6f;
@@ -51,7 +78,7 @@ public class HeroMovement : MonoBehaviour
 
     public void HandleRightClick(float moveSpd, int damage, float atkRange, float atkDelay)
     {
-        if (isAttack) return;
+        if (IsAttack) return;
 
         HeroController controller = this.gameObject.GetComponent<HeroController>();
 
@@ -170,7 +197,7 @@ public class HeroMovement : MonoBehaviour
             timer += Time.deltaTime;
             yield return null;
         }
-        isAttack = false;
+        IsAttack = false;
     }
 
     /// <summary>
@@ -181,11 +208,12 @@ public class HeroMovement : MonoBehaviour
     /// <param name="damage"></param>
     public void ExecuteAttack(Transform target, IDamageable damagable, int damage)
     {
+        if (IsAttack) return;
         // 멈춤 동기화를 위해 RPC 실행
         pv.RPC(nameof(RPC_StopAndFace), RpcTarget.All, target.position);
 
-        isMove = false;
-        isAttack = true;
+        IsMove = false;
+        IsAttack = true;
         
         // 타겟이 갖고 있는 TakeDamage RPC 실행
         PhotonView targetPv = target.gameObject.GetComponent<PhotonView>();
@@ -239,7 +267,7 @@ public class HeroMovement : MonoBehaviour
     {
         agent.speed = moveSpd;
         destination = dest;
-        isMove = true;
+        IsMove = true;
         agent.SetDestination(dest);
     }
 
@@ -250,12 +278,12 @@ public class HeroMovement : MonoBehaviour
     public void LookMoveDir()
     {
         // 이동 지점이 설정되었을 때
-        if (isMove)
+        if (IsMove)
         {
             // 이동이 끝난다면
             if (agent.velocity.magnitude == 0.0f)
             {
-                isMove = false;
+                IsMove = false;
                 return;
             }
         }
@@ -278,12 +306,11 @@ public class HeroMovement : MonoBehaviour
         }
 
         isAttacking = false;
-        isAttack = false;
-        isMove = false;
+        IsAttack = false;
+        IsMove = false;
 
         agent.isStopped = true;
         agent.velocity = Vector3.zero;
         agent.ResetPath();
     }
-
 }
