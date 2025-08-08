@@ -9,8 +9,6 @@ public class ResourceSystem : MonoBehaviour, IManager
     public enum ResourceType { Gold, Gear }
     public static ResourceSystem Instance { get; private set; }
 
-    public int Priority => (int)ManagerPriority.ResourceSystem;
-
     public bool IsDontDestroy => true;
 
     [Header("Resource Settings")]

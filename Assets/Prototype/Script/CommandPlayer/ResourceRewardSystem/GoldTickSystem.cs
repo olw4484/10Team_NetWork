@@ -8,12 +8,24 @@ public class GoldTickSystem : MonoBehaviour
     public float tickInterval = 5f; // 틱 간격 (초)
     private float nextTickTime; // 다음 틱이 발생할 시간
 
-    void Awake()
+    private void Awake()
     {
-        // 씬에서 CommandPlayer 컴포넌트를 가진 오브젝트를 찾아서 할당
-        // 이 오브젝트가 씬에 없으면 player 변수는 여전히 null이 됩니다.
-        player = FindObjectOfType<CommandPlayer>();
-        nextTickTime = Time.time + tickInterval;
+        // PlayerManager의 이벤트에 구독
+        PlayerManager.OnPlayerRegistered += OnPlayerRegistered;
+    }
+
+    private void OnDestroy()
+    {
+        // 오브젝트가 파괴될 때 이벤트 구독 해제 (메모리 누수 방지)
+        PlayerManager.OnPlayerRegistered -= OnPlayerRegistered;
+    }
+
+    private void OnPlayerRegistered(CommandPlayer registeredPlayer)
+    {
+        // PlayerManager로부터 받은 유효한 플레이어 참조를 할당
+        player = registeredPlayer;
+
+        Debug.Log("플레이어가 등록되어 GoldTickSystem이 작동을 시작합니다.");
     }
 
     void Update()
