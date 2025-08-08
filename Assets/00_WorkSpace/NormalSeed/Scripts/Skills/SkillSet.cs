@@ -19,14 +19,30 @@ public class SkillSet : MonoBehaviour
     protected Camera mainCam;
     protected HeroController hero;
     protected NavMeshAgent agent;
-    protected PhotonView pv;
+    public PhotonView pv;
 
     private void Start()
     {
         hero = GetComponent<HeroController>();
         agent = GetComponent<NavMeshAgent>();
-        pv = GetComponent<PhotonView>();
         mainCam = Camera.main;
+    }
+
+    private void OnEnable()
+    {
+        StartCoroutine(WaitForPhotonViewReady());
+    }
+
+    private IEnumerator WaitForPhotonViewReady()
+    {
+        while (pv == null || !pv.IsMine)
+        {
+            pv = GetComponent<PhotonView>();
+            yield return null; // 다음 프레임까지 대기
+        }
+
+        Debug.Log("PhotonView is ready and owned by this client.");
+        // 여기서부터 안전하게 RPC 호출 가능
     }
 
     public virtual void UseQ()
