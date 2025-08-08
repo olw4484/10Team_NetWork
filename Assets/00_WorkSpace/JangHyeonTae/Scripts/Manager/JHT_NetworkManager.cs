@@ -101,10 +101,6 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
         mainLobbyPanel.NetInit();
         mainLobbyPanel.RoomInit();
 
-        AudioClip bgmObj = Resources.Load<AudioClip>("LobbySound/LobbyBGM");
-
-        ManagerGroup.Instance.GetManager<YSJ_AudioManager>().StopBgm();
-        ManagerGroup.Instance.GetManager<YSJ_AudioManager>().PlayBgm(bgmObj);
         //PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
     }
 
