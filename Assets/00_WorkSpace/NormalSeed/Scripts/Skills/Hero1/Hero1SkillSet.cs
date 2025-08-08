@@ -40,9 +40,16 @@ public class Hero1SkillSet : SkillSet
         isQExecuted = true;
         double sentTime = PhotonNetwork.Time;
 
-        pv.RPC("InterruptMovement", RpcTarget.All);
-        
-        hero.isUsingSkill = true;
+        if (pv != null && pv.IsMine)
+        {
+            pv.RPC("InterruptMovement", RpcTarget.All);
+        }
+        else if (pv == null)
+        {
+            Debug.Log("포톤뷰 없음");
+        }
+
+            hero.isUsingSkill = true;
         pv.RPC(nameof(HeroView.PlayAnimation), RpcTarget.All, hero.Q_HASH, sentTime);
 
         // 마우스 방향에 부채꼴로 공격하는 스킬

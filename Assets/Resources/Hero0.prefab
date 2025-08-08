@@ -14675,6 +14675,9 @@ MonoBehaviour:
   - Type: 9
     SynchronizeType: 2
     Name: wSkill
+  - Type: 9
+    SynchronizeType: 2
+    Name: eSkill
   m_SynchronizeLayers:
   - SynchronizeType: 0
     LayerIndex: 0
