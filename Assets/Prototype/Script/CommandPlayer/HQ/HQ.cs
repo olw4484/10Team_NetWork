@@ -6,10 +6,15 @@ public class HQ : MonoBehaviour, IDamageable ,IPunInstantiateMagicCallback
     [Header("HQ 설정 데이터")]
     public HQDataSO data;
     public int teamId;
+    public bool isDead;
 
     private int currentHP;
     private float spawnTimer;
     private PhotonView photonView;
+
+    int IDamageable.teamId => this.teamId;
+    bool IDamageable.isDead => this.isDead;
+
     private void Awake()
     {
         photonView = GetComponent<PhotonView>();

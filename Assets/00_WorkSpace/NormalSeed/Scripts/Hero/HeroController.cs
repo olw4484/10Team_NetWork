@@ -21,6 +21,9 @@ public class HeroController : MonoBehaviour, IDamageable, IPunInstantiateMagicCa
 
     public int teamId;
 
+    int IDamageable.teamId => this.teamId;
+    bool IDamageable.isDead => this.isDead;
+
     private int currentAnimationHash = -1;
     public readonly int IDLE_HASH = Animator.StringToHash("Idle");
     public readonly int MOVE_HASH = Animator.StringToHash("Move");
