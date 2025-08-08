@@ -41,7 +41,11 @@ public class PlayerInputHandler : MonoBehaviour
             {
                 foreach (var minion in selectedMinions)
                 {
-                    minion.SetAttackMoveTarget(hit.point); // 또는 hit.transform
+                    // 내 미니언만 명령
+                    if (minion.photonView != null && minion.photonView.IsMine)
+                    {
+                        minion.SetAttackMoveTarget(hit.point); // 또는 hit.transform
+                    }
                 }
                 isAttackMoveMode = false; // 한 번만 실행
             }
@@ -75,17 +79,18 @@ public class PlayerInputHandler : MonoBehaviour
 
             if (isDragging)
             {
-                // 드래그로 영역 선택
+                // 드래그로 영역 선택 (내 유닛만)
                 SelectUnitsInDragBox(dragStartScreenPos, Input.mousePosition);
             }
             else
             {
-                // 단일 클릭 선택 처리
+                // 단일 클릭 선택 (내 유닛만)
                 HandleSingleClickSelection();
             }
             isDragging = false;
         }
     }
+
 
     private void UpdateDragBoxVisual(Vector2 start, Vector2 current)
     {
@@ -130,23 +135,29 @@ public class PlayerInputHandler : MonoBehaviour
         {
             minion?.SetSelected(false);
         }
-
         selectedMinions.Clear();
 
         foreach (var minion in FindObjectsOfType<MinionController>())
         {
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(minion.transform.position);
-            if (SelectionUtility.IsInSelectionBox(start, end, screenPos))
+            // 내 유닛만 드래그로 선택
+            if (minion.photonView != null && minion.photonView.IsMine)
             {
-                minion.Select();
-                selectedMinions.Add(minion);
+                Vector3 screenPos = Camera.main.WorldToScreenPoint(minion.transform.position);
+                if (SelectionUtility.IsInSelectionBox(start, end, screenPos))
+                {
+                    minion.Select();
+                    selectedMinions.Add(minion);
+                }
+                else
+                {
+                    minion.Deselect();
+                }
             }
             else
             {
                 minion.Deselect();
             }
         }
-
         currentSelected = null; // 드래그는 HQ 선택 취소
     }
 
@@ -171,18 +182,26 @@ public class PlayerInputHandler : MonoBehaviour
             }
             else if (selectable != null)
             {
-                currentSelected?.Deselect();
-                currentSelected = selectable;
-                currentSelected.Select();
-
-                switch (selectable.GetSelectableType())
+                // MinionController만 선택 제한
+                if (selectable is MinionController minion)
                 {
-                    case SelectableType.Minion:
-                        Debug.Log("유닛 선택됨");
-                        break;
-                    case SelectableType.Building:
-                        Debug.Log("건물 선택됨");
-                        break;
+                    if (minion.photonView != null && minion.photonView.IsMine)
+                    {
+                        currentSelected?.Deselect();
+                        currentSelected = selectable;
+                        currentSelected.Select();
+                    }
+                    else
+                    {
+                        currentSelected?.Deselect();
+                        currentSelected = null;
+                    }
+                }
+                else
+                {
+                    currentSelected?.Deselect();
+                    currentSelected = selectable;
+                    currentSelected.Select();
                 }
             }
         }
