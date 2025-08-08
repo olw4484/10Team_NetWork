@@ -305,9 +305,9 @@ public class HeroController : MonoBehaviour, IDamageable, IPunInstantiateMagicCa
         }
     }
 
-    public void TakeDamage(int amont, GameObject attacker = null)
+    public void TakeDamage(int amount, GameObject attacker = null)
     {
-
+        model.CurHP.Value -= amount;
     }
 
     [PunRPC]
