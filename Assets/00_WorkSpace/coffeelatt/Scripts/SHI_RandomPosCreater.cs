@@ -29,7 +29,7 @@ using UnityEngine;
             float maxHeight = 50;
             bool hitGround = false;
             int time = 0;
-        LayerMask groundLayer = (1 << 23);
+        LayerMask groundLayer = (1 << 26);
                                     // 무한 루프 방지용 카운트
         
         do
@@ -45,7 +45,7 @@ using UnityEngine;
                 }
 
                 time++;
-                if (time > 10)
+                if (time > 15)
                     break;
 
             } while (!hitGround);

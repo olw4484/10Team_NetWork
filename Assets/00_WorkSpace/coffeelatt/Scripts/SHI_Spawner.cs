@@ -44,11 +44,13 @@ public class Spawner : MonoBehaviour
             enabled = false;
             return;
         }
-
+        
         if (PhotonNetwork.IsMasterClient)
         {
             pv.RPC(nameof(spawn), RpcTarget.All);
         }
+        
+        
     }
     [PunRPC]
     public void spawn()
