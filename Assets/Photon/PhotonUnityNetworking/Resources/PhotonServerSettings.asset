@@ -72,6 +72,11 @@ MonoBehaviour:
   - PlayAnimation
   - RPC_DealDamage
   - StopAnimation
+  - HideBladeWindArea
+  - ShowBladeWindArea
+  - InterruptMovement
+  - LookAttackDir
+  - RPC_SetMoving
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

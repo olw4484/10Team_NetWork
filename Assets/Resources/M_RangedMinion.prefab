@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7790055598492290325}
   - component: {fileID: -616877397072140676}
   - component: {fileID: 8591005775599901286}
+  - component: {fileID: 8189262929920095062}
   m_Layer: 22
   m_Name: M_RangedMinion
   m_TagString: Player
@@ -56,6 +57,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 8189262929920095062}
   - {fileID: 8481446510786087639}
   sceneViewId: 0
   InstantiationId: 0
@@ -152,6 +154,22 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &8189262929920095062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1668674788522563362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1001 &5432122235488863370
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -286,19 +304,19 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters:
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Die
-  - Type: 4
-    SynchronizeType: 1
-    Name: Idle
-  - Type: 4
-    SynchronizeType: 1
-    Name: Move
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Attack
+  - Type: 4
+    SynchronizeType: 2
+    Name: IsIdling
+  - Type: 4
+    SynchronizeType: 2
+    Name: IsMoving
   m_SynchronizeLayers:
-  - SynchronizeType: 1
+  - SynchronizeType: 2
     LayerIndex: 0
 --- !u!1 &5432122235488980362 stripped
 GameObject:

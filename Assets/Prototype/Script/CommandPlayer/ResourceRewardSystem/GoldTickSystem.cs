@@ -1,3 +1,4 @@
+using Photon.Pun;
 using UnityEngine;
 
 public class GoldTickSystem : MonoBehaviour
@@ -9,6 +10,7 @@ public class GoldTickSystem : MonoBehaviour
 
     private void Update()
     {
+        if (!PhotonNetwork.IsMasterClient) return;
         timer += Time.deltaTime;
         if (timer >= tickInterval)
         {
@@ -18,10 +20,10 @@ public class GoldTickSystem : MonoBehaviour
             /// PlayerManager.Instance.AllPlayers 함수 필요
             /// <summary>
 
-            //foreach (var player in PlayerManager.Instance.AllPlayers)
-            //{
-            //    KMS_ResourceSystem.Instance.AddResourceToPlayer(player, ResourceType.Gold, goldPerTick);
-            //}
+            foreach (var player in PlayerManager.Instance.AllPlayers)
+            {
+                ResourceSystem.Instance.AddResourceToPlayer(player, ResourceSystem.ResourceType.Gold, goldPerTick);
+            }
         }
     }
 }

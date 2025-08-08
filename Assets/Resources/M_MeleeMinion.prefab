@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3620232580585397287}
   - component: {fileID: 7164204482370431142}
   - component: {fileID: -1981029711089163316}
+  - component: {fileID: -8369740876003889696}
   m_Layer: 22
   m_Name: M_MeleeMinion
   m_TagString: Player
@@ -56,6 +57,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: -8369740876003889696}
   - {fileID: 2907614490064609277}
   sceneViewId: 0
   InstantiationId: 0
@@ -152,6 +154,22 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &-8369740876003889696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6030940965793994703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1001 &2843375634349407310
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -330,10 +348,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 134188, guid: a9733678a87478b4689672067b7718fb, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2907614490064609277}
+      addedObject: {fileID: 4011305403307270381}
     - targetCorrespondingSourceObject: {fileID: 134188, guid: a9733678a87478b4689672067b7718fb, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4011305403307270381}
+      addedObject: {fileID: 2907614490064609277}
   m_SourcePrefab: {fileID: 100100000, guid: a9733678a87478b4689672067b7718fb, type: 3}
 --- !u!4 &2843375634349241820 stripped
 Transform:
@@ -355,6 +373,19 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 134188, guid: a9733678a87478b4689672067b7718fb, type: 3}
   m_PrefabInstance: {fileID: 2843375634349407310}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4011305403307270381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2843375634349535330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb03797cade6a1147b84b21f3e41336a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minionController: {fileID: 7164204482370431142}
 --- !u!114 &2907614490064609277
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -371,33 +402,20 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters:
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Die
-  - Type: 4
-    SynchronizeType: 1
-    Name: Idle
-  - Type: 4
-    SynchronizeType: 1
-    Name: Move
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Attack
+  - Type: 4
+    SynchronizeType: 2
+    Name: IsIdling
+  - Type: 4
+    SynchronizeType: 2
+    Name: IsMoving
   m_SynchronizeLayers:
-  - SynchronizeType: 1
+  - SynchronizeType: 2
     LayerIndex: 0
---- !u!114 &4011305403307270381
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2843375634349535330}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb03797cade6a1147b84b21f3e41336a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minionController: {fileID: 7164204482370431142}
 --- !u!95 &2843375634358757798 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 9557480, guid: a9733678a87478b4689672067b7718fb, type: 3}

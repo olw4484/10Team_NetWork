@@ -16,7 +16,6 @@ public class HQCommander : MonoBehaviour, ISelectable, IPunInstantiateMagicCallb
     public Transform defaultSpawnPoint;
     public Transform rallyPointTarget;
     public GameObject rallyPointMarker;
-    public WaypointGroup waypointGroup;
 
     bool IsSelected = false;
 

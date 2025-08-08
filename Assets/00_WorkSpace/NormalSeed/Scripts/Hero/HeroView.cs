@@ -17,13 +17,16 @@ public class HeroView : MonoBehaviour
 
     // HeroController에서 설정한 애니메이션 hash값을 가져옴
     [PunRPC]
-    public void PlayAnimation(int hash)
+    public void PlayAnimation(int hash, double sentTime)
     {
+        double now = PhotonNetwork.Time;
+        float lag = (float)(now - sentTime);
+
         if (animator != null)
         {
             animator.Rebind();
             animator.Update(0f);
-            animator.Play(hash, 0, 0);
+            animator.Play(hash, 0, lag);
         }
     }
 
