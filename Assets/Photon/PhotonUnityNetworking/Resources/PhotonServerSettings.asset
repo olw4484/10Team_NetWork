@@ -72,6 +72,8 @@ MonoBehaviour:
   - PlayAnimation
   - RPC_DealDamage
   - StopAnimation
+  - RPC_SetMovingState
+  - RPC_SetMoving
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

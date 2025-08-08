@@ -98,41 +98,34 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
 
     protected virtual void Update()
     {
-        if (isDead || !PhotonNetwork.IsMasterClient) return;
-        attackTimer += Time.deltaTime;
+        if (isDead) return;
 
-        if (isFollowingWaypoint)
+        // 마스터 클라이언트에서만 실행되는 AI 로직
+        if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log($"[UpdateCheck] isFollowingWaypoint: TRUE, 현재 웨이포인트 인덱스: {currentWaypointIndex}");
-        }
-        else
-        {
-            Debug.Log($"[UpdateCheck] isFollowingWaypoint: FALSE");
-        }
-
-        if (attackTarget == null || attackTarget.GetComponent<BaseMinionController>()?.isDead == true)
-        {
-            searchTimer += Time.deltaTime;
-            if (searchTimer >= searchInterval)
+            attackTimer += Time.deltaTime;
+            if (attackTarget == null || attackTarget.GetComponent<BaseMinionController>()?.isDead == true)
             {
-                SearchForTarget();
-                searchTimer = 0f;
+                searchTimer += Time.deltaTime;
+                if (searchTimer >= searchInterval)
+                {
+                    SearchForTarget();
+                    searchTimer = 0f;
+                }
             }
         }
 
-        // 최우선순위: 공격 중일 경우
+        // 최우선순위: 공격 중
         if (attackTarget != null)
         {
-            Debug.Log("[UpdateCheck] 공격 대상 발견, 웨이포인트 로직 무시.");
             HandleRotation();
             HandleAttackTarget();
             return;
         }
 
-        // 두 번째 우선순위: 수동 이동 명령이 있을 경우
+        // 두 번째 우선순위: 수동 이동 명령
         if (isAttackMove || isMovingToPosition)
         {
-            Debug.Log("[UpdateCheck] 수동 이동 명령 실행, 웨이포인트 로직 무시.");
             HandleRotation();
             HandleManualMove();
             return;
@@ -146,7 +139,6 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         }
         else
         {
-            // 아무것도 하지 않을 때, 에이전트 정지
             if (agent.hasPath)
             {
                 agent.isStopped = true;
@@ -155,14 +147,22 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
 
         if (attackTarget == null && !isDead && !isFollowingWaypoint)
         {
-            // 웨이포인트 이동 상태로 복귀
             isFollowingWaypoint = true;
             MoveToNextWaypoint();
-
         }
 
-        bool isMoving = agent.velocity.magnitude > 0.1f && !agent.isStopped;
-        animator.SetBool("IsMoving", isMoving);
+        // --- RPC를 사용한 애니메이션 동기화 로직 ---
+        if (photonView.IsMine)
+        {
+            bool currentIsMovingState = animator.GetBool("IsMoving");
+            bool newIsMovingState = agent.velocity.magnitude > 0.1f && !agent.isStopped;
+
+            if (currentIsMovingState != newIsMovingState)
+            {
+                // 상태가 변경되었을 때만 모든 클라이언트에 RPC 호출
+                photonView.RPC(nameof(RPC_SetMoving), RpcTarget.All, newIsMovingState);
+            }
+        }
     }
 
     /// <summary>
@@ -300,6 +300,8 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
 
     private void HandleRotation()
     {
+        if (!photonView.IsMine) return;
+
         Quaternion targetRotation = transform.rotation;
 
         if (agent.velocity.sqrMagnitude > 0.1f)
@@ -321,16 +323,27 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
             lastSentRotation = transform.rotation;
         }
     }
-
+    public void SyncRotation(float x, float y, float z, float w)
+    {
+        transform.rotation = new Quaternion(x, y, z, w);
+    }
     private void SearchForTarget()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, detectRange, targetMask);
         foreach (var hit in hits)
         {
+            // 1. 적 미니언 우선
             var minion = hit.GetComponent<BaseMinionController>();
             if (minion != null && minion.teamId != this.teamId && !minion.isDead)
             {
                 attackTarget = minion.transform;
+                break;
+            }
+            // 2. 적 영웅도 체크
+            var hero = hit.GetComponent<HeroController>();
+            if (hero != null && hero.teamId != this.teamId && !hero.isDead)
+            {
+                attackTarget = hero.transform;
                 break;
             }
         }
@@ -480,9 +493,10 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         }
     }
 
-    public void SyncRotation(float x, float y, float z, float w)
+    [PunRPC]
+    private void RPC_SetMoving(bool isMoving)
     {
-        transform.rotation = new Quaternion(x, y, z, w);
+        animator.SetBool("IsMoving", isMoving);
     }
     #endregion
 }
