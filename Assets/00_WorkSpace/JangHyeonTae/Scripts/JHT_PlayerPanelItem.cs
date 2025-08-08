@@ -58,7 +58,6 @@ public class JHT_PlayerPanelItem : YSJ_PanelBaseUI
         {
             return;
         }
-        Debug.Log($"PlayerPanelItem - {curCharacterIndex}");
         curCharacterIndex = networkUICanvas.curIndex;
         SetCharacterProperty();
     }

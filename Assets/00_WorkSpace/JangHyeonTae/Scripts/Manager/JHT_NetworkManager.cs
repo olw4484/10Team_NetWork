@@ -59,7 +59,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
 
     #region IManager
 
-    public bool IsDontDestroy => true;
+    public bool IsDontDestroy => IsDontDestroy;
 
     public Action<bool> OnLoading;
     public Action<bool> OnLobbyIn;
