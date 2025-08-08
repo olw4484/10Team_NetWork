@@ -97,7 +97,7 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
 
             Vector3 pos = (myTeamId == 0) ? heroRedSpawnPoint.position : heroBlueSpawnPoint.position;
             Quaternion rot = (myTeamId == 0) ? heroRedSpawnPoint.rotation : heroBlueSpawnPoint.rotation;
-            var go = PhotonNetwork.Instantiate(heroPrefabName, pos, rot);
+            var go = PhotonNetwork.Instantiate(heroPrefabName, pos, rot, 0, new object[] { myTeamId});
             Debug.Log($"[SpawnByRole] Hero ÇÁ¸®ÆÕ ÀÎ½ºÅÏ½º »ý¼ºµÊ: {go}");
         }
         else if (myRole == "Command")
