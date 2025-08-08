@@ -1,6 +1,9 @@
 ﻿using Photon.Pun;
+using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class LGH_TestGameManager : MonoBehaviourPunCallbacks, IManager
@@ -141,10 +144,12 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks, IManager
     public void Initialize()
     {
         StartCoroutine(WaitForLocalPlayer());
+        OnWin += PanelUpdate;
     }
 
     public void Cleanup()
     {
+        OnWin -= PanelUpdate;
         playerList.Clear();
         localPlayer = null;
         Instance = null;
@@ -191,4 +196,21 @@ public class LGH_TestGameManager : MonoBehaviourPunCallbacks, IManager
         Debug.LogWarning("팀 정보 없음.");
         return redSpawnPoint;
     }
+
+    public Action<bool> OnWin;
+    private void PanelUpdate(bool value)
+    {
+        SetWin(value);
+        ManagerGroup.Instance.GetManager<YSJ_SystemManager>().PauseGame();
+        Debug.Log($"Lose Team : {(TeamSetting)PhotonNetwork.LocalPlayer.CustomProperties["Team"]}");
+    }
+
+    public void SetWin(bool isWin)
+    {
+        ExitGames.Client.Photon.Hashtable props = new();
+        props["Win"] = isWin;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+    }
+
+
 }
