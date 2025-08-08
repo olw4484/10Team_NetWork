@@ -8915,6 +8915,7 @@ MonoBehaviour:
   - {fileID: 7994050}
   - {fileID: 784222469}
   - {fileID: 160920560}
+  - {fileID: 2128652666}
   _uiPrefabs: []
   _bgm: {fileID: 0}
   inventoryView: {fileID: 0}

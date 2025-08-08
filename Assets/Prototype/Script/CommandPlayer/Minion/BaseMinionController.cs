@@ -34,6 +34,8 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     private float searchTimer = 0f;
     private Quaternion lastSentRotation;
     protected Animator animator;
+    int IDamageable.teamId => this.teamId;
+    bool IDamageable.isDead => this.isDead;
 
     [Header("TeamColor")]
     [SerializeField] private GameObject redBody;
@@ -50,6 +52,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     private bool isMovingToPosition = false;
     private Vector3 attackMoveTarget;
     private Vector3 targetPosition;
+    public bool isMoving = false;
 
     // 수동제어
     protected bool isManual = false;
@@ -76,6 +79,7 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         photonView = GetComponent<PhotonView>();
         agent = GetComponent<NavMeshAgent>();
         view = GetComponentInChildren<MinionView>();
+        animator = GetComponentInChildren<Animator>();
 
         Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - BaseMinionController.Awake");
     }
@@ -319,36 +323,28 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         // 네트워크 전파 (예: 5도 이상 각도 차이 있을 때만)
         if (Quaternion.Angle(lastSentRotation, transform.rotation) > 5f)
         {
-            photonView.RPC("SyncRotation", RpcTarget.Others, transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
+            photonView.RPC("RPC_SyncRotation", RpcTarget.Others, transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
             lastSentRotation = transform.rotation;
         }
     }
-    public void SyncRotation(float x, float y, float z, float w)
-    {
-        transform.rotation = new Quaternion(x, y, z, w);
-    }
+
     private void SearchForTarget()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, detectRange, targetMask);
+
         foreach (var hit in hits)
         {
-            // 1. 적 미니언 우선
-            var minion = hit.GetComponent<BaseMinionController>();
-            if (minion != null && minion.teamId != this.teamId && !minion.isDead)
+            var target = hit.GetComponent<IDamageable>();
+            Debug.Log($"[전체로그] hit: {hit.name} | {target?.GetType().Name} | 팀: {target?.teamId} | 죽음: {target?.isDead}");
+
+            if (target != null && target.teamId != this.teamId && !target.isDead)
             {
-                attackTarget = minion.transform;
-                break;
-            }
-            // 2. 적 영웅도 체크
-            var hero = hit.GetComponent<HeroController>();
-            if (hero != null && hero.teamId != this.teamId && !hero.isDead)
-            {
-                attackTarget = hero.transform;
+                Debug.Log($"[타겟선정] 공격대상: {hit.name} | {target.GetType().Name}");
+                attackTarget = ((MonoBehaviour)target).transform;
                 break;
             }
         }
     }
-
     protected int FindNearestWaypointIndex()
     {
         if (waypointGroup == null) return 0;
@@ -493,10 +489,17 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         }
     }
 
-    [PunRPC] 
+    [PunRPC]
+    public void RPC_SyncRotation(float x, float y, float z, float w)
+    {
+        transform.rotation = new Quaternion(x, y, z, w);
+    }
+
+    [PunRPC]
     private void RPC_SetMoving(bool isMoving)
     {
-        animator.SetBool("IsMoving", isMoving);
+        //animator.SetBool("IsMoving", isMoving);
+        Debug.Log("Movement state received: " + isMoving);
     }
     #endregion
 }
