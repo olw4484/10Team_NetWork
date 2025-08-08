@@ -14516,6 +14516,7 @@ MonoBehaviour:
   isWExecuted: 0
   isEExecuted: 0
   isRExecuted: 0
+  pv: {fileID: 0}
   bladeWindMeshObj: {fileID: 3814786501378573687}
 --- !u!54 &7395969589646965975
 Rigidbody:
@@ -17037,7 +17038,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dd7c88fd72c2fe47abc0f46a97b8d51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stat: {fileID: 0}
+  stat: {fileID: 1972406567986634150}
   addstat: {fileID: 8673635077523773292}
   skillSO: {fileID: 0}
   Damage: 0
