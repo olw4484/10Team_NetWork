@@ -74,19 +74,23 @@ public class Spawner : MonoBehaviour
             if(PhotonNetwork.IsMasterClient)
             {
                 pv.RPC(nameof(setspawn), RpcTarget.All);
+                pv.RPC(nameof(SpawnRandom), RpcTarget.All);
             }
-           
+
             //_spwanPoint = SHI_RandomPosCreater.RandomPosList(groundBounds.min, groundBounds.max, spawnCount);
-                SpawnRandom();
+            
+
+               // SpawnRandom();
             
             yield return new WaitForSeconds(spawnInterval);
         }
     }
-
+    [PunRPC]
     void SpawnRandom()
     {
-        
-        for(int i = 0; i < spawnCount; i++)
+        if(PhotonNetwork.IsMasterClient)
+            
+        for (int i = 0; i < spawnCount; i++)
         {
             GameObject item = prefab.GetRandomPrefab();
             int random = Random.Range(0, _spwanPoint.Count);
