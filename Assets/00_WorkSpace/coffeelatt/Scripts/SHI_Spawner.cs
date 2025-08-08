@@ -44,13 +44,13 @@ public class Spawner : MonoBehaviour
             enabled = false;
             return;
         }
-        
+
         if (PhotonNetwork.IsMasterClient)
         {
             pv.RPC(nameof(spawn), RpcTarget.All);
         }
-        
-        
+
+
     }
     [PunRPC]
     public void spawn()
@@ -59,15 +59,24 @@ public class Spawner : MonoBehaviour
     }
     IEnumerator destory(GameObject prefab)
     {
-        yield return new WaitForSeconds(spawnInterval/2);
+        yield return new WaitForSeconds(spawnInterval / 2);
         prefab.SetActive(false);
+    }
+    [PunRPC]
+    public void setspawn()
+    {
+        _spwanPoint = SHI_RandomPosCreater.RandomPosList(groundBounds.min, groundBounds.max, spawnCount);
     }
     IEnumerator SpawnLoop()
     {
         while (true)
         {
-            
-                _spwanPoint = SHI_RandomPosCreater.RandomPosList(groundBounds.min, groundBounds.max, spawnCount);
+            if(PhotonNetwork.IsMasterClient)
+            {
+                pv.RPC(nameof(setspawn), RpcTarget.All);
+            }
+           
+            //_spwanPoint = SHI_RandomPosCreater.RandomPosList(groundBounds.min, groundBounds.max, spawnCount);
                 SpawnRandom();
             
             yield return new WaitForSeconds(spawnInterval);
