@@ -87,28 +87,18 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
     private event Action<Slider> OnSFXSlider;
     #endregion
 
-    #region AudioClip
-
-    private AudioClip enterClip;
-    private Dictionary<string, AudioClip> audioDic;
-    #endregion
-
     YSJ_AudioManager audioManager;
+    JHT_DataManager dataManager;
     private void Start()
     {
-        audioDic = new();
-        AudioClip[] objs = Resources.LoadAll<AudioClip>("Sound/UISound");
-        for (int i = 0; i < objs.Length; i++)
-        {
-            audioDic.Add(objs[i].name, objs[i]);
-        }
-
 
         #region audioSetting
         audioManager = ManagerGroup.Instance.GetManager<YSJ_AudioManager>();
+        dataManager = ManagerGroup.Instance.GetManager<JHT_DataManager>();
 
         GetEvent("OptionButton").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["SimpleWood"]);
             if (!optionPopUp.activeSelf)
             {
                 bgmSlider.value = audioManager.GetBgmVolume();
@@ -132,6 +122,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
 
         GetEvent("OptionExitButton").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["MetalImpact"]);
             if (optionPopUp.activeSelf)
             {
                 optionPopUp.SetActive(false);
@@ -146,6 +137,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
 
         GetEvent("BGMMuteButton").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["SimpleWood"]);
             isBGMMute = !isBGMMute;
 
             GetUI("BGMMuteImage").SetActive(isBGMMute);
@@ -155,6 +147,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
 
         GetEvent("SFXMuteButton").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["SimpleWood"]);
             isSFXMute = !isSFXMute;
 
             GetUI("SFXMuteImage").SetActive(isSFXMute);
@@ -224,21 +217,31 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         Color redBasicColor = redTeamPanel.color;
         Color blueBasicColor = blueTeamPanel.color;
 
-        GetEvent("RedTeamPanel").Enter += data => redTeamPanel.color = new Color(redTeamPanel.color.r, redTeamPanel.color.g, redTeamPanel.color.b, 0.4f);
+        GetEvent("RedTeamPanel").Enter += data =>
+        {
+            audioManager.PlaySfx(dataManager.audioDic["SimpleWood"]);
+            redTeamPanel.color = new Color(redTeamPanel.color.r, redTeamPanel.color.g, redTeamPanel.color.b, 0.4f);
+        };
         GetEvent("RedTeamPanel").Exit += data => redTeamPanel.color = redBasicColor;
 
-        GetEvent("BlueTeamPanel").Enter += data => blueTeamPanel.color = new Color(blueTeamPanel.color.r, blueTeamPanel.color.g, blueTeamPanel.color.b, 0.4f);
+        GetEvent("BlueTeamPanel").Enter += data =>
+        {
+            audioManager.PlaySfx(dataManager.audioDic["SimpleWood"]);
+            blueTeamPanel.color = new Color(blueTeamPanel.color.r, blueTeamPanel.color.g, blueTeamPanel.color.b, 0.4f);
+        };
         GetEvent("BlueTeamPanel").Exit += data => blueTeamPanel.color = blueBasicColor;
 
 
         GetEvent("RedTeamPanel").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["Multipurpose"]);
             teamManager.OnRedSelect?.Invoke(PhotonNetwork.LocalPlayer);
 
         };
 
         GetEvent("BlueTeamPanel").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["Multipurpose"]);
             teamManager.OnBlueSelect?.Invoke(PhotonNetwork.LocalPlayer);
             Debug.Log($"{PhotonNetwork.LocalPlayer.ActorNumber} 블루버튼 클릭");
         };
@@ -261,6 +264,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         
         GetEvent("CreateLobbyButton").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["SimpleWood"]);
             createRoomPanel.SetActive(true);
             roomPanelItem.SetActive(false);
             createLobbyButton.interactable = false;
@@ -268,11 +272,13 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
 
         GetEvent("SecretButton").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["Multipurpose"]);
             StartCoroutine(ButtonColorChange());
         };
 
         GetEvent("CreateRoomButton").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["SimpleWood"]);
             if (string.IsNullOrEmpty(roomNameInput.text))
             {
                 return;
@@ -297,6 +303,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
 
         GetEvent("BackButton").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["MetalImpact"]);
             if (!createRoomPanel.activeSelf)
                 return;
 
@@ -315,8 +322,9 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         }
         Debug.Log($"{networkManager.characters[0].name}");
 
-            GetEvent("CharacterPanel1").Click += data =>
+        GetEvent("CharacterPanel1").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["LeverDesigned"]);
             ChangeClick();
             GetUI<Image>("CharacterPanel1").color = Color.yellow;
             curIndex = 0;
@@ -325,6 +333,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         };
         GetEvent("CharacterPanel2").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["LeverDesigned"]);
             ChangeClick();
             GetUI<Image>("CharacterPanel2").color = Color.yellow;
             curIndex = 1;
@@ -332,6 +341,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         };
         GetEvent("CharacterPanel3").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["LeverDesigned"]);
             ChangeClick();
             GetUI<Image>("CharacterPanel3").color = Color.yellow;
             curIndex = 2;
@@ -351,7 +361,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
             GetUI("DescPopUp1").SetActive(true);
 
             GetUI("DescText1").GetComponent<TextMeshProUGUI>().text = networkManager.characters[0].desc;
-            audioManager.PlaySfx(audioDic["Simple Wood"]);
+            audioManager.PlaySfx(dataManager.audioDic["FireBurst"]);
         };
 
         GetEvent("CharacterPanel1").Exit += data =>
@@ -363,7 +373,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         {
             GetUI("DescPopUp2").SetActive(true);
             GetUI("DescText2").GetComponent<TextMeshProUGUI>().text = networkManager.characters[1].desc;
-            audioManager.PlaySfx(audioDic["Simple Wood"]);
+            audioManager.PlaySfx(dataManager.audioDic["FireBurst"]);
         };
 
         GetEvent("CharacterPanel2").Exit += data =>
@@ -375,7 +385,7 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
         {
             GetUI("DescPopUp3").SetActive(true);
             GetUI("DescText3").GetComponent<TextMeshProUGUI>().text = networkManager.characters[2].desc;
-            audioManager.PlaySfx(audioDic["Simple Wood"]);
+            audioManager.PlaySfx(dataManager.audioDic["FireBurst"]);
         };
 
         GetEvent("CharacterPanel3").Exit += data =>
@@ -401,12 +411,14 @@ public class JHT_NetworkUIPanel : YSJ_PanelBaseUI
 
         GetEvent("StartButton").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["BigExplosion"]);
             roomManager.GameStart();
         };
 
 
         GetEvent("LeaveRoomButton").Click += data =>
         {
+            audioManager.PlaySfx(dataManager.audioDic["MetalImpact"]);
             roomPanel.SetActive(false);
             lobbyPanel.SetActive(true);
             roomManager.OnLeaveRoom?.Invoke();
