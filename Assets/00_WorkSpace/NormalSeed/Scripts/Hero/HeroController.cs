@@ -313,7 +313,7 @@ public class HeroController : MonoBehaviour, IDamageable, IPunInstantiateMagicCa
     [PunRPC]
     public void Dead()
     {
-        StartCoroutine(DeadRoutine());
+        //StartCoroutine(DeadRoutine());
         gameObject.SetActive(false);
 
         if (pv.IsMine)
