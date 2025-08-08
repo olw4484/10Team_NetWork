@@ -116,10 +116,10 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
         _iLoadingUI?.SetProgress(1.0f);
         _iLoadingUI?.UpdateMessage("Loaded!!");
         yield return new WaitForSeconds(1.0f);
-        /*while (CurrentState != SystemStateType.Playing)
+        while (CurrentState != SystemStateType.Playing)
         {
             yield return null;
-        }*/
+        }
 
         yield return new WaitForSeconds(1.0f);
         _iLoadingUI?.Hide();
@@ -165,10 +165,10 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
         _iLoadingUI?.UpdateMessage("Loaded!!");
         yield return new WaitForSeconds(1.0f);
 
-        /*while(CurrentState != SystemStateType.Playing)
+        while(CurrentState != SystemStateType.Playing)
         {
             yield return null;
-        }*/
+        }
 
         yield return new WaitForSeconds(1.0f);
         _iLoadingUI?.Hide();
