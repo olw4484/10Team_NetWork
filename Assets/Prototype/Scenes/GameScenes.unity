@@ -4240,8 +4240,8 @@ MonoBehaviour:
   playerList: []
   localPlayer: {fileID: 0}
   inventoryView: {fileID: 0}
-  redSpawnPoint: {fileID: 0}
-  blueSpawnPoint: {fileID: 0}
+  redSpawnPoint: {fileID: 1205745413}
+  blueSpawnPoint: {fileID: 991993679}
 --- !u!4 &924423543
 Transform:
   m_ObjectHideFlags: 0

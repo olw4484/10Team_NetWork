@@ -402,19 +402,19 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters:
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Die
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Attack
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: IsIdling
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: IsMoving
   m_SynchronizeLayers:
-  - SynchronizeType: 1
+  - SynchronizeType: 2
     LayerIndex: 0
 --- !u!95 &2843375634358757798 stripped
 Animator:

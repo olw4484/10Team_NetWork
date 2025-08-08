@@ -311,19 +311,19 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters:
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Die
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Attack
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: IsIdling
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: IsMoving
   m_SynchronizeLayers:
-  - SynchronizeType: 1
+  - SynchronizeType: 2
     LayerIndex: 0
 --- !u!4 &8094093431737801326 stripped
 Transform:
