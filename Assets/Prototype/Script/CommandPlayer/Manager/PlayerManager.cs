@@ -1,6 +1,5 @@
 using Photon.Pun;
-using Photon.Realtime;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,7 +9,18 @@ public class PlayerManager : MonoBehaviour, IManager
     public static PlayerManager Instance { get; private set; }
     public List<CommandPlayer> AllPlayers { get; private set; } = new List<CommandPlayer>();
 
+    public static event Action<CommandPlayer> OnPlayerRegistered;
     public bool IsDontDestroy => false;
+
+    public void RegisterPlayer(CommandPlayer player)
+    {
+        AllPlayers.Add(player);
+
+        if (OnPlayerRegistered != null)
+        {
+            OnPlayerRegistered(player);
+        }
+    }
 
     public CommandPlayer GetCommandPlayerByTeam(int teamId)
     {
