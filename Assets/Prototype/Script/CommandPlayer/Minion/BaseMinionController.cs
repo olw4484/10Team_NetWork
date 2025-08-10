@@ -426,15 +426,38 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         if (isDead) return;
         isDead = true;
         view?.PlayMinionDeathAnimation();
-        if (EventManager.Instance != null)
-        {
-            EventManager.Instance.MinionDead(this as MinionController, killer);
-            EventManager.Instance.MinionKillConfirmed(killer, this as MinionController);
-        }
+
         if (PhotonNetwork.InRoom)
+        {
+            if (!PhotonNetwork.IsMasterClient) return; // 마스터만 최종 처리
+
+            // 1) EXP 지급 (있다면)
+            if (data != null && data.expReward > 0 && killer != null)
+                AwardExpToKiller(killer, data.expReward);
+
+            // 2) 이벤트(로그/UI 등)도 마스터 한 번만
+            EventManager.Instance?.MinionDead(this as MinionController, killer);
+            EventManager.Instance?.MinionKillConfirmed(killer, this as MinionController);
+
+            // 3) 네트워크 오브젝트 파괴
             PhotonNetwork.Destroy(gameObject);
+        }
         else
+        {
+            // 오프라인
+            EventManager.Instance?.MinionDead(this as MinionController, killer);
+            EventManager.Instance?.MinionKillConfirmed(killer, this as MinionController);
             Destroy(gameObject, 1f);
+        }
+    }
+
+    private void AwardExpToKiller(GameObject killer, int amount)
+    {
+        var recv = killer.GetComponentInParent<IExpReceiver>();
+        if (recv != null)
+        {
+            recv.AddExp(amount); // 내부에서 Owner 타겟 RPC로 지급됨
+        }
     }
 
     private void OnPhase2()
