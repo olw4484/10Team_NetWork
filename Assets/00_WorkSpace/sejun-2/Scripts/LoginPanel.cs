@@ -84,8 +84,9 @@ public class LoginPanel : MonoBehaviour
                 //2.이메일 인증이 아직 되지 않은 유저는 이메일 인증을 대기
                 else
                 {
-                    emailPanel.SetActive(true);
-                    gameObject.SetActive(false);
+                    //emailPanel.SetActive(true);
+                    //gameObject.SetActive(false);
+                    lobbyPanel.SetActive(true);
                 }
             });
     }
