@@ -34,7 +34,7 @@ public class Spawner : MonoBehaviour
         Debug.Log("작동은하지?");
         if (!PhotonNetwork.IsMasterClient) return; // 내 객체가 아니라면 RPC 호출 안 함
         Debug.Log("마스터맞아");
-        groundObject = GameObject.Find("Ground");
+        groundObject = GameObject.Find("DropZone");
         if (groundObject.TryGetComponent<Collider>(out Collider col))
             groundBounds = col.bounds;
         else if (groundObject.TryGetComponent<Renderer>(out Renderer rend))
