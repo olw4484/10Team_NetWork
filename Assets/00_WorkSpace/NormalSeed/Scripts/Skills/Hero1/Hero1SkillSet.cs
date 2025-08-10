@@ -39,6 +39,7 @@ public class Hero1SkillSet : SkillSet
     {
         isQExecuted = true;
         double sentTime = PhotonNetwork.Time;
+        float QDamage = skill_Q.curDamage + hero.model.Atk * 0.2f;
 
         if (pv != null && pv.IsMine)
         {
@@ -90,7 +91,7 @@ public class Hero1SkillSet : SkillSet
                 if (angle <= 30)
                 {
                     // 일단 데미지 계산식 없이 깡 스킬 데미지 부여
-                    view.RPC("RPC_TakeDamage", RpcTarget.All, skill_Q.curDamage, pv.ViewID);
+                    view.RPC("RPC_TakeDamage", RpcTarget.All, (int)QDamage, pv.ViewID);
                 }
             }
             Debug.Log("BladeWind");
@@ -216,6 +217,7 @@ public class Hero1SkillSet : SkillSet
     private IEnumerator BashRoutine(Vector3 dashDir)
     {
         double sentTime = PhotonNetwork.Time;
+        float EDamage = skill_E.curDamage + hero.model.Atk * 0.15f;
         Debug.Log("BashRoutine 시작!");
 
         // 마우스 방향으로 돌진하고 경로상에 부딪힌 적에 데미지를 주고 적 Hero나 장애물과 부딪히면 멈추는 스킬
@@ -258,7 +260,7 @@ public class Hero1SkillSet : SkillSet
                     }
 
                     // 영웅과 미니언 모두에게 데미지를 줄 수 있어야 함
-                    view.RPC("RPC_TakeDamage", RpcTarget.All, skill_E.curDamage, pv.ViewID);
+                    view.RPC("RPC_TakeDamage", RpcTarget.All, (int)EDamage, pv.ViewID);
                     Debug.Log("Bash Hit");
                 }
 
@@ -364,7 +366,8 @@ public class Hero1SkillSet : SkillSet
 
     private void ExecuteSkill(Transform target, IDamageable damagable, HeroController targetHero)
     {
-        hero.mov.ExecuteAttack(target, damagable, skill_R.curDamage);
+        float RDamage = skill_R.curDamage + hero.model.Atk * 0.4f;
+        hero.mov.ExecuteAttack(target, damagable, (int)RDamage);
 
         if (targetHero != null)
         {
