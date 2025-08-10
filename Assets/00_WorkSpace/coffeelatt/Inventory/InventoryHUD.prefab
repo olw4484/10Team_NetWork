@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 7073931999878008336}
   - component: {fileID: 5882794153842359354}
   - component: {fileID: 7867057380879055738}
-  - component: {fileID: 7535813759685006068}
   - component: {fileID: 1807609667951010265}
+  - component: {fileID: 863209666537977742}
   m_Layer: 5
   m_Name: InventoryHUD
   m_TagString: Untagged
@@ -102,28 +102,6 @@ MonoBehaviour:
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 1
   m_ConstraintCount: 3
---- !u!114 &7535813759685006068
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5082196377687239307}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60fe0f6414b52d5428bfa61bb95c96ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  slotPrefab: {fileID: 3991498070397423769, guid: a188fb0c1f1e4c64eb38a3dc3cea85e7, type: 3}
-  slotParent: {fileID: 2956937187438065907}
-  slots:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  inventory: {fileID: 0}
 --- !u!114 &1807609667951010265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,3 +116,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotPrefab: {fileID: 3991498070397423769, guid: a188fb0c1f1e4c64eb38a3dc3cea85e7, type: 3}
   slotParent: {fileID: 2956937187438065907}
+  pv: {fileID: 0}
+--- !u!114 &863209666537977742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5082196377687239307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0

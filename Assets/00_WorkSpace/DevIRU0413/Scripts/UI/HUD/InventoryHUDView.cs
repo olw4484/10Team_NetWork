@@ -18,9 +18,9 @@ public class InventoryHUDView : YSJ_HUDBaseUI
             gameObject.SetActive(false); // 내 플레이어가 아닐 경우 UI 비활성화
 
     }
-    
-        
-    
+
+
+
     public void InitSlots(InventoryHUDModel model)
     {
         ClearSlots();

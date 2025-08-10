@@ -795,6 +795,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1421534553042413391, guid: c23ac9cc122398d419907d6adfe52b80, type: 3}
+      propertyPath: sceneViewId
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5548277879991976494, guid: c23ac9cc122398d419907d6adfe52b80, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -887,7 +891,10 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 8848236679377846018, guid: c23ac9cc122398d419907d6adfe52b80, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6829537411898784330, guid: c23ac9cc122398d419907d6adfe52b80, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1974370991}
   m_SourcePrefab: {fileID: 100100000, guid: c23ac9cc122398d419907d6adfe52b80, type: 3}
 --- !u!1 &1073613607
 GameObject:
@@ -1180,7 +1187,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 96011351497683224, guid: c23ac9cc122398d419907d6adfe52b80, type: 3}
   m_PrefabInstance: {fileID: 988089589}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1974370986}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1044381fe0e6df46865cfad801e4ae5, type: 3}
@@ -1217,6 +1224,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1974370986 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6829537411898784330, guid: c23ac9cc122398d419907d6adfe52b80, type: 3}
+  m_PrefabInstance: {fileID: 988089589}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1974370991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1974370986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 2
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1001 &1635868363826967260
 PrefabInstance:
   m_ObjectHideFlags: 0

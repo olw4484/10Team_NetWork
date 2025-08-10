@@ -619,7 +619,7 @@ GameObject:
   - component: {fileID: 711083071}
   - component: {fileID: 711083075}
   m_Layer: 23
-  m_Name: Ground
+  m_Name: DropZone
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
