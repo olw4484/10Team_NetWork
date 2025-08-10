@@ -15659,7 +15659,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dd7c88fd72c2fe47abc0f46a97b8d51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stat: {fileID: 0}
+  stat: {fileID: 5069226440957445123}
   addstat: {fileID: 5902372502343655296}
   skillSO: {fileID: 0}
   Damage: 0

@@ -31,9 +31,10 @@ public class Spawner : MonoBehaviour
     void Start()
     {
         //pv = GetComponent<PhotonView>();
-
+        Debug.Log("작동은하지?");
         if (!PhotonNetwork.IsMasterClient) return; // 내 객체가 아니라면 RPC 호출 안 함
-
+        Debug.Log("마스터맞아");
+        groundObject = GameObject.Find("Ground");
         if (groundObject.TryGetComponent<Collider>(out Collider col))
             groundBounds = col.bounds;
         else if (groundObject.TryGetComponent<Renderer>(out Renderer rend))
@@ -87,7 +88,7 @@ public class Spawner : MonoBehaviour
     {
         _spwanPoint = SHI_RandomPosCreater.RandomPosList(groundBounds.min, groundBounds.max, spawnCount);
 
-        for (int i = 0; i < spawnCount; i++)
+        for (int i = 0; i < spawnCount; i++ )
         {
             
             GameObject item = prefab.GetRandomPrefab();
@@ -105,13 +106,13 @@ public class Spawner : MonoBehaviour
             //itemBase.GetComponent<SpriteRenderer>().sprite = itemBase._Image;
 
 
-            _spwanPoint.RemoveAt(random);
+            //_spwanPoint.RemoveAt(random);
             //destory(spawnitem);????
             //Instantiate(prefab, spawnpoint, prefab.transform.rotation);
             //GameObject create = Instantiate(prefab, spawnpoint, prefab.transform.rotation);
             StartCoroutine(destory(spawnitem));
         }
-
+        _spwanPoint.Clear(); // 스폰 포인트 초기화
 
     }
 }
