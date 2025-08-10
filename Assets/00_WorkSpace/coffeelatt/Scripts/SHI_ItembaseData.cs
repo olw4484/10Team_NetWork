@@ -7,9 +7,9 @@ public class SHI_ItembaseData : ScriptableObject
     public Sprite _Image;
     public enum ItemName
     {
-        HealHp,
-        HealMp,
-        GainExp,
+        HpPotion,
+        MpPotion,
+        ExpPotion,
         TrinityForce, //  트포
         RapidFirecannon, //고연포
         MinionSlayer, // 미니언 슬레이어

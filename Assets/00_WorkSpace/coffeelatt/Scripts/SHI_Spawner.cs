@@ -89,7 +89,9 @@ public class Spawner : MonoBehaviour
 
         for (int i = 0; i < spawnCount; i++)
         {
+            
             GameObject item = prefab.GetRandomPrefab();
+            Debug.Log($"{item.name}");
             int random = Random.Range(0, _spwanPoint.Count);
             //Vector3 spawnpoint = _spwanPoint[random];
             Vector3 spawnpoint = _spwanPoint[i] + Vector3.up * dropheight; // 드랍 높이만큼 위로 올리기
