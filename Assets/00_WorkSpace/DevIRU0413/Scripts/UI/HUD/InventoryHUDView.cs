@@ -1,13 +1,26 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class InventoryHUDView : YSJ_HUDBaseUI
 {
     [SerializeField] private GameObject slotPrefab;
     [SerializeField] private Transform slotParent;
-
+    public PhotonView pv;
+    
     private List<SHI_InventorySlot> slots = new List<SHI_InventorySlot>();
+    private void Start()
+    {
 
+
+        pv = GetComponent<PhotonView>();
+        if (!pv.IsMine)
+            gameObject.SetActive(false); // 내 플레이어가 아닐 경우 UI 비활성화
+
+    }
+    
+        
+    
     public void InitSlots(InventoryHUDModel model)
     {
         ClearSlots();
