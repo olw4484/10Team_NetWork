@@ -2233,6 +2233,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: itemspawn
       objectReference: {fileID: 0}
+    - target: {fileID: 7870535399760195874, guid: 15afb22cccebe8148aa7b5a8b2e6c5a4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -48,6 +48,8 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
                 props["Role"] = setJob;
                 player.SetCustomProperties(props);
             }
+            if (PhotonNetwork.IsMasterClient)
+                PhotonNetwork.Instantiate("ItemSpawner", Vector3.zero, Quaternion.identity);
         }
 
         // 2. 모든 클라이언트에서 자신의 스폰 루틴 실행 (팀/역할 세팅 완료될 때까지 대기)
