@@ -1,3 +1,4 @@
+using Photon.Pun;
 using UnityEngine;
 
 public class SHI_Itemget : MonoBehaviour
@@ -42,5 +43,6 @@ public class SHI_Itemget : MonoBehaviour
             //Destroy(other.gameObject); // 아이템 오브젝트 제거
             //item.gameObject.SetActive(false);
         }
+        
     }
 }
