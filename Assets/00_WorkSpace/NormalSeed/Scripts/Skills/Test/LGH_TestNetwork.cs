@@ -39,7 +39,7 @@ public class LGH_TestNetwork : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         TypedLobby testLobby = new TypedLobby(testLobbyName, LobbyType.Default);
-        PhotonNetwork.JoinLobby();
+        PhotonNetwork.JoinLobby(testLobby);
     }
 
     public override void OnJoinedLobby()
