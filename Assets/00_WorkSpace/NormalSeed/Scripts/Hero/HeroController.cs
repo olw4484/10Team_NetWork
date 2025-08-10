@@ -293,7 +293,7 @@ public class HeroController : MonoBehaviour, IDamageable, IPunInstantiateMagicCa
     [PunRPC]
     public void RPC_TakeDamage(int amount, int attackerViewID = -1)
     {
-        model.CurHP.Value -= amount;
+        model.CurHP.Value -= DamageCalculate.DamageCalculation(amount, model.Def);
         Debug.Log($"{amount}의 데미지를 입음. 현재 HP : {model.CurHP.Value}");
 
         if (model.CurHP.Value <= 0)
