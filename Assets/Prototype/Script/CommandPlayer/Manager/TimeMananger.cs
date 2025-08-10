@@ -21,6 +21,9 @@ public class TimeManager : MonoBehaviour
     private bool _phase2Fired = false;
     private bool _phase3Fired = false;
 
+    public bool Phase2Fired => _phase2Fired;
+    public bool Phase3Fired => _phase3Fired;
+
     // 싱글턴 초기화
 
     private void Awake()
