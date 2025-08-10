@@ -37,8 +37,6 @@ public class HQ : MonoBehaviour, IDamageable ,IPunInstantiateMagicCallback
         if (Input.GetKeyUp(KeyCode.B))
         {
             OnDestroyed();
-            if(this.gameObject != null)
-                ManagerGroup.Instance.GetManager<LGH_TestGameManager>().OnWin?.Invoke(false);
         }
     }
 
@@ -63,6 +61,9 @@ public class HQ : MonoBehaviour, IDamageable ,IPunInstantiateMagicCallback
     private void OnDestroyed()
     {
         Debug.Log($"{gameObject.name} HQ 파괴됨!");
+
+        if (this.gameObject != null)
+            ManagerGroup.Instance.GetManager<LGH_TestGameManager>().OnWin?.Invoke(false);
 
         if (PhotonNetwork.InRoom)
         {
