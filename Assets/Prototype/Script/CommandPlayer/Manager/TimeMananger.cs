@@ -1,14 +1,15 @@
+using Photon.Pun;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 
 /// <summary>
 /// 게임의 경과 시간과 페이즈에 따른 이벤트를 관리하는 TimeManager 싱글턴 클래스.
 /// 8분, 15분에 이벤트를 발생시키며, 하드코딩된 타이밍을 기준으로 작동.
 /// </summary>
-public class TimeManager : MonoBehaviour
+public class TimeManager : MonoBehaviour, IManager
 {
     public static TimeManager Instance { get; private set; }
 
@@ -20,6 +21,11 @@ public class TimeManager : MonoBehaviour
 
     private bool _phase2Fired = false;
     private bool _phase3Fired = false;
+
+    public bool Phase2Fired => _phase2Fired;
+    public bool Phase3Fired => _phase3Fired;
+
+    public bool IsDontDestroy => false;
 
     // 싱글턴 초기화
 
@@ -60,4 +66,24 @@ public class TimeManager : MonoBehaviour
             OnPhase3Started?.Invoke();
         }
     }
+
+    public void Initialize()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
+    public void Cleanup()
+    {
+        if (PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.Disconnect();
+        }
+    }
+
+    public GameObject GetGameObject() => this.gameObject;
 }

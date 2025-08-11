@@ -74,6 +74,8 @@ MonoBehaviour:
   - setspawn
   - SpawnRandom
   - SpawnItem
+  - RPC_ApplyPhaseBuff
+  - RPC_RequestDamage
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1
