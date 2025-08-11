@@ -1,4 +1,4 @@
-using Photon.Pun;
+﻿using Photon.Pun;
 using Photon.Realtime;
 using System;
 using System.Collections;
@@ -114,7 +114,9 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
     {
         Init();
         OnLoading?.Invoke(false);
-        PhotonNetwork.JoinLobby();
+        TypedLobby customLobby = new TypedLobby("GameLobby", LobbyType.Default);
+
+        PhotonNetwork.JoinLobby(customLobby);
     }
 
     public override void OnDisconnected(DisconnectCause cause)
