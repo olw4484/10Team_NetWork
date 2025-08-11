@@ -33,6 +33,9 @@ public class HQCommander : MonoBehaviour, ISelectable, IPunInstantiateMagicCallb
             OnSpawnMinionButton((int)MinionType.Elite);
 
         // 특수 스킬 확장 가능성 ) HQSkil 2~3개
+
+        //if (Input.GetKeyDown(FeyCode.D))
+        //  
     }
 
     public void OnSpawnMinionButton(int type)
