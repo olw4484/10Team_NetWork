@@ -14,6 +14,10 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     public int maxHP;
     protected int currentHP;
 
+    private int baseMaxHP;
+    private int baseAttackPower;
+    private float baseMoveSpeed;
+
     [Header("Data")]
     public MinionDataSO data;
     public LayerMask targetMask;
@@ -57,6 +61,20 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     // 수동제어
     protected bool isManual = false;
     public virtual bool IsManualControl => isManual;
+
+    // 페이즈 배율
+    [Header("Phase Buff Multipliers")]
+    public float phase2_HP_Mul = 1.25f;
+    public float phase2_DMG_Mul = 1.15f;
+    public float phase2_SPD_Mul = 1.10f;
+
+    public float phase3_HP_Mul = 1.50f;
+    public float phase3_DMG_Mul = 1.30f;
+    public float phase3_SPD_Mul = 1.20f;
+
+    private bool p2Applied = false;
+    private bool p3Applied = false;
+
 
     public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
@@ -153,6 +171,29 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         {
             isFollowingWaypoint = true;
             MoveToNextWaypoint();
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (TimeManager.Instance != null)
+        {
+            TimeManager.Instance.OnPhase2Started += OnPhase2;
+            TimeManager.Instance.OnPhase3Started += OnPhase3;
+
+            // 이미 진행 중인 판에 합류/스폰된 경우 즉시 보정
+            float t = TimeManager.Instance.ElapsedTime;
+            if (!p2Applied && t >= 480f) OnPhase2();
+            if (!p3Applied && t >= 900f) OnPhase3();
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (TimeManager.Instance != null)
+        {
+            TimeManager.Instance.OnPhase2Started -= OnPhase2;
+            TimeManager.Instance.OnPhase3Started -= OnPhase3;
         }
     }
 
@@ -385,15 +426,68 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         if (isDead) return;
         isDead = true;
         view?.PlayMinionDeathAnimation();
-        if (EventManager.Instance != null)
-        {
-            EventManager.Instance.MinionDead(this as MinionController, killer);
-            EventManager.Instance.MinionKillConfirmed(killer, this as MinionController);
-        }
+
         if (PhotonNetwork.InRoom)
+        {
+            if (!PhotonNetwork.IsMasterClient) return; // 마스터만 최종 처리
+
+            // 1) EXP 지급 (있다면)
+            if (data != null && data.expReward > 0 && killer != null)
+                AwardExpToKiller(killer, data.expReward);
+
+            // 2) 이벤트(로그/UI 등)도 마스터 한 번만
+            EventManager.Instance?.MinionDead(this as MinionController, killer);
+            EventManager.Instance?.MinionKillConfirmed(killer, this as MinionController);
+
+            // 3) 네트워크 오브젝트 파괴
             PhotonNetwork.Destroy(gameObject);
+        }
         else
+        {
+            // 오프라인
+            EventManager.Instance?.MinionDead(this as MinionController, killer);
+            EventManager.Instance?.MinionKillConfirmed(killer, this as MinionController);
             Destroy(gameObject, 1f);
+        }
+    }
+
+    private void AwardExpToKiller(GameObject killer, int amount)
+    {
+        var recv = killer.GetComponentInParent<IExpReceiver>();
+        if (recv != null)
+        {
+            recv.AddExp(amount); // 내부에서 Owner 타겟 RPC로 지급됨
+        }
+    }
+
+    private void OnPhase2()
+    {
+        if (p2Applied) return;
+
+        if (PhotonNetwork.InRoom)
+        {
+            if (PhotonNetwork.IsMasterClient)
+                photonView.RPC(nameof(RPC_ApplyPhaseBuff), RpcTarget.All, 2);
+        }
+        else
+        {
+            ApplyPhaseBuff(2);
+        }
+    }
+
+    private void OnPhase3()
+    {
+        if (p3Applied) return;
+
+        if (PhotonNetwork.InRoom)
+        {
+            if (PhotonNetwork.IsMasterClient)
+                photonView.RPC(nameof(RPC_ApplyPhaseBuff), RpcTarget.All, 3);
+        }
+        else
+        {
+            ApplyPhaseBuff(3);
+        }
     }
 
     // RPC 처리
@@ -411,6 +505,10 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         this.attackPower = data.attackPower;
         this.maxHP = data.maxHP;
         this.currentHP = maxHP;
+
+        this.baseMoveSpeed = this.moveSpeed;
+        this.baseAttackPower = this.attackPower;
+        this.baseMaxHP = this.maxHP;
 
         this.teamId = teamId;
 
@@ -480,6 +578,50 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     public void RPC_SyncRotation(float x, float y, float z, float w)
     {
         transform.rotation = new Quaternion(x, y, z, w);
+    }
+
+    [PunRPC]
+    private void RPC_ApplyPhaseBuff(int phase)
+    {
+        ApplyPhaseBuff(phase);
+    }
+
+    private void ApplyPhaseBuff(int phase)
+    {
+        switch (phase)
+        {
+            case 2:
+                if (p2Applied) return;
+                p2Applied = true;
+
+                // HP
+                {
+                    int prev = maxHP;
+                    maxHP = Mathf.RoundToInt(maxHP * phase2_HP_Mul);
+                    currentHP = Mathf.RoundToInt(currentHP * (maxHP / (float)prev));
+                }
+                // DMG
+                attackPower = Mathf.RoundToInt(attackPower * phase2_DMG_Mul);
+                // SPD
+                moveSpeed *= phase2_SPD_Mul;
+                if (agent != null) agent.speed = moveSpeed;
+                break;
+
+            case 3:
+                if (p3Applied) return;
+                p3Applied = true;
+
+                // 누적 강화 (Phase2 이후 추가 곱)
+                {
+                    int prev = maxHP;
+                    maxHP = Mathf.RoundToInt(maxHP * phase3_HP_Mul);
+                    currentHP = Mathf.RoundToInt(currentHP * (maxHP / (float)prev));
+                }
+                attackPower = Mathf.RoundToInt(attackPower * phase3_DMG_Mul);
+                moveSpeed *= phase3_SPD_Mul;
+                if (agent != null) agent.speed = moveSpeed;
+                break;
+        }
     }
     #endregion
 }
