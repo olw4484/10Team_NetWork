@@ -107,7 +107,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
         {
             AA();
         }
-        PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
+        //PhotonNetwork.NickName = FirebaseManager.Auth.CurrentUser.DisplayName;
     }
 
     #region Photon Callbacks
