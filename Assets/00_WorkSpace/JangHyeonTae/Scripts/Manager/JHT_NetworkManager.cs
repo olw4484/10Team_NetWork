@@ -77,6 +77,7 @@ public class JHT_NetworkManager : MonoBehaviourPunCallbacks, IManager
         }
         DontDestroyOnLoad(gameObject);
 
+        PhotonNetwork.PhotonServerSettings.AppSettings.FixedRegion = "kr";
         PhotonNetwork.ConnectUsingSettings();
     }
 
