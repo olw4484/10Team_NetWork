@@ -16,25 +16,33 @@ public class MeleeMinionController : BaseMinionController
 
     protected override void TryAttack()
     {
-        if (!PhotonNetwork.IsMasterClient || attackTimer < attackCooldown || attackTarget == null || isDead) return;
-
-        // 여기서 어택 이펙트 or 애니메이션 or 데미지 처리
-        var targetPV = attackTarget.GetComponent<PhotonView>();
-        if (targetPV != null)
+        Debug.Log("TryAttack() called!");
+        if (!PhotonNetwork.IsMasterClient || attackTimer < attackCooldown || attackTarget == null || isDead)
         {
-            attackTimer = 0f;
-            photonView.RPC(nameof(RPC_Attack), RpcTarget.All, targetPV.ViewID, attackPower);
+            Debug.Log("TryAttack blocked by condition");
+            return;
         }
+        var targetPV = attackTarget.GetComponent<PhotonView>();
+        if (targetPV == null)
+        {
+            Debug.LogError("[Minion] TryAttack: attackTarget에 PhotonView 없음! " + attackTarget.name);
+            return;
+        }
+
+        attackTimer = 0f;
+        int targetViewID = targetPV.ViewID;
+        Debug.Log("TryAttack conditions passed, sending RPC_TryAttack!");
+        photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID, attackPower);
     }
 
     [PunRPC]
-    public void RPC_Attack(int targetViewID, int dmg)
+    public void RPC_TryAttack(int targetViewID, int dmg)
     {
         var targetPV = PhotonView.Find(targetViewID);
         if (targetPV != null)
         {
             var damageable = targetPV.GetComponent<IDamageable>();
-            damageable?.TakeDamage(dmg, this.gameObject);
+            damageable?.TakeDamage(dmg, gameObject);
             view?.PlayMinionAttackAnimation();
         }
     }

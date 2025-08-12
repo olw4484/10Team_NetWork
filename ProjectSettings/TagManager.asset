@@ -8,6 +8,7 @@ TagManager:
   - Obstacle
   - SceneBase
   - Manager
+  - Item
   layers:
   - Default
   - TransparentFX
@@ -33,9 +34,9 @@ TagManager:
   - Buildig
   - Minion
   - Ground
-  - 
-  - 
-  - 
+  - Hero
+  - Projectile
+  - DropArea
   - 
   - 
   - 

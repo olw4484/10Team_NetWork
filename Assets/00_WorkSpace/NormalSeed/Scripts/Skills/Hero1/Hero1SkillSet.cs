@@ -12,15 +12,47 @@ public class Hero1SkillSet : SkillSet
     //public SkillSO skill_E;
     //public SkillSO skill_R;
 
-    // protected Camera mainCam;
+    //public bool isQExecuted = false;
+    //public bool isWExecuted = false;
+    //public bool isEExecuted = false;
+    //public bool isRExecuted = false;
+
+    //protected Camera mainCam;
     //protected HeroController hero;
+    //protected NavMeshAgent agent;
+    //protected PhotonView pv;
 
     private WaitForSeconds distCheck = new WaitForSeconds(0.1f);
+    [SerializeField] private GameObject bladeWindMeshObj;
+    private MeshFilter meshFilter;
+    private MeshRenderer meshRenderer;
+
+    private void Awake()
+    {
+        meshFilter = bladeWindMeshObj.GetComponent<MeshFilter>();
+        meshRenderer = bladeWindMeshObj.GetComponent<MeshRenderer>();
+        meshRenderer.enabled = false;
+    }
 
     #region UseQ
     public override void UseQ()
     {
         isQExecuted = true;
+        double sentTime = PhotonNetwork.Time;
+        float QDamage = skill_Q.curDamage + hero.model.Atk * 0.2f;
+
+        if (pv != null && pv.IsMine)
+        {
+            pv.RPC(nameof(HeroMovement.InterruptMovement), RpcTarget.All);
+        }
+        else if (pv == null)
+        {
+            Debug.Log("포톤뷰 없음");
+        }
+
+            hero.isUsingSkill = true;
+        pv.RPC(nameof(HeroView.PlayAnimation), RpcTarget.All, hero.Q_HASH, sentTime);
+
         // 마우스 방향에 부채꼴로 공격하는 스킬
         Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
         Vector3 attackDir;
@@ -34,7 +66,7 @@ public class Hero1SkillSet : SkillSet
             // 공격 방향은 마우스 위치로 설정
             attackDir = (hit.point - originPos).normalized;
             // 공격 방향을 바라보게 forward를 바꿔줌
-            transform.forward = new Vector3(attackDir.x, transform.position.y, attackDir.z);
+            pv.RPC(nameof(LookAttackDir), RpcTarget.All, attackDir);
 
             foreach (Collider collider in hits)
             {
@@ -59,14 +91,89 @@ public class Hero1SkillSet : SkillSet
                 if (angle <= 30)
                 {
                     // 일단 데미지 계산식 없이 깡 스킬 데미지 부여
-                    view.RPC(nameof(HeroController.TakeDamage), RpcTarget.All, skill_Q.curDamage);
+                    view.RPC("RPC_TakeDamage", RpcTarget.All, (int)QDamage, pv.ViewID);
                 }
             }
             Debug.Log("BladeWind");
+            StartCoroutine(BladeWindRoutine(sentTime));
         }
+    }
+
+    private IEnumerator BladeWindRoutine(double sentTime)
+    {
+        double now = PhotonNetwork.Time;
+        float lag = (float)(now - sentTime);
+
+        pv.RPC(nameof(ShowBladeWindArea), RpcTarget.All, skill_Q.skillRange, 60f, sentTime);
+
+        float duration = 0.7f;
+        float waitTime = Mathf.Max(0f, duration - lag);
+        yield return new WaitForSeconds(waitTime);
+
+        pv.RPC(nameof(HideBladeWindArea), RpcTarget.All);
+        HideBladeWindArea();
+        hero.isUsingSkill = false;
+    }
+
+    private Mesh CreateFanMesh(float radius, float angleDeg, int segments)
+    {
+        Mesh mesh = new Mesh();
+
+        List<Vector3> vertices = new List<Vector3>();
+        List<int> triangles = new List<int>();
+
+        vertices.Add(Vector3.zero); // 중심점
+
+        float angleRad = Mathf.Deg2Rad * angleDeg;
+        float segmentAngle = angleRad / segments;
+
+        for (int i = 0; i <= segments; i++)
+        {
+            float currentAngle = -angleRad / 2 + segmentAngle * i;
+            Vector3 point = new Vector3(Mathf.Sin(currentAngle), 0, Mathf.Cos(currentAngle)) * radius;
+            vertices.Add(point);
+        }
+
+        for (int i = 1; i < vertices.Count - 1; i++)
+        {
+            triangles.Add(0);
+            triangles.Add(i);
+            triangles.Add(i + 1);
+        }
+
+        mesh.SetVertices(vertices);
+        mesh.SetTriangles(triangles, 0);
+        mesh.RecalculateNormals();
+
+        return mesh;
+    }
+
+    [PunRPC]
+    private void LookAttackDir(Vector3 attackDir)
+    {
+        transform.forward = new Vector3(attackDir.x, transform.position.y, attackDir.z);
+    }
+
+    [PunRPC]
+    private void ShowBladeWindArea(float radius, float angleDeg, double sentTime)
+    {
+        double now = PhotonNetwork.Time;
+        float lag = (float)(now - sentTime);
+
+        meshFilter.mesh = CreateFanMesh(radius, angleDeg, 600); 
+        bladeWindMeshObj.transform.position = transform.position;
+        bladeWindMeshObj.transform.rotation = Quaternion.LookRotation(transform.forward);
+        meshRenderer.enabled = true;
+    }
+
+    [PunRPC]
+    private void HideBladeWindArea()
+    {
+        meshRenderer.enabled = false;
     }
     #endregion
 
+    #region UseW
     public override void UseW()
     {
         isWExecuted = true;
@@ -82,11 +189,19 @@ public class Hero1SkillSet : SkillSet
         hero.model.Def = hero.model.Def - hero.model.Atk * 0.2f;
         Debug.Log($"방어력 돌아감. 방어력 : {hero.model.Def}");
     }
+    #endregion
 
+    #region UseE
     public override void UseE()
     {
+        double sentTime = PhotonNetwork.Time;
         isEExecuted = true;
-        hero.mov.isMove = false;
+        pv.RPC(nameof(HeroMovement.InterruptMovement), RpcTarget.All);
+
+        hero.isUsingSkill = true;
+        hero.view.animator.SetTrigger("eSkill");
+
+        pv.RPC(nameof(HeroView.PlayAnimation), RpcTarget.All, hero.E_HASH, sentTime);
 
         Vector3 originPos = new Vector3(transform.position.x, 0, transform.position.z);
         RaycastHit hit;
@@ -94,12 +209,15 @@ public class Hero1SkillSet : SkillSet
         {
             Vector3 dashDir = (hit.point - originPos).normalized;
             pv.RPC(nameof(RPC_StartBash), RpcTarget.All, dashDir);
+            
             Debug.Log("RPC_StartBash 호출됨, dashDir: " + dashDir);
         }
     }
 
     private IEnumerator BashRoutine(Vector3 dashDir)
     {
+        double sentTime = PhotonNetwork.Time;
+        float EDamage = skill_E.curDamage + hero.model.Atk * 0.15f;
         Debug.Log("BashRoutine 시작!");
 
         // 마우스 방향으로 돌진하고 경로상에 부딪힌 적에 데미지를 주고 적 Hero나 장애물과 부딪히면 멈추는 스킬
@@ -133,6 +251,7 @@ public class Hero1SkillSet : SkillSet
                 // 먼저 데미지를 줄 수 있는 충돌인지 체크
                 if (damagable != null && view != null && !view.IsMine)
                 {
+                    // 팀 체크
                     object targetTeam, myTeam;
                     if (view.Owner.CustomProperties.TryGetValue("Team", out targetTeam) &&
                         PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Team", out myTeam))
@@ -140,7 +259,8 @@ public class Hero1SkillSet : SkillSet
                         if (targetTeam == myTeam) continue;
                     }
 
-                    damagable.TakeDamage(skill_E.curDamage);
+                    // 영웅과 미니언 모두에게 데미지를 줄 수 있어야 함
+                    view.RPC("RPC_TakeDamage", RpcTarget.All, (int)EDamage, pv.ViewID);
                     Debug.Log("Bash Hit");
                 }
 
@@ -155,6 +275,7 @@ public class Hero1SkillSet : SkillSet
 
             if (hitDetected)
             {
+                hero.isUsingSkill = false;
                 dashSpeed = 0f;
 
                 agent.enabled = true;
@@ -167,6 +288,9 @@ public class Hero1SkillSet : SkillSet
             yield return null;
         }
 
+        hero.isUsingSkill = false;
+        pv.RPC("PlayAnimation", RpcTarget.All, hero.IDLE_HASH, sentTime);
+
         agent.enabled = true;
         agent.isStopped = false;
         agent.ResetPath();
@@ -174,12 +298,13 @@ public class Hero1SkillSet : SkillSet
     }
 
     [PunRPC]
-
     public void RPC_StartBash(Vector3 dashDir)
     {
         StartCoroutine(BashRoutine(dashDir));
     }
+    #endregion
 
+    #region UseR
     public override void UseR()
     {
         // 사정거리 안의 Hero를 선택해서 공격 가능, 적에게 큰 데미지를 주고 이동속도를 1초동안 감소시키는 스킬
@@ -241,7 +366,8 @@ public class Hero1SkillSet : SkillSet
 
     private void ExecuteSkill(Transform target, IDamageable damagable, HeroController targetHero)
     {
-        hero.mov.ExecuteAttack(target, damagable, skill_R.curDamage);
+        float RDamage = skill_R.curDamage + hero.model.Atk * 0.4f;
+        hero.mov.ExecuteAttack(target, damagable, (int)RDamage);
 
         if (targetHero != null)
         {
@@ -273,4 +399,5 @@ public class Hero1SkillSet : SkillSet
             agent.ResetPath();
         }   
     }
+    #endregion
 }

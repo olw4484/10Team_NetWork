@@ -32,8 +32,8 @@ public class MinionView : MonoBehaviour
         if (animator != null)
         {
             animator.SetTrigger("Attack");
-            hitEffect?.Play();
-            audioSource?.PlayOneShot(attackSound);
+            //hitEffect?.Play();
+            //audioSource?.PlayOneShot(attackSound);
         }
     }
 

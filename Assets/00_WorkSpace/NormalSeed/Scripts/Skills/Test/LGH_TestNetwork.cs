@@ -1,9 +1,7 @@
 ﻿using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Photon.Realtime;
-using System;
+using System.Collections;
+using UnityEngine;
 
 
 //public enum TestTeamSetting
@@ -18,6 +16,10 @@ public class LGH_TestNetwork : MonoBehaviourPunCallbacks
     public Transform redSpawnPoint;
     public Transform blueSpawnPoint;
 
+    [Header("테스트 씬 상세")]
+    [SerializeField] private const string testLobbyName = "TestLobby";
+    [SerializeField] private const string testGameVersion = "Test_1.0";
+
     private void Start()
     {
         string randomName = $"Tester{UnityEngine.Random.Range(1000, 9999)}";
@@ -28,18 +30,26 @@ public class LGH_TestNetwork : MonoBehaviourPunCallbacks
     {
         Debug.Log($"Connect to Photon as {nickName}");
         PhotonNetwork.AuthValues = new AuthenticationValues(nickName);
-        PhotonNetwork.AutomaticallySyncScene = true;
+        PhotonNetwork.AutomaticallySyncScene = true;   // 테스트씬에서는 씬동기화 꺼둠
         PhotonNetwork.NickName = nickName;
+        PhotonNetwork.GameVersion = testGameVersion;
         PhotonNetwork.ConnectUsingSettings();
     }
 
     public override void OnConnectedToMaster()
     {
-        PhotonNetwork.JoinLobby();
+        TypedLobby testLobby = new TypedLobby(testLobbyName, LobbyType.Default);
+        PhotonNetwork.JoinLobby(testLobby);
     }
 
     public override void OnJoinedLobby()
     {
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.MaxPlayers = 4;
+        roomOptions.IsVisible = false; // 테스트 방은 숨김처리
+        roomOptions.IsOpen = true;
+
+        TypedLobby testLobby = new TypedLobby(testLobbyName, LobbyType.Default);
         PhotonNetwork.JoinRandomOrCreateRoom();
     }
 
@@ -54,7 +64,8 @@ public class LGH_TestNetwork : MonoBehaviourPunCallbacks
             init["BlueCount"] = 0;
             PhotonNetwork.CurrentRoom.SetCustomProperties(init);
         }
-
+        if (PhotonNetwork.IsMasterClient)
+            PhotonNetwork.Instantiate("ItemSpawner", Vector3.zero, Quaternion.identity);
         StartCoroutine(WaitForRoomPropertiesAndJoin());
     }
 
@@ -105,7 +116,8 @@ public class LGH_TestNetwork : MonoBehaviourPunCallbacks
         Quaternion spawnRot = testTeam == TestTeamSetting.Red ? redSpawnPoint.rotation : blueSpawnPoint.rotation;
 
         // 생성
-        PhotonNetwork.Instantiate("Hero1", spawnPos, spawnRot);
-        Debug.Log($"JHT_TestNetwork : 플레이어 {PhotonNetwork.NickName} 팀 : {testTeam}, 위치 : {spawnPos}");
+        PhotonNetwork.Instantiate("Hero0", spawnPos, spawnRot);
+
+        Debug.Log($"[TEST] 플레이어 {PhotonNetwork.NickName}의 팀 : {testTeam}, 위치 : {spawnPos}");
     }
 }

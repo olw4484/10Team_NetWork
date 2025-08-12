@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
 {
     #region Fields
-    [SerializeField] private YSJ_CanvasProfile[] customCanvasProfiles = new YSJ_CanvasProfile[5];
+    [SerializeField] private YSJ_CanvasProfile[] _customCanvasProfiles = new YSJ_CanvasProfile[5];
 
     private readonly Dictionary<YSJ_UIType, Canvas> _canvasMap = new();
     private Dictionary<Canvas, List<JHT_BaseUI>> _uiMap = new();
@@ -45,9 +45,9 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
 
         Canvas canvas = null;
         // 커스텀 컴버스가 있다면
-        if (customCanvasProfiles.Length > 0)
+        if (_customCanvasProfiles.Length > 0)
         {
-            foreach (var profile in customCanvasProfiles)
+            foreach (var profile in _customCanvasProfiles)
             {
                 if (profile == null) continue;
                 if (profile.canvasType == layer)
@@ -92,7 +92,12 @@ public class YSJ_UIManager : YSJ_SimpleSingleton<YSJ_UIManager>, IManager
         }
 
         // Canvas에 필요한 컴포넌트들 추가
-        go.GetOrAddComponent<CanvasScaler>();
+        CanvasScaler scaler = go.GetOrAddComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920.0f, 1080.0f);
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        scaler.matchWidthOrHeight = 0.5f;
+
         go.GetOrAddComponent<GraphicRaycaster>();
 
         // 내부 UI 매핑 리스트 초기화

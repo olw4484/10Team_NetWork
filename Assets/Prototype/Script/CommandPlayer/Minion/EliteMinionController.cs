@@ -29,6 +29,12 @@ public class EliteMinionController : BaseMinionController
         }
     }
 
+    private void ApplyEliteEffect(GameObject target)
+    {
+        // 여기에 엘리트 전용 효과 추가 가능
+        // ex: 넉백, 슬로우, 체력 회복, 버프 등
+    }
+
     [PunRPC]
     public void RPC_Attack(int targetViewID, int dmg)
     {
@@ -43,9 +49,11 @@ public class EliteMinionController : BaseMinionController
         }
     }
 
-    private void ApplyEliteEffect(GameObject target)
+    [PunRPC]
+    public void RPC_SetMoving()
     {
-        // 여기에 엘리트 전용 효과 추가 가능
-        // ex: 넉백, 슬로우, 체력 회복, 버프 등
-    }
+        animator.SetBool("IsMoving", isMoving);
+    }
+
+
 }

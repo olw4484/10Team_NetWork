@@ -1,12 +1,10 @@
 ﻿using Photon.Pun;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Data;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.TextCore.Text;
-using static UnityEngine.GraphicsBuffer;
+using UnityEngine.Events;
+
 
 public class HeroMovement : MonoBehaviour
 {
@@ -14,10 +12,38 @@ public class HeroMovement : MonoBehaviour
     private NavMeshAgent agent;
     private PhotonView pv;
 
-    public bool isMove;
-    private bool isAttacking = false;
+    public bool isMove = false;
+    public UnityAction<bool> OnMoveStateChanged;
+
+    public bool IsMove 
+    {
+        get => isMove;
+        set
+        {
+            if (isMove == value) return; // 값이 같으면 무시
+            isMove = value;
+            OnMoveStateChanged?.Invoke(isMove);
+
+        }
+    }
+    public bool isAttacking = false;
+    public bool isAttack = false;
+    public UnityAction<bool> OnAttackStateChanged;
+
+    public bool IsAttack
+    {
+        get => isAttack;
+        set
+        {
+            if (isAttack == value) return; // 값이 같으면 무시
+            isAttack = value;
+            OnAttackStateChanged?.Invoke(isAttack);
+        }
+    }
+
     [SerializeField] private float atkCooldown;
     private Vector3 destination;
+    private float attackLockTime = 0.6f;
 
     private Coroutine attackCoroutine;
     private WaitForSeconds distCheck = new WaitForSeconds(0.1f);
@@ -52,6 +78,13 @@ public class HeroMovement : MonoBehaviour
 
     public void HandleRightClick(float moveSpd, int damage, float atkRange, float atkDelay)
     {
+        if (IsAttack) return;
+
+        IsAttack = false;
+        HeroController controller = this.gameObject.GetComponent<HeroController>();
+
+        if (controller.isUsingSkill) return;
+
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
@@ -60,6 +93,7 @@ public class HeroMovement : MonoBehaviour
             // 땅 클릭 시 이동
             if (hit.collider.CompareTag("Ground") || hit.collider.CompareTag("Obstacle"))
             {
+                CancleAttackRoutine();
                 isAttacking = false;
                 SetDestination(hit.point, moveSpd);
                 return;
@@ -93,6 +127,7 @@ public class HeroMovement : MonoBehaviour
                 // 아군 유닛 클릭 (예: 따라가기 등 커스터마이징 가능)
                 Debug.Log("우클릭된 대상은 아군입니다. 기본 이동 처리 또는 무시.");
             }
+
             SetDestination(hit.point, moveSpd);
         }
     }
@@ -110,7 +145,10 @@ public class HeroMovement : MonoBehaviour
     private IEnumerator HeroAttackRoutine(Transform target, IDamageable damagable, float atkRange, float atkDelay, int damage, float moveSpd)
     {
         Debug.Log("기본공격 코루틴 시작됨");
-        if (isAttacking) yield break;
+        if (isAttacking)
+        {
+            yield break;
+        }
 
         isAttacking = true;
 
@@ -142,6 +180,27 @@ public class HeroMovement : MonoBehaviour
         attackCoroutine = null;
     }
 
+    private void CancleAttackRoutine()
+    {
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+            attackCoroutine = null;
+            isAttacking = false;
+        }
+    }
+
+    private IEnumerator AttackLockRoutine(float lockTime)
+    {
+        float timer = 0f;
+        while (timer < lockTime)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        IsAttack = false;
+    }
+
     /// <summary>
     /// 실제 공격 실행 메서드
     /// </summary>
@@ -150,16 +209,22 @@ public class HeroMovement : MonoBehaviour
     /// <param name="damage"></param>
     public void ExecuteAttack(Transform target, IDamageable damagable, int damage)
     {
+        if (IsAttack) return;
         // 멈춤 동기화를 위해 RPC 실행
         pv.RPC(nameof(RPC_StopAndFace), RpcTarget.All, target.position);
+
+        IsMove = false;
+        IsAttack = true;
         
-        // 타겟이 갖고 있는 HeroControlelr 안의 TakeDamage RPC 실행
+        // 타겟이 갖고 있는 TakeDamage RPC 실행
         PhotonView targetPv = target.gameObject.GetComponent<PhotonView>();
         if (targetPv != null)
         {
-            targetPv.RPC(nameof(HeroController.TakeDamage), RpcTarget.All, damage);
+            targetPv.RPC("RPC_TakeDamage", RpcTarget.All, damage, pv.ViewID); // TODO 데미지 줄 때 내가 줬다고 전달해줘야 함
         }
         Debug.Log("Hero1 기본 공격");
+
+        StartCoroutine(AttackLockRoutine(attackLockTime));
     }
 
     /// <summary>
@@ -189,7 +254,7 @@ public class HeroMovement : MonoBehaviour
     {
         if (pv.IsMine && !isAttacking)
         {
-            pv.RPC("RPC_SetDestination", RpcTarget.All, dest, moveSpd);
+            pv.RPC(nameof(RPC_SetDestination), RpcTarget.All, dest, moveSpd);
         }
     }
 
@@ -203,7 +268,7 @@ public class HeroMovement : MonoBehaviour
     {
         agent.speed = moveSpd;
         destination = dest;
-        isMove = true;
+        IsMove = true;
         agent.SetDestination(dest);
     }
 
@@ -214,12 +279,12 @@ public class HeroMovement : MonoBehaviour
     public void LookMoveDir()
     {
         // 이동 지점이 설정되었을 때
-        if (isMove)
+        if (IsMove)
         {
             // 이동이 끝난다면
             if (agent.velocity.magnitude == 0.0f)
             {
-                isMove = false;
+                IsMove = false;
                 return;
             }
         }
@@ -230,5 +295,23 @@ public class HeroMovement : MonoBehaviour
         {
             transform.forward = dir;
         }
+    }
+
+    [PunRPC]
+    public void InterruptMovement()
+    {
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+            attackCoroutine = null;
+        }
+
+        isAttacking = false;
+        IsAttack = false;
+        IsMove = false;
+
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.ResetPath();
     }
 }

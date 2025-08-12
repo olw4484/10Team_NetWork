@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class SHI_InventorySlot : MonoBehaviour
@@ -29,6 +28,9 @@ public class SHI_InventorySlot : MonoBehaviour
         useButton.onClick.AddListener(OnUseButtonClicked);
         currentItem = GetComponent<SHI_ItemBase>();
         useButton.interactable = inventoryManager.stat.CurHP.Value > 0;
+       
+        
+        
     }
 
     public void SetItem(SHI_ItemBase item)
@@ -39,7 +41,11 @@ public class SHI_InventorySlot : MonoBehaviour
         //icon.sprite = item._Image;
         icon.enabled = true;
         useButton.interactable = true;
-      
+        if (outline == null)
+            outline = GetComponent<Outline>();
+
+        if (outline != null)
+            outline.enabled = (currentItem.type == 2);
     }
 
     public void ClearSlot()
@@ -60,14 +66,14 @@ public class SHI_InventorySlot : MonoBehaviour
             if (currentItem.type == 2)
                 outline.enabled = true; // 슬롯의 아웃라인 활성화
 
-            else
+            else if (currentItem.type == 1)
                 outline.enabled = false; // 슬롯의 아웃라인 비활성화
 
             if (success)
             {
                 inventory.RemoveItem(currentItem);
-                if (currentItem.type <= 0)
-                    ClearSlot();
+                // if (currentItem.type <= 0)
+                //ClearSlot();
             }
         }
     }

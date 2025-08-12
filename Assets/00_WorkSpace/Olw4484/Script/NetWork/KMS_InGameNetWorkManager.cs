@@ -48,6 +48,8 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
                 props["Role"] = setJob;
                 player.SetCustomProperties(props);
             }
+            if (PhotonNetwork.IsMasterClient)
+                PhotonNetwork.Instantiate("ItemSpawner", Vector3.zero, Quaternion.identity);
         }
 
         // 2. 모든 클라이언트에서 자신의 스폰 루틴 실행 (팀/역할 세팅 완료될 때까지 대기)
@@ -97,19 +99,19 @@ public class KMS_InGameNetWorkManager : MonoBehaviourPunCallbacks, IManager
 
             Vector3 pos = (myTeamId == 0) ? heroRedSpawnPoint.position : heroBlueSpawnPoint.position;
             Quaternion rot = (myTeamId == 0) ? heroRedSpawnPoint.rotation : heroBlueSpawnPoint.rotation;
-            var go = PhotonNetwork.Instantiate(heroPrefabName, pos, rot);
+            var go = PhotonNetwork.Instantiate(heroPrefabName, pos, rot, 0, new object[] { myTeamId});
             Debug.Log($"[SpawnByRole] Hero 프리팹 인스턴스 생성됨: {go}");
         }
         else if (myRole == "Command")
         {
             Vector3 hqPos = (myTeamId == 0) ? hqRedSpawnPoint.position : hqBlueSpawnPoint.position;
             Quaternion hqRot = (myTeamId == 0) ? hqRedSpawnPoint.rotation : hqBlueSpawnPoint.rotation;
-            var hqObj = PhotonNetwork.Instantiate("HQ", hqPos, hqRot);
+            var hqObj = PhotonNetwork.Instantiate("HQ", hqPos, hqRot, 0, new object[] { myTeamId });
             Debug.Log($"[SpawnByRole] HQ 인스턴스 생성됨: {hqObj}");
 
             Vector3 pos = (myTeamId == 0) ? cmdRedSpawnPoint.position : cmdBlueSpawnPoint.position;
             Quaternion rot = (myTeamId == 0) ? cmdRedSpawnPoint.rotation : cmdBlueSpawnPoint.rotation;
-            var cmdObj = PhotonNetwork.Instantiate("CommandPlayer", pos, rot);
+            var cmdObj = PhotonNetwork.Instantiate("CommandPlayer", pos, rot, 0, new object[] { myTeamId });
             Debug.Log($"[SpawnByRole] CommandPlayer 인스턴스 생성됨: {cmdObj}");
 
             var commandPlayer = cmdObj.GetComponent<CommandPlayer>();

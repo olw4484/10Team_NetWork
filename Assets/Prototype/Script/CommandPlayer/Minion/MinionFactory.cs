@@ -50,7 +50,7 @@ public class MinionFactory : MonoBehaviour
             return;
         }
 
-        object[] instantiationData = new object[] { (int)type, teamId, groupId , teamId};
+        object[] instantiationData = new object[] { (int)type, teamId, groupId };
         PhotonNetwork.Instantiate(prefab.name, spawnPos, Quaternion.identity, 0, instantiationData);
     }
 

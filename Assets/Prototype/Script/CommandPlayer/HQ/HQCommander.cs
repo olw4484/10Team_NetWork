@@ -1,18 +1,21 @@
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
 using static ISelectable;
 using static UnityEngine.GraphicsBuffer;
 
-public class HQCommander : MonoBehaviour, ISelectable
+public class HQCommander : MonoBehaviour, ISelectable, IPunInstantiateMagicCallback
 {
     [Header("Linked")]
     public CommandPlayer player;
+
+    [Header("TeamId")]
+    public int teamId;
 
     [Header("SpawnPoint/Target")]
     public Transform defaultSpawnPoint;
     public Transform rallyPointTarget;
     public GameObject rallyPointMarker;
-    public WaypointGroup waypointGroup;
 
     bool IsSelected = false;
 
@@ -30,6 +33,9 @@ public class HQCommander : MonoBehaviour, ISelectable
             OnSpawnMinionButton((int)MinionType.Elite);
 
         // 특수 스킬 확장 가능성 ) HQSkil 2~3개
+
+        //if (Input.GetKeyDown(FeyCode.D))
+        //  
     }
 
     public void OnSpawnMinionButton(int type)
@@ -95,6 +101,16 @@ public class HQCommander : MonoBehaviour, ISelectable
         }
 
         Debug.Log($"[Commander] Rally Point 설정: {point}");
+    }
+
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        object[] data = info.photonView.InstantiationData;
+        if (data != null && data.Length > 0)
+        {
+            teamId = (int)data[0];
+            Debug.Log($"[HQCommander] teamId 동기화: {teamId}");
+        }
     }
 
     public void Select()

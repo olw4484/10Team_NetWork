@@ -9,8 +9,6 @@ public class ResourceSystem : MonoBehaviour, IManager
     public enum ResourceType { Gold, Gear }
     public static ResourceSystem Instance { get; private set; }
 
-    public int Priority => (int)ManagerPriority.ResourceSystem;
-
     public bool IsDontDestroy => true;
 
     [Header("Resource Settings")]
@@ -80,6 +78,14 @@ public class ResourceSystem : MonoBehaviour, IManager
 
         OnResourceChanged?.Invoke(type, GetResource(type));
 
+    }
+
+    public void AddResourceToPlayer(CommandPlayer player, ResourceType type, int amount)
+    {
+        if (type == ResourceType.Gold)
+        {
+            player.photonView.RPC("RpcAddGold", RpcTarget.All, amount);
+        }
     }
 
     #region RPC_GOLD

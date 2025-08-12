@@ -1,5 +1,7 @@
-public enum SceneID
+﻿public enum SceneID
 {
     TestScene,
+    LoginScene,
+    LobbyScene,
     InGameScene,
 }

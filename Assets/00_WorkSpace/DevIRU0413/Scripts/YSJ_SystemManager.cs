@@ -40,9 +40,6 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
         CurrentSceneBase.OnInitializeAction -= InitLoadingUI;
         CurrentSceneBase.OnInitializeAction += InitLoadingUI;
 
-        CurrentSceneBase.OnInitializeAction -= TestSceneLoad;
-        CurrentSceneBase.OnInitializeAction += TestSceneLoad;
-
         ChangeState(SystemStateType.Init);
 
         _isInitialized = true;
@@ -57,6 +54,21 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
         if (CurrentState == newStateType) return;
 
         CurrentState = newStateType;
+
+        switch (CurrentState)
+        {
+            case SystemStateType.Init: 
+                break;
+            case SystemStateType.SceneChange:
+                _iLoadingUI?.Show("Wait Init...");
+                _iLoadingUI?.SetProgress(0.0f);
+                break;
+            case SystemStateType.Playing:
+                break;
+            case SystemStateType.Quit: 
+                break;
+        }
+
         Debug.Log($"Game State Changed: {CurrentState}");
     }
 
@@ -75,8 +87,6 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
     private IEnumerator TransitionScene(string sceneName, List<(string message, Func<IEnumerator> action)> preActions = null, string finalMessage = null)
     {
         ChangeState(SystemStateType.SceneChange);
-        _iLoadingUI?.SetProgress(0.0f);
-        _iLoadingUI?.Show("Wait Init...");
         yield return new WaitForSeconds(1.0f);
 
         // 전처리 액션 실행
@@ -106,9 +116,13 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
         _iLoadingUI?.SetProgress(1.0f);
         _iLoadingUI?.UpdateMessage("Loaded!!");
         yield return new WaitForSeconds(1.0f);
+        while (CurrentState != SystemStateType.Playing)
+        {
+            yield return null;
+        }
 
-        _iLoadingUI?.Hide(); // 나중에 따로 빼도 됨
-        SceneLoaded();
+        yield return new WaitForSeconds(1.0f);
+        _iLoadingUI?.Hide();
     }
     private IEnumerator TransitionPhotonScene(string sceneName, List<(string message, Func<IEnumerator> action)> preActions = null, string finalMessage = null)
     {
@@ -119,8 +133,6 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
         }
 
         ChangeState(SystemStateType.SceneChange);
-        _iLoadingUI?.SetProgress(0.0f);
-        _iLoadingUI?.Show("Wait Init...");
         yield return new WaitForSeconds(1.0f);
 
         // 전처리 액션
@@ -153,8 +165,13 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
         _iLoadingUI?.UpdateMessage("Loaded!!");
         yield return new WaitForSeconds(1.0f);
 
+        while(CurrentState != SystemStateType.Playing)
+        {
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(1.0f);
         _iLoadingUI?.Hide();
-        SceneLoaded();
     }
 
     private void SceneLoaded()
@@ -179,7 +196,7 @@ public class YSJ_SystemManager : YSJ_SimpleSingleton<YSJ_SystemManager>, IManage
         _iLoadingUI = loadingUIGO.GetComponent<ILoadingUI>();
         if (_iLoadingUI == null) return;
         _iLoadingUI.Init();
-        // _iLoadingUI.Hide();
+        _iLoadingUI.Hide();
     }
 
     private void TestSceneLoad()

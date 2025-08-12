@@ -1,3 +1,5 @@
+using JetBrains.Annotations;
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -24,19 +26,19 @@ public class Spawner : MonoBehaviour
 
     private Bounds groundBounds;
     public int dropheight = 10; // 드랍 높이 (기본값 10)
+    //public PhotonView pv;
 
     void Start()
     {
-        
-        // 바닥의 Bounds 가져오기 (Collider > Renderer 우선)
+        //pv = GetComponent<PhotonView>();
+        Debug.Log("작동은하지?");
+        if (!PhotonNetwork.IsMasterClient) return; // 내 객체가 아니라면 RPC 호출 안 함
+        Debug.Log("마스터맞아");
+        groundObject = GameObject.Find("DropZone");
         if (groundObject.TryGetComponent<Collider>(out Collider col))
-        {
             groundBounds = col.bounds;
-        }
         else if (groundObject.TryGetComponent<Renderer>(out Renderer rend))
-        {
             groundBounds = rend.bounds;
-        }
         else
         {
             Debug.LogError("GroundObject에 Collider 또는 Renderer가 없습니다.");
@@ -44,50 +46,73 @@ public class Spawner : MonoBehaviour
             return;
         }
 
-        // 스폰 반복 시작
         StartCoroutine(SpawnLoop());
+
+
     }
+
+    //public void spawn()
+    //{
+    //    StartCoroutine(SpawnLoop());
+    //}
     IEnumerator destory(GameObject prefab)
     {
-        yield return new WaitForSeconds(spawnInterval/2);
+        yield return new WaitForSeconds(spawnInterval / 2);
         prefab.SetActive(false);
+    }
+    [PunRPC]
+    public void setspawn()
+    {
+        _spwanPoint = SHI_RandomPosCreater.RandomPosList(groundBounds.min, groundBounds.max, spawnCount);
     }
     IEnumerator SpawnLoop()
     {
         while (true)
         {
-            
-                _spwanPoint = SHI_RandomPosCreater.RandomPosList(groundBounds.min, groundBounds.max, spawnCount);
-                SpawnRandom();
-            
+            //if(PhotonNetwork.IsMasterClient)
+            //{
+            //    pv.RPC(nameof(setspawn), RpcTarget.All);
+            //    pv.RPC(nameof(SpawnRandom), RpcTarget.All);
+            //}
+
+            //_spwanPoint = SHI_RandomPosCreater.RandomPosList(groundBounds.min, groundBounds.max, spawnCount);
+
+
+            SpawnRandom();
+
             yield return new WaitForSeconds(spawnInterval);
         }
     }
 
     void SpawnRandom()
     {
-        
-        for(int i = 0; i < spawnCount; i++)
+        _spwanPoint = SHI_RandomPosCreater.RandomPosList(groundBounds.min, groundBounds.max, spawnCount);
+
+        for (int i = 0; i < spawnCount; i++ )
         {
-            GameObject item = prefab.GetRandomPrefab();
-            int random = Random.Range(0, _spwanPoint.Count);
-            Vector3 spawnpoint = _spwanPoint[random];
             
-            GameObject spawnitem = Instantiate(item, spawnpoint , item.transform.rotation);
-            spawnitem.transform.parent = this.gameObject.transform;
+            GameObject item = prefab.GetRandomPrefab();
+            Debug.Log($"{item.name}");
+            int random = Random.Range(0, _spwanPoint.Count);
+            //Vector3 spawnpoint = _spwanPoint[random];
+            Vector3 spawnpoint = _spwanPoint[i] + Vector3.up * dropheight; // 드랍 높이만큼 위로 올리기
+            GameObject spawnitem = PhotonNetwork.Instantiate(item.name, spawnpoint, item.transform.rotation);
+            //spawnitem.transform.parent = this.gameObject.transform;
+
+
             //SHI_ItemBase itemBase = spawnitem.GetComponent<SHI_ItemBase>();
             //itemBase.get(ItembaseData[Random.Range(0, ItembaseData.Count)]);
             //itemBase._Image = itemBase.data._Image;
             //itemBase.GetComponent<SpriteRenderer>().sprite = itemBase._Image;
-            
 
-            _spwanPoint.RemoveAt(random);
-           destory(spawnitem);
+
+            //_spwanPoint.RemoveAt(random);
+            //destory(spawnitem);????
             //Instantiate(prefab, spawnpoint, prefab.transform.rotation);
             //GameObject create = Instantiate(prefab, spawnpoint, prefab.transform.rotation);
             StartCoroutine(destory(spawnitem));
         }
-        
-       
+        _spwanPoint.Clear(); // 스폰 포인트 초기화
+
     }
 }

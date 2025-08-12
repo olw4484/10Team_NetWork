@@ -5,29 +5,43 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class HeroController : MonoBehaviour, IDamageable
+public class HeroController : MonoBehaviour, IDamageable, IPunInstantiateMagicCallback
 {
     public HeroModel model;
     public HeroView view;
     public HeroMovement mov;
     public NavMeshAgent agent;
-    private PhotonView pv;
+    public PhotonView pv;
 
     [SerializeField] private int heroType;
-    private bool isInCombat;
+    public bool isUsingSkill = false;
+    public bool isDead = false;
     private float atkDelay;
     private float genTime = 1f;
 
+    public int teamId;
+
+    int IDamageable.teamId => this.teamId;
+    bool IDamageable.isDead => this.isDead;
+
+    private int currentAnimationHash = -1;
     public readonly int IDLE_HASH = Animator.StringToHash("Idle");
     public readonly int MOVE_HASH = Animator.StringToHash("Move");
     public readonly int ATTACK_HASH = Animator.StringToHash("Attack");
     public readonly int DEAD_HASH = Animator.StringToHash("Dead");
+
+    public readonly int Q_HASH = Animator.StringToHash("QSkill");
+    public readonly int W_HASH = Animator.StringToHash("WSkill");
+    public readonly int E_HASH = Animator.StringToHash("ESkill");
+    public readonly int R_HASH = Animator.StringToHash("RSkill");
+
     // 각 Hero마다 스킬 애니메이션 존재
 
     private void Awake() => Init();
 
     private void Init()
     {
+        Debug.Log("HeroController Init");
         model = GetComponent<HeroModel>();
         view = GetComponent<HeroView>();
         mov = GetComponent<HeroMovement>();
@@ -51,6 +65,25 @@ public class HeroController : MonoBehaviour, IDamageable
         model.CurMP.Subscribe(OnMPChanged);
         
         model.Level.Subscribe(OnLevelChanged);
+
+        mov.OnMoveStateChanged += (moving) =>
+        {
+            view.animator.SetBool("isMove", moving);
+        };
+        mov.OnAttackStateChanged += (attack) =>
+        {
+            view.animator.SetBool("isAttack", attack);
+        };
+    }
+
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        object[] data = info.photonView.InstantiationData;
+        if (data != null && data.Length > 0)
+        {
+            teamId = (int)data[0];
+            Debug.Log($"[HeroController] teamId 동기화: {teamId}");
+        }
     }
 
     private IEnumerator RegisterRoutine()
@@ -90,8 +123,11 @@ public class HeroController : MonoBehaviour, IDamageable
         // Test용 코드들
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            model.CurHP.Value -= 10;
-            Debug.Log("현재 HP : " + model.CurHP.Value);
+            if (pv.IsMine)
+            {
+                pv.RPC("TakeDamage", RpcTarget.All, 100, default);
+                Debug.Log("현재 HP : " + model.CurHP.Value);
+            }
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
@@ -105,6 +141,11 @@ public class HeroController : MonoBehaviour, IDamageable
         if (!pv.IsMine) return;
 
         mov.LookMoveDir();
+    }
+
+    private void LateUpdate()
+    {
+        //HandleAnimation();
     }
 
     /// <summary>
@@ -173,7 +214,7 @@ public class HeroController : MonoBehaviour, IDamageable
                currentEXP >= model.levelExpTable[currentLevel + 1])
         {
             currentLevel++;
-            TestSkillManager.Instance.skillPoint++;
+            TestSkillManager.Instance.skillPoint.Value++;
             Debug.Log($"레벨업! → {currentLevel}레벨");
         }
 
@@ -193,6 +234,8 @@ public class HeroController : MonoBehaviour, IDamageable
 
         model.CurHP.Value += levelUpHp;
         model.CurMP.Value += levelUpMp;
+
+        TestSkillManager.Instance.RefreshSkillButton();
     }
 
     [PunRPC]
@@ -248,9 +291,87 @@ public class HeroController : MonoBehaviour, IDamageable
     }
 
     [PunRPC]
+    public void RPC_TakeDamage(int amount, int attackerViewID = -1)
+    {
+        model.CurHP.Value -= DamageCalculate.DamageCalculation(amount, model.Def);
+        Debug.Log($"{amount}의 데미지를 입음. 현재 HP : {model.CurHP.Value}");
+
+        if (model.CurHP.Value <= 0)
+        {
+            if (pv.IsMine)
+            {
+                pv.RPC("Dead", RpcTarget.All);
+            }
+        }
+    }
+
     public void TakeDamage(int amount, GameObject attacker = null)
     {
-        model.CurHP.Value -= amount;
-        Debug.Log($"{amount}의 데미지를 입음. 현재 HP : {model.CurHP.Value}");
+        model.CurHP.Value -= DamageCalculate.DamageCalculation(amount, model.Def);
+
+        if (model.CurHP.Value <= 0)
+        {
+            if (pv.IsMine)
+            {
+                pv.RPC("Dead", RpcTarget.All);
+            }
+        }
+    }
+
+    [PunRPC]
+    public void Dead()
+    {
+        //StartCoroutine(DeadRoutine());
+        gameObject.SetActive(false);
+
+        if (pv.IsMine)
+        {
+            LGH_TestGameManager.Instance.RequestRespawn(this);
+        }
+    }
+
+    private IEnumerator DeadRoutine()
+    {
+        isDead = true;
+        view.animator.SetBool("isDead", isDead);
+        yield return new WaitForSeconds(0.5f);
+    }
+
+    [PunRPC]
+    public void RPC_Respawn(Vector3 spawnPos, float hp)
+    {
+        transform.position = spawnPos;
+        gameObject.SetActive(true);
+        model.CurHP.Value = hp;
+        isDead = false;
+
+        Debug.Log($"리스폰 완료. 위치: {spawnPos}, HP: {hp}");
+    }
+
+    private void HandleAnimation()
+    {
+        if (isUsingSkill) return;
+
+        if (isDead)
+        {
+            view.animator.SetBool("isDead", isDead);
+        }
+        else if (mov.isMove)
+        {
+            
+        }
+        else if (mov.isAttack)
+        {
+            
+        }
+        else
+        {
+            
+        }
+    }
+
+    private void OnDisable()
+    {
+        Debug.Log("비활성화됨");
     }
 }

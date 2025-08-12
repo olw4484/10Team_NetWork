@@ -19,10 +19,14 @@ public class RangedMinionController : BaseMinionController
         base.Start();
     }
 
-    protected override void TryAttack()
+    protected override void TryAttack()
     {
-        if (!PhotonNetwork.IsMasterClient || attackTimer < attackCooldown || attackTarget == null || isDead) return;
-
+        Debug.Log("TryAttack() called!");
+        if (!PhotonNetwork.IsMasterClient || attackTimer < attackCooldown || attackTarget == null || isDead)
+        {
+            Debug.Log("TryAttack blocked by condition");
+            return;
+        }
         var targetPV = attackTarget.GetComponent<PhotonView>();
         if (targetPV == null)
         {
@@ -32,38 +36,19 @@ public class RangedMinionController : BaseMinionController
 
         attackTimer = 0f;
         int targetViewID = targetPV.ViewID;
-        photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID, attackPower);
+        Debug.Log("TryAttack conditions passed, sending RPC_TryAttack!");
+        photonView.RPC(nameof(RPC_TryAttack), RpcTarget.All, targetViewID, attackPower);
     }
 
     [PunRPC]
-    private void RPC_TryAttack(int targetViewID, int dmg)
+    public void RPC_TryAttack(int targetViewID, int dmg)
     {
         var targetPV = PhotonView.Find(targetViewID);
-        if (targetPV == null || isDead) return;
-
-        view?.PlayMinionAttackAnimation();
-
-        // 탄환 생성
-        Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position + transform.forward * 0.5f;
-        Quaternion rotation = Quaternion.LookRotation(targetPV.transform.position - spawnPos);
-
-        if (PhotonNetwork.IsMasterClient)
+        if (targetPV != null)
         {
-            object[] instantiationData = new object[]
-            {
-                dmg,
-                targetViewID,
-                photonView.ViewID,
-                teamId
-            };
-
-            PhotonNetwork.Instantiate(
-                projectilePrefab.name,
-                spawnPos,
-                rotation,
-                0,
-                instantiationData
-            );
+            var damageable = targetPV.GetComponent<IDamageable>();
+            damageable?.TakeDamage(dmg, this.gameObject);
+            view?.PlayMinionAttackAnimation();
         }
     }
 }

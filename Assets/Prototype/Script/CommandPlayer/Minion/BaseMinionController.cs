@@ -1,5 +1,4 @@
 ﻿using Photon.Pun;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,13 +8,19 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     [Header("Stats")]
     public float moveSpeed;
     public float attackRange;
+    public float detectRange;
     public float attackCooldown;
     public int attackPower;
     public int maxHP;
     protected int currentHP;
 
+    private int baseMaxHP;
+    private int baseAttackPower;
+    private float baseMoveSpeed;
+
     [Header("Data")]
     public MinionDataSO data;
+    public LayerMask targetMask;
 
     [Header("Components")]
     public PhotonView photonView;
@@ -29,6 +34,12 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     protected bool isDead = false;
     public int teamId;
     public float waypointStoppingDistance = 0.8f;
+    private float searchInterval = 0.2f;
+    private float searchTimer = 0f;
+    private Quaternion lastSentRotation;
+    protected Animator animator;
+    int IDamageable.teamId => this.teamId;
+    bool IDamageable.isDead => this.isDead;
 
     [Header("TeamColor")]
     [SerializeField] private GameObject redBody;
@@ -45,10 +56,25 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     private bool isMovingToPosition = false;
     private Vector3 attackMoveTarget;
     private Vector3 targetPosition;
+    public bool isMoving = false;
 
     // 수동제어
     protected bool isManual = false;
     public virtual bool IsManualControl => isManual;
+
+    // 페이즈 배율
+    [Header("Phase Buff Multipliers")]
+    public float phase2_HP_Mul = 1.25f;
+    public float phase2_DMG_Mul = 1.15f;
+    public float phase2_SPD_Mul = 1.10f;
+
+    public float phase3_HP_Mul = 1.50f;
+    public float phase3_DMG_Mul = 1.30f;
+    public float phase3_SPD_Mul = 1.20f;
+
+    private bool p2Applied = false;
+    private bool p3Applied = false;
+
 
     public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
@@ -65,13 +91,13 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         }
     }
 
-
     // --- 초기화 ---
     protected virtual void Awake()
     {
         photonView = GetComponent<PhotonView>();
         agent = GetComponent<NavMeshAgent>();
         view = GetComponentInChildren<MinionView>();
+        animator = GetComponentInChildren<Animator>();
 
         Debug.Log($"[{PhotonNetwork.LocalPlayer.ActorNumber}] {name} - BaseMinionController.Awake");
     }
@@ -94,31 +120,34 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
 
     protected virtual void Update()
     {
-        if (isDead || !PhotonNetwork.IsMasterClient) return;
-        attackTimer += Time.deltaTime;
+        if (isDead) return;
 
-        if (isFollowingWaypoint)
+        // 마스터 클라이언트에서만 실행되는 AI 로직
+        if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log($"[UpdateCheck] isFollowingWaypoint: TRUE, 현재 웨이포인트 인덱스: {currentWaypointIndex}");
-        }
-        else
-        {
-            Debug.Log($"[UpdateCheck] isFollowingWaypoint: FALSE");
+            attackTimer += Time.deltaTime;
+            if (attackTarget == null || attackTarget.GetComponent<BaseMinionController>()?.isDead == true)
+            {
+                searchTimer += Time.deltaTime;
+                if (searchTimer >= searchInterval)
+                {
+                    SearchForTarget();
+                    searchTimer = 0f;
+                }
+            }
         }
 
-        // 최우선순위: 공격 중일 경우
+        // 최우선순위: 공격 중
         if (attackTarget != null)
         {
-            Debug.Log("[UpdateCheck] 공격 대상 발견, 웨이포인트 로직 무시.");
             HandleRotation();
             HandleAttackTarget();
             return;
         }
 
-        // 두 번째 우선순위: 수동 이동 명령이 있을 경우
+        // 두 번째 우선순위: 수동 이동 명령
         if (isAttackMove || isMovingToPosition)
         {
-            Debug.Log("[UpdateCheck] 수동 이동 명령 실행, 웨이포인트 로직 무시.");
             HandleRotation();
             HandleManualMove();
             return;
@@ -132,11 +161,39 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         }
         else
         {
-            // 아무것도 하지 않을 때, 에이전트 정지
             if (agent.hasPath)
             {
                 agent.isStopped = true;
             }
+        }
+
+        if (attackTarget == null && !isDead && !isFollowingWaypoint)
+        {
+            isFollowingWaypoint = true;
+            MoveToNextWaypoint();
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (TimeManager.Instance != null)
+        {
+            TimeManager.Instance.OnPhase2Started += OnPhase2;
+            TimeManager.Instance.OnPhase3Started += OnPhase3;
+
+            // 이미 진행 중인 판에 합류/스폰된 경우 즉시 보정
+            float t = TimeManager.Instance.ElapsedTime;
+            if (!p2Applied && t >= 480f) OnPhase2();
+            if (!p3Applied && t >= 900f) OnPhase3();
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (TimeManager.Instance != null)
+        {
+            TimeManager.Instance.OnPhase2Started -= OnPhase2;
+            TimeManager.Instance.OnPhase3Started -= OnPhase3;
         }
     }
 
@@ -145,10 +202,19 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
     /// </summary>
     protected virtual void HandleAttackTarget()
     {
+        Debug.Log($"[{photonView.name}] HandleAttackTarget() called!");
+        if (attackTarget == null)
+        {
+            Debug.Log("attackTarget is null!");
+            return;
+        }
         float distance = Vector3.Distance(transform.position, attackTarget.position);
+        Debug.Log($"[AttackCheck] distance={distance}, attackRange={attackRange}");
         if (distance <= attackRange)
         {
+            Debug.Log($"In attack range, [{photonView.name}]calling TryAttack()");
             agent.isStopped = true;
+            agent.ResetPath();
             TryAttack();
         }
         else
@@ -263,26 +329,50 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         }
     }
 
+
     private void HandleRotation()
     {
+        if (!photonView.IsMine) return;
+
+        Quaternion targetRotation = transform.rotation;
+
         if (agent.velocity.sqrMagnitude > 0.1f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(agent.velocity.normalized);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-        }
+            targetRotation = Quaternion.LookRotation(agent.velocity.normalized);
         else if (attackTarget != null)
         {
             Vector3 direction = (attackTarget.position - transform.position).normalized;
             if (direction != Vector3.zero)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(direction);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-            }
+                targetRotation = Quaternion.LookRotation(direction);
+        }
+
+        // 부드럽게 회전
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+
+        // 네트워크 전파 (예: 5도 이상 각도 차이 있을 때만)
+        if (Quaternion.Angle(lastSentRotation, transform.rotation) > 5f)
+        {
+            photonView.RPC("RPC_SyncRotation", RpcTarget.Others, transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
+            lastSentRotation = transform.rotation;
         }
     }
 
+    private void SearchForTarget()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, detectRange, targetMask);
 
+        foreach (var hit in hits)
+        {
+            var target = hit.GetComponent<IDamageable>();
+            Debug.Log($"[전체로그] hit: {hit.name} | {target?.GetType().Name} | 팀: {target?.teamId} | 죽음: {target?.isDead}");
 
+            if (target != null && target.teamId != this.teamId && !target.isDead)
+            {
+                Debug.Log($"[타겟선정] 공격대상: {hit.name} | {target.GetType().Name}");
+                attackTarget = ((MonoBehaviour)target).transform;
+                break;
+            }
+        }
+    }
     protected int FindNearestWaypointIndex()
     {
         if (waypointGroup == null) return 0;
@@ -319,20 +409,85 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         if (currentHP <= 0)
             Die(attacker);
     }
+
+    public void OnAttackAnimationEvent()
+    {
+        if (!PhotonNetwork.IsMasterClient || attackTarget == null || isDead) return;
+
+        var targetPV = attackTarget.GetComponent<PhotonView>();
+        if (targetPV == null) return;
+
+        photonView.RPC(nameof(RPC_DealDamage), RpcTarget.All, targetPV.ViewID, attackPower);
+    }
+
+
     protected virtual void Die(GameObject killer)
     {
         if (isDead) return;
         isDead = true;
         view?.PlayMinionDeathAnimation();
-        if (EventManager.Instance != null)
-        {
-            EventManager.Instance.MinionDead(this as MinionController, killer);
-            EventManager.Instance.MinionKillConfirmed(killer, this as MinionController);
-        }
+
         if (PhotonNetwork.InRoom)
+        {
+            if (!PhotonNetwork.IsMasterClient) return; // 마스터만 최종 처리
+
+            // 1) EXP 지급 (있다면)
+            if (data != null && data.expReward > 0 && killer != null)
+                AwardExpToKiller(killer, data.expReward);
+
+            // 2) 이벤트(로그/UI 등)도 마스터 한 번만
+            EventManager.Instance?.MinionDead(this as MinionController, killer);
+            EventManager.Instance?.MinionKillConfirmed(killer, this as MinionController);
+
+            // 3) 네트워크 오브젝트 파괴
             PhotonNetwork.Destroy(gameObject);
+        }
         else
+        {
+            // 오프라인
+            EventManager.Instance?.MinionDead(this as MinionController, killer);
+            EventManager.Instance?.MinionKillConfirmed(killer, this as MinionController);
             Destroy(gameObject, 1f);
+        }
+    }
+
+    private void AwardExpToKiller(GameObject killer, int amount)
+    {
+        var recv = killer.GetComponentInParent<IExpReceiver>();
+        if (recv != null)
+        {
+            recv.AddExp(amount); // 내부에서 Owner 타겟 RPC로 지급됨
+        }
+    }
+
+    private void OnPhase2()
+    {
+        if (p2Applied) return;
+
+        if (PhotonNetwork.InRoom)
+        {
+            if (PhotonNetwork.IsMasterClient)
+                photonView.RPC(nameof(RPC_ApplyPhaseBuff), RpcTarget.All, 2);
+        }
+        else
+        {
+            ApplyPhaseBuff(2);
+        }
+    }
+
+    private void OnPhase3()
+    {
+        if (p3Applied) return;
+
+        if (PhotonNetwork.InRoom)
+        {
+            if (PhotonNetwork.IsMasterClient)
+                photonView.RPC(nameof(RPC_ApplyPhaseBuff), RpcTarget.All, 3);
+        }
+        else
+        {
+            ApplyPhaseBuff(3);
+        }
     }
 
     // RPC 처리
@@ -345,10 +500,15 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
         this.data = data;
         this.moveSpeed = data.moveSpeed;
         this.attackRange = data.attackRange;
+        this.detectRange = data.detectRange;
         this.attackCooldown = data.attackCooldown;
         this.attackPower = data.attackPower;
         this.maxHP = data.maxHP;
         this.currentHP = maxHP;
+
+        this.baseMoveSpeed = this.moveSpeed;
+        this.baseAttackPower = this.attackPower;
+        this.baseMaxHP = this.maxHP;
 
         this.teamId = teamId;
 
@@ -393,19 +553,74 @@ public abstract class BaseMinionController : MonoBehaviour, IDamageable, IPunIns
             agent.SetDestination(destination);
         }
     }
-
     [PunRPC]
     public void RPC_TakeDamage(int damage, int attackerViewID)
     {
-        if (isDead) return;
-        currentHP -= damage;
-        if (currentHP <= 0)
+        GameObject killer = null;
+        var attackerPV = PhotonView.Find(attackerViewID);
+        if (attackerPV != null)
+            killer = attackerPV.gameObject;
+        TakeDamage(damage, killer);
+    }
+
+    [PunRPC]
+    public void RPC_DealDamage(int targetViewID, int dmg)
+    {
+        var targetPV = PhotonView.Find(targetViewID);
+        if (targetPV != null)
         {
-            GameObject killer = null;
-            var attackerPV = PhotonView.Find(attackerViewID);
-            if (attackerPV != null)
-                killer = attackerPV.gameObject;
-            Die(killer);
+            var damageable = targetPV.GetComponent<IDamageable>();
+            damageable?.TakeDamage(dmg, this.gameObject);
+        }
+    }
+
+    [PunRPC]
+    public void RPC_SyncRotation(float x, float y, float z, float w)
+    {
+        transform.rotation = new Quaternion(x, y, z, w);
+    }
+
+    [PunRPC]
+    private void RPC_ApplyPhaseBuff(int phase)
+    {
+        ApplyPhaseBuff(phase);
+    }
+
+    private void ApplyPhaseBuff(int phase)
+    {
+        switch (phase)
+        {
+            case 2:
+                if (p2Applied) return;
+                p2Applied = true;
+
+                // HP
+                {
+                    int prev = maxHP;
+                    maxHP = Mathf.RoundToInt(maxHP * phase2_HP_Mul);
+                    currentHP = Mathf.RoundToInt(currentHP * (maxHP / (float)prev));
+                }
+                // DMG
+                attackPower = Mathf.RoundToInt(attackPower * phase2_DMG_Mul);
+                // SPD
+                moveSpeed *= phase2_SPD_Mul;
+                if (agent != null) agent.speed = moveSpeed;
+                break;
+
+            case 3:
+                if (p3Applied) return;
+                p3Applied = true;
+
+                // 누적 강화 (Phase2 이후 추가 곱)
+                {
+                    int prev = maxHP;
+                    maxHP = Mathf.RoundToInt(maxHP * phase3_HP_Mul);
+                    currentHP = Mathf.RoundToInt(currentHP * (maxHP / (float)prev));
+                }
+                attackPower = Mathf.RoundToInt(attackPower * phase3_DMG_Mul);
+                moveSpeed *= phase3_SPD_Mul;
+                if (agent != null) agent.speed = moveSpeed;
+                break;
         }
     }
     #endregion

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillName: Bash
   isPassive: 0
-  damage: 0000000032000000500000006e0000008c000000aa000000
-  curDamage: 0
+  damage: 000000003c0000005a0000007800000096000000b4000000
+  curDamage: 50
   skillRange: 5
   buffAmount: []
   mana:
@@ -25,7 +25,7 @@ MonoBehaviour:
   - 70
   - 80
   - 90
-  curMana: 0
+  curMana: 50
   cooldown:
   - 0
   - 12

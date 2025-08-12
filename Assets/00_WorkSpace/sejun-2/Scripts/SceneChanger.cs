@@ -10,7 +10,7 @@ public class SceneChanger : MonoBehaviour
     // 프로젝트에 포함된 다른 씬을 로딩하고 기존의 씬의 내용을 삭제함
     public static void ChageScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
+        ManagerGroup.Instance.GetManager<YSJ_SystemManager>().LoadSceneWithPreActions(sceneName);
     }
 
 
